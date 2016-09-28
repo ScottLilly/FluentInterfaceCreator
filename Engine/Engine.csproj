@@ -40,6 +40,8 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Enums.cs" />
+    <Compile Include="LanguageFactory.cs" />
     <Compile Include="Models\Method.cs" />
     <Compile Include="Models\MethodParameter.cs" />
     <Compile Include="Models\Project.cs" />

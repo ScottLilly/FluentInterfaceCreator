@@ -19,7 +19,13 @@ namespace Engine.Models
         {
             Name = name;
             ActionToPerform = actionToPerform;
+
             Parameters = new ObservableCollection<MethodParameter>();
+        }
+
+        public void AddParameter(string name, string datatype)
+        {
+            Parameters.Add(new MethodParameter(name, datatype));
         }
     }
 }
