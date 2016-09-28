@@ -301,3 +301,8 @@ $RECYCLE.BIN/
 
 # Windows shortcuts
 *.lnk
+
+# SVN
+*.svn
+.svn/wc.db
+.svn/wc.db
