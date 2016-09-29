@@ -1,13 +1,12 @@
 ﻿using Engine;
 using Engine.Models;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
+using Xunit;
 
 namespace TestEngine.Models
 {
-    [TestClass]
     public class TestProject
     {
-        [TestMethod]
+        [Fact]
         public void Test_CreateProject()
         {
             Project project = new Project("SQLHydra", Language.CSharp);
