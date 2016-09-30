@@ -8,20 +8,61 @@
         Title="{Binding Source={x:Static resources:Literals.AboutFluentInterfaceCreator}}" 
         WindowStartupLocation="CenterOwner"
         ResizeMode="NoResize"
-        Height="500" Width="750">
-    
-    <Grid>
+        SizeToContent="Height"
+        Height="450" Width="700">
+
+    <Grid Margin="10">
         <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
             <RowDefinition Height="*"/>
             <RowDefinition Height="Auto"/>
         </Grid.RowDefinitions>
 
-        <Button Grid.Row="1"
+        <Label Grid.Row="0"
+                   Content="{Binding Source={x:Static resources:Literals.AppTitle}}"/>
+        <Label Grid.Row="1"
+                   Content="{Binding Source={x:Static resources:Literals.Version}}"/>
+        <Label Grid.Row="2"
+                   Content="{Binding Source={x:Static resources:Literals.CopyrightNotice}}"/>
+        <Label Grid.Row="3"
+                   Content="{Binding Source={x:Static resources:Literals.AllRightsReserved}}"/>
+        <Label Grid.Row="4" Margin="0,10,0,0"
+                   FontWeight="Bold"
+                   Content="{Binding Source={x:Static resources:Literals.LicenseInformation}}"/>
+        
+        <Border Grid.Row="5"
+                Margin="0,5,0,0" 
+                BorderBrush="DarkGray"
+                BorderThickness="1">
+            
+            <TextBlock Margin="5" TextWrapping="Wrap">
+                <Run>
+                    Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software"), to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do so, subject to the following conditions:
+                </Run>
+                <LineBreak/><LineBreak/>
+                <Run>
+                    The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.
+                </Run>
+                <LineBreak/><LineBreak/>
+                <Run>
+                    THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+                </Run>
+            </TextBlock>
+            
+        </Border>
+
+        <Button Grid.Row="6"
+                VerticalAlignment="Bottom"
                 HorizontalAlignment="Right"
                 Width="65"
-                Margin="5"
+                Margin="0,10,0,0"
                 Content="{Binding Source={x:Static resources:Literals.OK}}"
                 Click="OnClick_OK"/>
     </Grid>
-    
+
 </Window>
+

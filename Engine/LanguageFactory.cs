@@ -4,7 +4,7 @@ namespace Engine
 {
     public static class LanguageFactory
     {
-        public static List<string> PrimitiveDatatypeFor(Language language)
+        public static List<string> PrimitiveDatatypesFor(Language language)
         {
             switch (language)
             {

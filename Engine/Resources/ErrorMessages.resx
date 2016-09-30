@@ -117,43 +117,7 @@
   <resheader name="writer">
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
-  <data name="AboutFluentInterfaceCreator" xml:space="preserve">
-    <value>About Fluent Interface Creator</value>
-  </data>
-  <data name="AllRightsReserved" xml:space="preserve">
-    <value>All rights reserved.</value>
-  </data>
-  <data name="AppTitle" xml:space="preserve">
-    <value>Fluent Interface Creator</value>
-  </data>
-  <data name="CopyrightNotice" xml:space="preserve">
-    <value>Copyright © 2016, Scott Lilly</value>
-  </data>
-  <data name="CreateNewProject" xml:space="preserve">
-    <value>Create New Project</value>
-  </data>
-  <data name="Exit" xml:space="preserve">
-    <value>Exit</value>
-  </data>
-  <data name="File" xml:space="preserve">
-    <value>File</value>
-  </data>
-  <data name="Help" xml:space="preserve">
-    <value>Help</value>
-  </data>
-  <data name="LicenseInformation" xml:space="preserve">
-    <value>License information</value>
-  </data>
-  <data name="LoadProject" xml:space="preserve">
-    <value>Load Project</value>
-  </data>
-  <data name="OK" xml:space="preserve">
-    <value>OK</value>
-  </data>
-  <data name="Version" xml:space="preserve">
-    <value>Version</value>
-  </data>
-  <data name="ViewHelp" xml:space="preserve">
-    <value>View Help</value>
+  <data name="CannotAddMoreThan64MethodsToAProject" xml:space="preserve">
+    <value>Cannot add more than 64 metods to a project.</value>
   </data>
 </root>

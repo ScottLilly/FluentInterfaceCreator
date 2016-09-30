@@ -70,11 +70,29 @@ namespace FluentInterfaceCreator.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to All rights reserved..
+        /// </summary>
+        public static string AllRightsReserved {
+            get {
+                return ResourceManager.GetString("AllRightsReserved", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Fluent Interface Creator.
         /// </summary>
         public static string AppTitle {
             get {
                 return ResourceManager.GetString("AppTitle", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Copyright © 2016, Scott Lilly.
+        /// </summary>
+        public static string CopyrightNotice {
+            get {
+                return ResourceManager.GetString("CopyrightNotice", resourceCulture);
             }
         }
         
@@ -115,6 +133,15 @@ namespace FluentInterfaceCreator.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to License information.
+        /// </summary>
+        public static string LicenseInformation {
+            get {
+                return ResourceManager.GetString("LicenseInformation", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Load Project.
         /// </summary>
         public static string LoadProject {
@@ -129,6 +156,15 @@ namespace FluentInterfaceCreator.Resources {
         public static string OK {
             get {
                 return ResourceManager.GetString("OK", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Version.
+        /// </summary>
+        public static string Version {
+            get {
+                return ResourceManager.GetString("Version", resourceCulture);
             }
         }
         

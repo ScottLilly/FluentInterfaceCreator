@@ -6,7 +6,7 @@ namespace Engine.Models
     {
         public string Name { get; private set; }
         public Language OutputLanguage { get; private set; }
-        public ObservableCollection<Method> Methods { get; }
+        public MethodList Methods { get; }
         public ObservableCollection<string> Datatypes { get; private set; }
 
         public Project(string name, Language outputLanguage)
@@ -14,14 +14,13 @@ namespace Engine.Models
             Name = name;
             OutputLanguage = outputLanguage;
 
-            Methods = new ObservableCollection<Method>();
-            Datatypes = new ObservableCollection<string>(LanguageFactory.PrimitiveDatatypeFor(outputLanguage));
+            Methods = new MethodList();
+            Datatypes = new ObservableCollection<string>(LanguageFactory.PrimitiveDatatypesFor(outputLanguage));
         }
 
         public void AddMethod(Method method)
         {
-            // TODO: Throw exception if duplicate (by name, or by name and parameters?)
-            Methods.Add(method);
+            Methods.AddMethod(method);
         }
     }
 }
