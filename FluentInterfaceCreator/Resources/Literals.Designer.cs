@@ -133,6 +133,15 @@ namespace FluentInterfaceCreator.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Interfaces.
+        /// </summary>
+        public static string Interfaces {
+            get {
+                return ResourceManager.GetString("Interfaces", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to License information.
         /// </summary>
         public static string LicenseInformation {
@@ -151,11 +160,38 @@ namespace FluentInterfaceCreator.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Methods.
+        /// </summary>
+        public static string Methods {
+            get {
+                return ResourceManager.GetString("Methods", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to OK.
         /// </summary>
         public static string OK {
             get {
                 return ResourceManager.GetString("OK", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Project Details.
+        /// </summary>
+        public static string ProjectDetails {
+            get {
+                return ResourceManager.GetString("ProjectDetails", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Save.
+        /// </summary>
+        public static string Save {
+            get {
+                return ResourceManager.GetString("Save", resourceCulture);
             }
         }
         

@@ -6,6 +6,8 @@ namespace Engine.Models
     {
         public string Name { get; private set; }
         public Language OutputLanguage { get; private set; }
+        public bool IsDirty { get; private set; }
+
         public MethodList Methods { get; }
         public ObservableCollection<string> Datatypes { get; private set; }
 
@@ -13,6 +15,7 @@ namespace Engine.Models
         {
             Name = name;
             OutputLanguage = outputLanguage;
+            IsDirty = false;
 
             Methods = new MethodList();
             Datatypes = new ObservableCollection<string>(LanguageFactory.PrimitiveDatatypesFor(outputLanguage));
@@ -21,6 +24,8 @@ namespace Engine.Models
         public void AddMethod(Method method)
         {
             Methods.AddMethod(method);
+
+            IsDirty = true;
         }
     }
 }

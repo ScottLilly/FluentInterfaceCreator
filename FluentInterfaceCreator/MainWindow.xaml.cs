@@ -12,6 +12,8 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
+using Engine.Models;
+using Engine.ViewModels;
 
 namespace FluentInterfaceCreator
 {
@@ -20,9 +22,18 @@ namespace FluentInterfaceCreator
     /// </summary>
     public partial class MainWindow : Window
     {
+        readonly ProjectEditorViewModel _projectEditor = new ProjectEditorViewModel();
+
         public MainWindow()
         {
             InitializeComponent();
+
+            DataContext = _projectEditor;
+        }
+
+        private void OnClick_CreateNewProject(object sender, RoutedEventArgs e)
+        {
+            _projectEditor.CreateNewProject();
         }
 
         private void OnClick_Exit(object sender, RoutedEventArgs e)

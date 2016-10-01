@@ -141,14 +141,26 @@
   <data name="Help" xml:space="preserve">
     <value>Help</value>
   </data>
+  <data name="Interfaces" xml:space="preserve">
+    <value>Interfaces</value>
+  </data>
   <data name="LicenseInformation" xml:space="preserve">
     <value>License information</value>
   </data>
   <data name="LoadProject" xml:space="preserve">
     <value>Load Project</value>
   </data>
+  <data name="Methods" xml:space="preserve">
+    <value>Methods</value>
+  </data>
   <data name="OK" xml:space="preserve">
     <value>OK</value>
+  </data>
+  <data name="ProjectDetails" xml:space="preserve">
+    <value>Project Details</value>
+  </data>
+  <data name="Save" xml:space="preserve">
+    <value>Save</value>
   </data>
   <data name="Version" xml:space="preserve">
     <value>Version</value>

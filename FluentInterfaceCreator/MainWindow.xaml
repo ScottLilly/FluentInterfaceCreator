@@ -9,16 +9,22 @@
         mc:Ignorable="d"
         Title="{Binding Source={x:Static resources:Literals.AppTitle}}" 
         Height="768" Width="1024">
-    
+
+    <Window.Resources>
+        <BooleanToVisibilityConverter x:Key="BooleanToVisibility" />
+    </Window.Resources>
+
     <Grid>
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto"/>
             <RowDefinition Height="*"/>
+            <RowDefinition Height="Auto"/>
         </Grid.RowDefinitions>
         
         <Menu Grid.Row="0">
             <MenuItem Header="{Binding Source={x:Static resources:Literals.File}}">
-                <MenuItem Header="{Binding Source={x:Static resources:Literals.CreateNewProject}}"/>
+                <MenuItem Header="{Binding Source={x:Static resources:Literals.CreateNewProject}}"
+                          Click="OnClick_CreateNewProject"/>
                 <MenuItem Header="{Binding Source={x:Static resources:Literals.LoadProject}}"/>
                 <Separator/>
                 <MenuItem Header="{Binding Source={x:Static resources:Literals.Exit}}" 
@@ -31,6 +37,31 @@
                           Click="OnClick_About"/>
             </MenuItem>
         </Menu>
+        
+        <TabControl Grid.Row="1"
+                    Visibility="{Binding HasProject, Converter={StaticResource BooleanToVisibility}}"
+                    Margin="10">
+            
+            <TabItem Header="{Binding Source={x:Static resources:Literals.ProjectDetails}}">
+                
+            </TabItem>
+
+            <TabItem Header="{Binding Source={x:Static resources:Literals.Methods}}">
+
+            </TabItem>
+
+            <TabItem Header="{Binding Source={x:Static resources:Literals.Interfaces}}">
+
+            </TabItem>
+
+        </TabControl>
+
+        <Button Grid.Row="2" 
+                Width="75"
+                Margin="0,10,10,10"
+                HorizontalAlignment="Right"
+                IsEnabled="{Binding HasChanges}"
+                Content="{Binding Source={x:Static resources:Literals.Save}}"/>
         
     </Grid>
 
