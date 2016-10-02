@@ -120,17 +120,32 @@
   <data name="AboutFluentInterfaceCreator" xml:space="preserve">
     <value>About Fluent Interface Creator</value>
   </data>
+  <data name="Action" xml:space="preserve">
+    <value>Action</value>
+  </data>
+  <data name="AddMethod" xml:space="preserve">
+    <value>Add Method</value>
+  </data>
   <data name="AllRightsReserved" xml:space="preserve">
     <value>All rights reserved.</value>
   </data>
   <data name="AppTitle" xml:space="preserve">
     <value>Fluent Interface Creator</value>
   </data>
+  <data name="Continue" xml:space="preserve">
+    <value>Continue</value>
+  </data>
   <data name="CopyrightNotice" xml:space="preserve">
     <value>Copyright © 2016, Scott Lilly</value>
   </data>
+  <data name="CreateFluentInterfaceFile" xml:space="preserve">
+    <value>Create fluent interface file</value>
+  </data>
   <data name="CreateNewProject" xml:space="preserve">
     <value>Create New Project</value>
+  </data>
+  <data name="Execute" xml:space="preserve">
+    <value>Execute</value>
   </data>
   <data name="Exit" xml:space="preserve">
     <value>Exit</value>
@@ -140,6 +155,9 @@
   </data>
   <data name="Help" xml:space="preserve">
     <value>Help</value>
+  </data>
+  <data name="Instantiate" xml:space="preserve">
+    <value>Instantiate</value>
   </data>
   <data name="Interfaces" xml:space="preserve">
     <value>Interfaces</value>
@@ -153,11 +171,11 @@
   <data name="Methods" xml:space="preserve">
     <value>Methods</value>
   </data>
+  <data name="Name" xml:space="preserve">
+    <value>Name</value>
+  </data>
   <data name="OK" xml:space="preserve">
     <value>OK</value>
-  </data>
-  <data name="ProjectDetails" xml:space="preserve">
-    <value>Project Details</value>
   </data>
   <data name="Save" xml:space="preserve">
     <value>Save</value>

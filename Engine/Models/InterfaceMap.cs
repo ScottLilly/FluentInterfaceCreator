@@ -8,7 +8,7 @@ using Engine.Resources;
 
 namespace Engine.Models
 {
-    public class MethodList : INotifyPropertyChanged
+    public class InterfaceMap : INotifyPropertyChanged
     {
         private readonly Dictionary<ulong, Method> _methods = new Dictionary<ulong, Method>();
 

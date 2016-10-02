@@ -4,18 +4,11 @@ namespace Engine.Models
 {
     public class Method
     {
-        public enum Action
-        {
-            Instantiate,
-            Continue,
-            Execute
-        }
-
         public string Name { get; private set; }
-        public Action ActionToPerform { get; private set; }
+        public string ActionToPerform { get; private set; }
         public ObservableCollection<MethodParameter> Parameters { get; private set; }
 
-        public Method(string name, Action actionToPerform)
+        public Method(string name, string actionToPerform)
         {
             Name = name;
             ActionToPerform = actionToPerform;

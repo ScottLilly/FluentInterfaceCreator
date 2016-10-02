@@ -47,5 +47,10 @@ namespace FluentInterfaceCreator
 
             about.ShowDialog();
         }
+
+        private void OnClick_AddMethod(object sender, RoutedEventArgs e)
+        {
+            _projectEditor.AddMethod();
+        }
     }
 }

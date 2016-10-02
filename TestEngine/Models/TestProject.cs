@@ -11,19 +11,19 @@ namespace TestEngine.Models
         {
             Project project = new Project("SQLHydra", Language.CSharp);
 
-            Method constructor = new Method("InsertIntoTable", Method.Action.Instantiate);
+            Method constructor = new Method("InsertIntoTable", "Instantiate");
             constructor.AddParameter("tableName", "string");
             project.AddMethod(constructor);
 
-            Method setColumn = new Method("SetColumn", Method.Action.Continue);
+            Method setColumn = new Method("SetColumn", "Continue");
             setColumn.AddParameter("columnName", "string");
             project.AddMethod(setColumn);
 
-            Method toValue = new Method("ToValue", Method.Action.Continue);
+            Method toValue = new Method("ToValue", "Continue");
             toValue.AddParameter("value", "object");
             project.AddMethod(toValue);
 
-            Method runQuery = new Method("RunQuery", Method.Action.Execute);
+            Method runQuery = new Method("RunQuery", "Execute");
             project.AddMethod(runQuery);
         }
     }
