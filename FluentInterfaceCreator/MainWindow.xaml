@@ -5,6 +5,8 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:resources="clr-namespace:FluentInterfaceCreator.Resources"
         xmlns:viewModels="clr-namespace:Engine.ViewModels;assembly=Engine"
+        xmlns:componentModel="clr-namespace:System.ComponentModel;assembly=WindowsBase"
+        xmlns:system="clr-namespace:System;assembly=mscorlib"
         d:DataContext="{d:DesignInstance viewModels:ProjectEditorViewModel}"
         mc:Ignorable="d"
         Title="{Binding Source={x:Static resources:Literals.AppTitle}}" 
@@ -12,6 +14,17 @@
 
     <Window.Resources>
         <BooleanToVisibilityConverter x:Key="BooleanToVisibility" />
+        
+        <CollectionViewSource x:Key="Methods" Source="{Binding CurrentProject.Methods}"
+                              IsLiveSortingRequested="True">
+            <CollectionViewSource.SortDescriptions>
+                <componentModel:SortDescription PropertyName="SortKey"
+                                                Direction="Ascending"/>
+            </CollectionViewSource.SortDescriptions>
+            <CollectionViewSource.LiveSortingProperties>
+                <system:String>SortKey</system:String>
+            </CollectionViewSource.LiveSortingProperties>
+        </CollectionViewSource>
     </Window.Resources>
 
     <Grid>
@@ -81,15 +94,21 @@
                     </Grid.ColumnDefinitions>
                     
                     <DataGrid Grid.Row="0" Grid.Column="0"
-                              Grid.ColumnSpan="2"
+                              Grid.ColumnSpan="3"
                               Margin="10"
                               AutoGenerateColumns="False"
-                              ItemsSource="{Binding CurrentProject.Methods}">
+                              HeadersVisibility="Column"
+                              CanUserAddRows="False"
+                              CanUserDeleteRows="False"
+                              CanUserResizeRows="False"
+                              CanUserReorderColumns="False"
+                              CanUserSortColumns="False"
+                              ItemsSource="{Binding Source={StaticResource Methods}}">
                         
                         <DataGrid.Columns>
                             <DataGridTextColumn 
                                 Header="{Binding Source={x:Static resources:Literals.Action}}"
-                                Binding="{Binding ActionToPerform}"/>
+                                Binding="{Binding ActionToPerform.Name}"/>
 
                             <DataGridTextColumn 
                                 Header="{Binding Source={x:Static resources:Literals.Name}}"
@@ -100,19 +119,21 @@
 
                     <ComboBox Grid.Row="1" Grid.Column="0"
                               Margin="10"
-                              Width="100"
+                              Width="90"
                               ItemsSource="{Binding CurrentProject.Actions}"
-                              SelectedItem="{Binding MethodAction}"/>
+                              SelectedItem="{Binding MethodAction}"
+                              SelectedValuePath="ID"
+                              DisplayMemberPath="Name"/>
 
                     <TextBox Grid.Row="1" Grid.Column="1"
                              Margin="10"
-                             Width="250"
+                             Width="200"
                              Text="{Binding MethodName, UpdateSourceTrigger=PropertyChanged}">
                     </TextBox>
                     
                     <Button Grid.Row="1" Grid.Column="2"
                             Margin="10"
-                            MinWidth="150"
+                            MinWidth="125"
                             IsEnabled="{Binding CanAddMethod}"
                             Content="{Binding Source={x:Static resources:Literals.AddMethod}}"
                             Click="OnClick_AddMethod"/>

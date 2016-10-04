@@ -5,7 +5,7 @@ namespace Engine.ViewModels
     public class ProjectEditorViewModel : BaseNotificationClass
     {
         private Project _currentProject;
-        private string _methodAction;
+        private MethodAction _methodAction;
         private string _methodName;
 
         public Project CurrentProject
@@ -23,7 +23,7 @@ namespace Engine.ViewModels
             }
         }
 
-        public string MethodAction
+        public MethodAction MethodAction
         {
             get { return _methodAction; }
             set
@@ -48,7 +48,7 @@ namespace Engine.ViewModels
         }
 
         public bool CanAddMethod => !string.IsNullOrWhiteSpace(MethodName) && 
-            !string.IsNullOrWhiteSpace(MethodAction);
+            !string.IsNullOrWhiteSpace(MethodAction.Name);
 
         public bool HasProject => CurrentProject != null;
         public bool HasChanges => (CurrentProject != null) && CurrentProject.IsDirty;
@@ -63,7 +63,7 @@ namespace Engine.ViewModels
         {
             if(_currentProject != null)
             {
-                _currentProject.AddMethod(new Method(MethodName, MethodAction));
+                _currentProject.AddMethod(new Method(MethodAction, MethodName));
 
                 MethodName = "";
             }

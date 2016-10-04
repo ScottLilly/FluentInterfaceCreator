@@ -1,24 +1,15 @@
-﻿using System.Collections.ObjectModel;
-
-namespace Engine.Models
+﻿namespace Engine.Models
 {
     public class Method
     {
+        public MethodAction ActionToPerform { get; private set; }
         public string Name { get; private set; }
-        public string ActionToPerform { get; private set; }
-        public ObservableCollection<MethodParameter> Parameters { get; private set; }
+        public string SortKey => $"{ActionToPerform.ID}:{Name}";
 
-        public Method(string name, string actionToPerform)
+        public Method(MethodAction actionToPerform, string name)
         {
-            Name = name;
             ActionToPerform = actionToPerform;
-
-            Parameters = new ObservableCollection<MethodParameter>();
-        }
-
-        public void AddParameter(string name, string datatype)
-        {
-            Parameters.Add(new MethodParameter(name, datatype));
+            Name = name;
         }
     }
 }
