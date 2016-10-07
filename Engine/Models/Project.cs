@@ -21,6 +21,7 @@ namespace Engine.Models
         public Language OutputLanguage { get; private set; }
 
         public ObservableCollection<Method> Methods { get; }
+        public ObservableCollection<Method> ChainableMethods { get; }
 
         public bool IsDirty
         {
@@ -50,6 +51,7 @@ namespace Engine.Models
             OutputLanguage = outputLanguage;
 
             Methods = new ObservableCollection<Method>();
+            ChainableMethods = new ObservableCollection<Method>();
 
             IsDirty = false;
             IsComplete = false;
@@ -58,6 +60,12 @@ namespace Engine.Models
         public void AddMethod(Method method)
         {
             Methods.Add(method);
+
+            if(method.ActionToPerform.Name == Literals.Continue ||
+                method.ActionToPerform.Name == Literals.Execute)
+            {
+                ChainableMethods.Add(method);
+            }
 
             IsDirty = true;
             IsComplete = false;

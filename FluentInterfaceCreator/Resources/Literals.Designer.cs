@@ -196,6 +196,15 @@ namespace FluentInterfaceCreator.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Language:.
+        /// </summary>
+        public static string Language {
+            get {
+                return ResourceManager.GetString("Language", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to License information.
         /// </summary>
         public static string LicenseInformation {
@@ -241,11 +250,29 @@ namespace FluentInterfaceCreator.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Project Name:.
+        /// </summary>
+        public static string ProjectName {
+            get {
+                return ResourceManager.GetString("ProjectName", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Save.
         /// </summary>
         public static string Save {
             get {
                 return ResourceManager.GetString("Save", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Select the methods available, after calling method &apos;{0}&apos;..
+        /// </summary>
+        public static string SelectTheMethodsAvailableAfterMethod {
+            get {
+                return ResourceManager.GetString("SelectTheMethodsAvailableAfterMethod", resourceCulture);
             }
         }
         

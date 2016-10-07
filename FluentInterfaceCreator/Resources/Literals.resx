@@ -162,6 +162,9 @@
   <data name="Interfaces" xml:space="preserve">
     <value>Interfaces</value>
   </data>
+  <data name="Language" xml:space="preserve">
+    <value>Language:</value>
+  </data>
   <data name="LicenseInformation" xml:space="preserve">
     <value>License information</value>
   </data>
@@ -177,8 +180,14 @@
   <data name="OK" xml:space="preserve">
     <value>OK</value>
   </data>
+  <data name="ProjectName" xml:space="preserve">
+    <value>Project Name:</value>
+  </data>
   <data name="Save" xml:space="preserve">
     <value>Save</value>
+  </data>
+  <data name="SelectTheMethodsAvailableAfterMethod" xml:space="preserve">
+    <value>Select the methods available, after calling method '{0}'.</value>
   </data>
   <data name="Version" xml:space="preserve">
     <value>Version</value>
