@@ -25,17 +25,6 @@
                 <system:String>SortKey</system:String>
             </CollectionViewSource.LiveSortingProperties>
         </CollectionViewSource>
-
-        <CollectionViewSource x:Key="ChainableMethods" Source="{Binding CurrentProject.ChainableMethods}"
-                              IsLiveSortingRequested="True">
-            <CollectionViewSource.SortDescriptions>
-                <componentModel:SortDescription PropertyName="SortKey"
-                                                Direction="Ascending"/>
-            </CollectionViewSource.SortDescriptions>
-            <CollectionViewSource.LiveSortingProperties>
-                <system:String>SortKey</system:String>
-            </CollectionViewSource.LiveSortingProperties>
-        </CollectionViewSource>
     </Window.Resources>
 
     <Grid>
@@ -176,29 +165,6 @@
                                Margin="10"
                                HorizontalAlignment="Center"
                                Content="{Binding Source={x:Static resources:Literals.SelectTheMethodsAvailableAfterMethod}}"/>
-                        
-                        <DataGrid Grid.Row="1" Grid.Column="0"
-                              Margin="10"
-                              AutoGenerateColumns="False"
-                              HeadersVisibility="Column"
-                              CanUserAddRows="False"
-                              CanUserDeleteRows="False"
-                              CanUserResizeRows="False"
-                              CanUserReorderColumns="False"
-                              CanUserSortColumns="False"
-                              ItemsSource="{Binding Source={StaticResource ChainableMethods}}">
-
-                            <DataGrid.Columns>
-                                <DataGridTextColumn 
-                                Header="{Binding Source={x:Static resources:Literals.Action}}"
-                                Binding="{Binding ActionToPerform.Name}"/>
-
-                                <DataGridTextColumn 
-                                Header="{Binding Source={x:Static resources:Literals.Name}}"
-                                Binding="{Binding Name}"/>
-                            </DataGrid.Columns>
-
-                        </DataGrid>
 
                     </Grid>
                     

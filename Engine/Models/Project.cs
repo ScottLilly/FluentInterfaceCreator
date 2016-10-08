@@ -1,6 +1,4 @@
-﻿using System.Collections.Generic;
-using System.Collections.ObjectModel;
-using Engine.Resources;
+﻿using System.Collections.ObjectModel;
 
 namespace Engine.Models
 {
@@ -9,19 +7,10 @@ namespace Engine.Models
         private bool _isComplete;
         private bool _isDirty;
 
-        public List<MethodAction> Actions { get; } = 
-            new List<MethodAction>
-        {
-            new MethodAction {ID = 1, Name = Literals.Instantiate},
-            new MethodAction {ID = 2, Name = Literals.Continue},
-            new MethodAction {ID = 3, Name = Literals.Execute}
-        };
-
         public string Name { get; private set; }
         public Language OutputLanguage { get; private set; }
 
         public ObservableCollection<Method> Methods { get; }
-        public ObservableCollection<Method> ChainableMethods { get; }
 
         public bool IsDirty
         {
@@ -51,20 +40,22 @@ namespace Engine.Models
             OutputLanguage = outputLanguage;
 
             Methods = new ObservableCollection<Method>();
-            ChainableMethods = new ObservableCollection<Method>();
 
             IsDirty = false;
             IsComplete = false;
         }
 
-        public void AddMethod(Method method)
+        public void AddMethod(MethodAction methodAction, string name)
         {
+            //TODO: Prevent duplicate method names.
+
+            Method method = new Method(methodAction, name);
+
             Methods.Add(method);
 
-            if(method.ActionToPerform.Name == Literals.Continue ||
-                method.ActionToPerform.Name == Literals.Execute)
+            foreach(Method existingMethod in Methods)
             {
-                ChainableMethods.Add(method);
+                existingMethod.AddChainableMethods(method);
             }
 
             IsDirty = true;

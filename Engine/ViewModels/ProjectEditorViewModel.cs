@@ -50,6 +50,8 @@ namespace Engine.ViewModels
         public bool CanAddMethod => !string.IsNullOrWhiteSpace(MethodName) && 
             !string.IsNullOrWhiteSpace(MethodAction.Name);
 
+        public Method SelectedMethod { get; set; }
+
         public bool HasProject => CurrentProject != null;
         public bool HasChanges => (CurrentProject != null) && CurrentProject.IsDirty;
         public bool CanCreateFile => (CurrentProject != null) && CurrentProject.IsComplete;
@@ -63,7 +65,7 @@ namespace Engine.ViewModels
         {
             if(_currentProject != null)
             {
-                _currentProject.AddMethod(new Method(MethodAction, MethodName));
+                _currentProject.AddMethod(MethodAction, MethodName);
 
                 MethodName = "";
             }
