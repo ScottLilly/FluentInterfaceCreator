@@ -1,4 +1,5 @@
-﻿using System.Linq;
+﻿using System;
+using System.Linq;
 using Engine;
 using Engine.Models;
 using Engine.ViewModels;
@@ -34,18 +35,23 @@ namespace TestEngine.ViewModels
             // Set selected method and confirm correct number of potentially-chainable methods.
             SetSelectedMethodTo("CreateCalculator");
             Assert.Equal(4, _viewModel.SelectedMethod.ChainableMethods.Count);
+            Assert.Equal(Convert.ToUInt64(0), _viewModel.SelectedMethod.ChainMask);
 
             SetSelectedMethodTo("InputNumber");
             Assert.Equal(3, _viewModel.SelectedMethod.ChainableMethods.Count);
+            Assert.Equal(Convert.ToUInt64(0), _viewModel.SelectedMethod.ChainMask);
 
             SetSelectedMethodTo("CalculateMinimum");
             Assert.Equal(0, _viewModel.SelectedMethod.ChainableMethods.Count);
+            Assert.Equal(Convert.ToUInt64(0), _viewModel.SelectedMethod.ChainMask);
 
             SetSelectedMethodTo("CalculateMean");
             Assert.Equal(0, _viewModel.SelectedMethod.ChainableMethods.Count);
+            Assert.Equal(Convert.ToUInt64(0), _viewModel.SelectedMethod.ChainMask);
 
             SetSelectedMethodTo("CalculateMaximum");
             Assert.Equal(0, _viewModel.SelectedMethod.ChainableMethods.Count);
+            Assert.Equal(Convert.ToUInt64(0), _viewModel.SelectedMethod.ChainMask);
         }
 
         private void AddMethodToProject(MethodAction methodAction, string name)

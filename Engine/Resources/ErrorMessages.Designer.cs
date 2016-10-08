@@ -61,11 +61,11 @@ namespace Engine.Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Cannot add more than 64 metods to a project..
+        ///   Looks up a localized string similar to Cannot add more than 63 methods to a project..
         /// </summary>
-        internal static string CannotAddMoreThan64MethodsToAProject {
+        internal static string CannotAddMoreThan63MethodsToAProject {
             get {
-                return ResourceManager.GetString("CannotAddMoreThan64MethodsToAProject", resourceCulture);
+                return ResourceManager.GetString("CannotAddMoreThan63MethodsToAProject", resourceCulture);
             }
         }
     }

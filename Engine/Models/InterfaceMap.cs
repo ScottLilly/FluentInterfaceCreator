@@ -24,7 +24,7 @@ namespace Engine.Models
 
             if(numberOfMethods >= 64)
             {
-                throw new IndexOutOfRangeException(ErrorMessages.CannotAddMoreThan64MethodsToAProject);
+                throw new IndexOutOfRangeException(ErrorMessages.CannotAddMoreThan63MethodsToAProject);
             }
 
             _methods.Add(Convert.ToUInt64(2 ^ numberOfMethods), method);

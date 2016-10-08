@@ -1,4 +1,7 @@
-﻿using System.Collections.ObjectModel;
+﻿using System;
+using System.Collections.ObjectModel;
+using System.Linq;
+using Engine.Resources;
 
 namespace Engine.Models
 {
@@ -29,7 +32,7 @@ namespace Engine.Models
             private set
             {
                 _isComplete = value;
-                
+
                 NotifyPropertyChanged("IsComplete");
             }
         }
@@ -49,7 +52,9 @@ namespace Engine.Models
         {
             //TODO: Prevent duplicate method names.
 
-            Method method = new Method(methodAction, name);
+            int chainIndex = DetermineChainIndexFor(methodAction);
+
+            Method method = new Method(methodAction, name, chainIndex);
 
             Methods.Add(method);
 
@@ -60,6 +65,28 @@ namespace Engine.Models
 
             IsDirty = true;
             IsComplete = false;
+        }
+
+        private int DetermineChainIndexFor(MethodAction methodAction)
+        {
+            if(methodAction == Actions.Instantiate)
+            {
+                return Constants.INITIATE_METHOD_ACTION_CHAIN_INDEX;
+            }
+
+            int chainIndex = 0;
+
+            while(Methods.Any(x => x.ChainIndex == chainIndex))
+            {
+                chainIndex++;
+
+                if(chainIndex == 64)
+                {
+                    throw new ArgumentOutOfRangeException(ErrorMessages.CannotAddMoreThan63MethodsToAProject);
+                }
+            }
+
+            return chainIndex;
         }
     }
 }
