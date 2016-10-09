@@ -6,7 +6,7 @@ namespace Engine
     {
         public static List<string> PrimitiveDatatypesFor(Language language)
         {
-            switch (language)
+            switch(language)
             {
                 case Language.CSharp:
                     return DotNetPrimitiveDatatypes();
