@@ -37,19 +37,9 @@ namespace Engine.Models
             ChainableMethods = new ObservableCollection<ChainableMethod>();
         }
 
-        public void AddChainableMethods(Method method)
+        public void AddChainableMethod(Method method)
         {
-            // Execute methods are "final" methods,
-            // and do not have any methods that can be called after them.
-            if(method.Name != Name &&
-               (ActionToPerform == Actions.Instantiate ||
-                ActionToPerform == Actions.Continue))
-            {
-                if(ChainableMethods.All(x => x.Method.Name != method.Name))
-                {
-                    ChainableMethods.Add(new ChainableMethod(method));
-                }
-            }
+            ChainableMethods.Add(new ChainableMethod(method));
         }
     }
 }

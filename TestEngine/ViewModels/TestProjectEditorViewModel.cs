@@ -38,7 +38,7 @@ namespace TestEngine.ViewModels
             Assert.Equal(Convert.ToUInt64(0), _viewModel.SelectedMethod.ChainMask);
 
             SetSelectedMethodTo("InputNumber");
-            Assert.Equal(3, _viewModel.SelectedMethod.ChainableMethods.Count);
+            Assert.Equal(4, _viewModel.SelectedMethod.ChainableMethods.Count);
             Assert.Equal(Convert.ToUInt64(0), _viewModel.SelectedMethod.ChainMask);
 
             SetSelectedMethodTo("CalculateMinimum");

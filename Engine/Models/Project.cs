@@ -10,33 +10,6 @@ namespace Engine.Models
         private bool _isComplete;
         private bool _isDirty;
 
-        public string Name { get; private set; }
-        public Language OutputLanguage { get; private set; }
-
-        public ObservableCollection<Method> Methods { get; }
-
-        public bool IsDirty
-        {
-            get { return _isDirty; }
-            private set
-            {
-                _isDirty = value;
-
-                NotifyPropertyChanged("IsDirty");
-            }
-        }
-
-        public bool IsComplete
-        {
-            get { return _isComplete; }
-            private set
-            {
-                _isComplete = value;
-
-                NotifyPropertyChanged("IsComplete");
-            }
-        }
-
         public Project(string name, Language outputLanguage)
         {
             Name = name;
@@ -45,25 +18,6 @@ namespace Engine.Models
             Methods = new ObservableCollection<Method>();
 
             IsDirty = false;
-            IsComplete = false;
-        }
-
-        public void AddMethod(MethodAction methodAction, string name)
-        {
-            //TODO: Prevent duplicate method names.
-
-            int chainIndex = DetermineChainIndexFor(methodAction);
-
-            Method method = new Method(methodAction, name, chainIndex);
-
-            Methods.Add(method);
-
-            foreach(Method existingMethod in Methods)
-            {
-                existingMethod.AddChainableMethods(method);
-            }
-
-            IsDirty = true;
             IsComplete = false;
         }
 
@@ -88,5 +42,58 @@ namespace Engine.Models
 
             return chainIndex;
         }
+
+        public void AddMethod(MethodAction methodAction, string name)
+        {
+            //TODO: Prevent duplicate method names.
+
+            int chainIndex = DetermineChainIndexFor(methodAction);
+
+            Method method = new Method(methodAction, name, chainIndex);
+
+            Methods.Add(method);
+
+            if(methodAction == Actions.Continue ||
+                methodAction == Actions.Execute)
+            {
+                foreach(Method existingMethod in
+                    Methods.Where(x =>
+                    x.ActionToPerform == Actions.Instantiate ||
+                    x.ActionToPerform == Actions.Continue))
+                {
+                    existingMethod.AddChainableMethod(method);
+                }
+            }
+
+            IsDirty = true;
+            IsComplete = false;
+        }
+
+        public bool IsComplete
+        {
+            get { return _isComplete; }
+            private set
+            {
+                _isComplete = value;
+
+                NotifyPropertyChanged("IsComplete");
+            }
+        }
+
+        public bool IsDirty
+        {
+            get { return _isDirty; }
+            private set
+            {
+                _isDirty = value;
+
+                NotifyPropertyChanged("IsDirty");
+            }
+        }
+
+        public ObservableCollection<Method> Methods { get; }
+
+        public string Name { get; private set; }
+        public Language OutputLanguage { get; private set; }
     }
 }
