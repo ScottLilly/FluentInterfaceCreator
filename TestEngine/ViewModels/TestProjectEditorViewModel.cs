@@ -36,10 +36,20 @@ namespace TestEngine.ViewModels
             SetSelectedMethodTo("CreateCalculator");
             Assert.Equal(4, _viewModel.SelectedMethod.ChainableMethods.Count);
             Assert.Equal(Convert.ToUInt64(0), _viewModel.SelectedMethod.ChainMask);
+            SetChainableMethodSelected("InputNumber", true);
+            Assert.Equal(Convert.ToUInt64(1), _viewModel.SelectedMethod.ChainMask);
 
             SetSelectedMethodTo("InputNumber");
             Assert.Equal(4, _viewModel.SelectedMethod.ChainableMethods.Count);
             Assert.Equal(Convert.ToUInt64(0), _viewModel.SelectedMethod.ChainMask);
+            SetChainableMethodSelected("InputNumber", true);
+            Assert.Equal(Convert.ToUInt64(1), _viewModel.SelectedMethod.ChainMask);
+            SetChainableMethodSelected("CalculateMinimum", true);
+            Assert.Equal(Convert.ToUInt64(3), _viewModel.SelectedMethod.ChainMask);
+            SetChainableMethodSelected("CalculateMean", true);
+            Assert.Equal(Convert.ToUInt64(7), _viewModel.SelectedMethod.ChainMask);
+            SetChainableMethodSelected("CalculateMaximum", true);
+            Assert.Equal(Convert.ToUInt64(15), _viewModel.SelectedMethod.ChainMask);
 
             SetSelectedMethodTo("CalculateMinimum");
             Assert.Equal(0, _viewModel.SelectedMethod.ChainableMethods.Count);
@@ -65,6 +75,17 @@ namespace TestEngine.ViewModels
         {
             _viewModel.SelectedMethod =
                 _viewModel.CurrentProject.Methods.FirstOrDefault(x => x.Name == name);
+        }
+
+        private void SetChainableMethodSelected(string methodName, bool isSelected)
+        {
+            ChainableMethod chainableMethod = 
+                _viewModel.SelectedMethod.ChainableMethods.FirstOrDefault(x => x.Method.Name == methodName);
+
+            if(chainableMethod != null)
+            {
+                chainableMethod.IsSelected = isSelected;
+            }
         }
     }
 }

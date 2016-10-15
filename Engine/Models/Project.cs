@@ -52,9 +52,7 @@ namespace Engine.Models
         {
             //TODO: Prevent duplicate method names.
 
-            int chainIndex = DetermineChainIndexFor(methodAction);
-
-            Method method = new Method(methodAction, name, chainIndex);
+            Method method = new Method(methodAction, name, DetermineChainIndexFor(methodAction));
 
             Methods.Add(method);
 
@@ -63,8 +61,8 @@ namespace Engine.Models
             {
                 foreach(Method existingMethod in
                     Methods.Where(x =>
-                    x.ActionToPerform == Actions.Instantiate ||
-                    x.ActionToPerform == Actions.Continue))
+                        x.ActionToPerform == Actions.Instantiate ||
+                        x.ActionToPerform == Actions.Continue))
                 {
                     existingMethod.AddChainableMethod(method);
                 }
