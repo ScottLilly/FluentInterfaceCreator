@@ -307,3 +307,7 @@ $RECYCLE.BIN/
 .svn/wc.db
 .svn/wc.db
 *.db
+*.db
+
+# CodeRush
+*.cr

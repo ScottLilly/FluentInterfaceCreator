@@ -131,7 +131,7 @@
                         <ComboBox Grid.Row="1" Grid.Column="0"
                               Margin="10"
                               Width="90"
-                              ItemsSource="{Binding CurrentProject.Actions}"
+                              ItemsSource="{Binding Actions}"
                               SelectedItem="{Binding MethodAction}"
                               SelectedValuePath="ID"
                               DisplayMemberPath="Name"/>

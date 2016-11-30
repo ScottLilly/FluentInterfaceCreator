@@ -52,14 +52,14 @@ namespace Engine.Models
         {
             //TODO: Prevent duplicate method names.
 
-            Method method = new Method(methodAction, name, DetermineChainIndexFor(methodAction));
+            var method = new Method(methodAction, name, DetermineChainIndexFor(methodAction));
 
             Methods.Add(method);
 
             if(methodAction == Actions.Continue ||
                methodAction == Actions.Execute)
             {
-                foreach(Method existingMethod in
+                foreach(var existingMethod in
                     Methods.Where(x =>
                         x.ActionToPerform == Actions.Instantiate ||
                         x.ActionToPerform == Actions.Continue))
@@ -79,7 +79,7 @@ namespace Engine.Models
                 return Constants.INITIATE_METHOD_ACTION_CHAIN_INDEX;
             }
 
-            int chainIndex = 0;
+            var chainIndex = 0;
 
             while(Methods.Any(x => x.ChainIndex == chainIndex))
             {

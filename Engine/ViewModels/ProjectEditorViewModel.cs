@@ -1,4 +1,6 @@
-﻿using Engine.Models;
+﻿using System.Collections.Generic;
+using System.Linq;
+using Engine.Models;
 
 namespace Engine.ViewModels
 {
@@ -40,21 +42,28 @@ namespace Engine.ViewModels
             get { return _methodName; }
             set
             {
-                _methodName = value; 
-                
+                _methodName = value;
+
                 NotifyPropertyChanged("MethodName");
                 NotifyPropertyChanged("CanAddMethod");
             }
         }
 
-        public bool CanAddMethod => !string.IsNullOrWhiteSpace(MethodName) && 
-            !string.IsNullOrWhiteSpace(MethodAction.Name);
+        public bool CanAddMethod => !string.IsNullOrWhiteSpace(MethodName) &&
+                                    !string.IsNullOrWhiteSpace(MethodAction.Name);
 
         public Method SelectedMethod { get; set; }
 
         public bool HasProject => CurrentProject != null;
         public bool HasChanges => (CurrentProject != null) && CurrentProject.IsDirty;
         public bool CanCreateFile => (CurrentProject != null) && CurrentProject.IsComplete;
+
+        public List<MethodAction> Actions { get; set; } = new List<MethodAction>
+                                                          {
+                                                              Engine.Actions.Instantiate,
+                                                              Engine.Actions.Continue,
+                                                              Engine.Actions.Execute
+                                                          };
 
         public void CreateNewProject()
         {
@@ -65,9 +74,12 @@ namespace Engine.ViewModels
         {
             if(_currentProject != null)
             {
-                _currentProject.AddMethod(MethodAction, MethodName);
+                if(_currentProject.Methods.All(x => x.Name != MethodName))
+                {
+                    _currentProject.AddMethod(MethodAction, MethodName);
 
-                MethodName = "";
+                    MethodName = "";
+                }
             }
         }
     }
