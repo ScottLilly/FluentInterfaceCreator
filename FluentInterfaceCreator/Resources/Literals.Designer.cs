@@ -268,7 +268,7 @@ namespace FluentInterfaceCreator.Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Select the methods available, after calling method &apos;{0}&apos;..
+        ///   Looks up a localized string similar to Select the methods available, after method:.
         /// </summary>
         public static string SelectTheMethodsAvailableAfterMethod {
             get {

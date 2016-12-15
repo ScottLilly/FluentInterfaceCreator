@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
 using Engine.Resources;
@@ -34,6 +35,18 @@ namespace Engine.Models
 
         public ObservableCollection<Method> Methods { get; }
 
+        public List<Method> ChainableMethods
+        {
+            get
+            {
+                return Methods.Where(x =>
+                                         x.ActionToPerform == Actions.Continue ||
+                                         x.ActionToPerform == Actions.Execute)
+                              .OrderBy(x => x.SortKey)
+                              .ToList();
+            }
+        }
+
         public string Name { get; private set; }
         public Language OutputLanguage { get; private set; }
 
@@ -52,17 +65,17 @@ namespace Engine.Models
         {
             //TODO: Prevent duplicate method names.
 
-            var method = new Method(methodAction, name, DetermineChainIndexFor(methodAction));
+            Method method = new Method(methodAction, name, DetermineChainIndexFor(methodAction));
 
             Methods.Add(method);
 
             if(methodAction == Actions.Continue ||
                methodAction == Actions.Execute)
             {
-                foreach(var existingMethod in
+                foreach(Method existingMethod in
                     Methods.Where(x =>
-                        x.ActionToPerform == Actions.Instantiate ||
-                        x.ActionToPerform == Actions.Continue))
+                                      x.ActionToPerform == Actions.Instantiate ||
+                                      x.ActionToPerform == Actions.Continue))
                 {
                     existingMethod.AddChainableMethod(method);
                 }
@@ -79,7 +92,7 @@ namespace Engine.Models
                 return Constants.INITIATE_METHOD_ACTION_CHAIN_INDEX;
             }
 
-            var chainIndex = 0;
+            int chainIndex = 0;
 
             while(Methods.Any(x => x.ChainIndex == chainIndex))
             {

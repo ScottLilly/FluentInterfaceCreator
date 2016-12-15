@@ -39,7 +39,10 @@ namespace Engine.Models
 
         public void AddChainableMethod(Method method)
         {
-            ChainableMethods.Add(new ChainableMethod(method));
+            if(ChainableMethods.All(x => x.Method.Name != method.Name))
+            {
+                ChainableMethods.Add(new ChainableMethod(method));
+            }
         }
     }
 }

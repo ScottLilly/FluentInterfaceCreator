@@ -187,7 +187,7 @@
     <value>Save</value>
   </data>
   <data name="SelectTheMethodsAvailableAfterMethod" xml:space="preserve">
-    <value>Select the methods available, after calling method '{0}'.</value>
+    <value>Select the methods available, after method:</value>
   </data>
   <data name="Version" xml:space="preserve">
     <value>Version</value>

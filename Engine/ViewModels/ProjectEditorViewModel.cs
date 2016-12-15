@@ -6,9 +6,11 @@ namespace Engine.ViewModels
 {
     public class ProjectEditorViewModel : BaseNotificationClass
     {
+        private List<ChainableMethod> _chainableMethods;
         private Project _currentProject;
         private MethodAction _methodAction;
         private string _methodName;
+        private Method _selectedMethod;
 
         public Project CurrentProject
         {
@@ -52,7 +54,47 @@ namespace Engine.ViewModels
         public bool CanAddMethod => !string.IsNullOrWhiteSpace(MethodName) &&
                                     !string.IsNullOrWhiteSpace(MethodAction.Name);
 
-        public Method SelectedMethod { get; set; }
+        public Method SelectedMethod
+        {
+            get { return _selectedMethod; }
+            set
+            {
+                _selectedMethod = value;
+
+                if(_selectedMethod == null)
+                {
+                    ChainableMethods = null;
+                }
+                else
+                {
+                    if(SelectedMethod.ActionToPerform == Engine.Actions.Instantiate ||
+                       SelectedMethod.ActionToPerform == Engine.Actions.Continue)
+                    {
+                        foreach(Method chainableMethod in CurrentProject.ChainableMethods)
+                        {
+                            _selectedMethod.AddChainableMethod(chainableMethod);
+                        }
+                    }
+
+                    ChainableMethods = _selectedMethod.ChainableMethods
+                                                      .OrderBy(x => x.Method.SortKey)
+                                                      .ToList();
+                }
+
+                NotifyPropertyChanged("SelectedMethod");
+            }
+        }
+
+        public List<ChainableMethod> ChainableMethods
+        {
+            get { return _chainableMethods; }
+            set
+            {
+                _chainableMethods = value;
+
+                NotifyPropertyChanged("ChainableMethods");
+            }
+        }
 
         public bool HasProject => CurrentProject != null;
         public bool HasChanges => (CurrentProject != null) && CurrentProject.IsDirty;
