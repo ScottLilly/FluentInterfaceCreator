@@ -1,16 +1,30 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using Engine.Models;
+using Engine.Resources;
+using Engine.Utilities;
 
 namespace Engine.ViewModels
 {
-    public class ProjectEditorViewModel : BaseNotificationClass
+    public class ProjectEditorViewModel : NotificationClassBase
     {
-        private List<ChainableMethod> _chainableMethods;
+        #region Properties
+
         private Project _currentProject;
-        private MethodAction _methodAction;
-        private string _methodName;
-        private Method _selectedMethod;
+        private string _currentEditingMethodErrorMessage;
+        private string _currentEditingMethodGroup;
+        private string _currentEditingMethodName;
+        private Method _currentMethod;
+
+        public List<string> OutputLanguages { get; set; } =
+            new List<string> {"C#"};
+
+        public List<string> MethodGroups { get; set; } =
+            new List<string> {"Instantiating", "Chaining", "Executing"};
+
+        public bool HasProject => CurrentProject != null;
+        public bool HasMethod => CurrentMethod != null;
 
         public Project CurrentProject
         {
@@ -21,108 +35,169 @@ namespace Engine.ViewModels
                 {
                     _currentProject = value;
 
+                    CurrentEditingMethodErrorMessage = "";
+                    CurrentEditingMethodGroup = "";
+                    CurrentEditingMethodName = "";
+                    CurrentMethod = null;
+
                     NotifyPropertyChanged("CurrentProject");
                     NotifyPropertyChanged("HasProject");
                 }
             }
         }
 
-        public MethodAction MethodAction
+        public string CurrentEditingMethodErrorMessage
         {
-            get { return _methodAction; }
+            get { return _currentEditingMethodErrorMessage; }
             set
             {
-                _methodAction = value;
+                _currentEditingMethodErrorMessage = value;
 
-                NotifyPropertyChanged("MethodAction");
-                NotifyPropertyChanged("CanAddMethod");
+                NotifyPropertyChanged(nameof(CurrentEditingMethodErrorMessage));
             }
         }
 
-        public string MethodName
+        public string CurrentEditingMethodGroup
         {
-            get { return _methodName; }
+            get { return _currentEditingMethodGroup; }
             set
             {
-                _methodName = value;
+                _currentEditingMethodGroup = value;
 
-                NotifyPropertyChanged("MethodName");
-                NotifyPropertyChanged("CanAddMethod");
+                NotifyPropertyChanged(nameof(CurrentEditingMethodGroup));
             }
         }
 
-        public bool CanAddMethod => !string.IsNullOrWhiteSpace(MethodName) &&
-                                    !string.IsNullOrWhiteSpace(MethodAction.Name);
-
-        public Method SelectedMethod
+        public string CurrentEditingMethodName
         {
-            get { return _selectedMethod; }
+            get { return _currentEditingMethodName; }
             set
             {
-                _selectedMethod = value;
+                _currentEditingMethodName = value;
 
-                if(_selectedMethod == null)
-                {
-                    ChainableMethods = null;
-                }
-                else
-                {
-                    if(SelectedMethod.ActionToPerform == Engine.Actions.Instantiate ||
-                       SelectedMethod.ActionToPerform == Engine.Actions.Continue)
-                    {
-                        foreach(Method chainableMethod in CurrentProject.ChainableMethods)
-                        {
-                            _selectedMethod.AddChainableMethod(chainableMethod);
-                        }
-                    }
-
-                    ChainableMethods = _selectedMethod.ChainableMethods
-                                                      .OrderBy(x => x.Method.SortKey)
-                                                      .ToList();
-                }
-
-                NotifyPropertyChanged("SelectedMethod");
+                NotifyPropertyChanged(nameof(CurrentEditingMethodName));
             }
         }
 
-        public List<ChainableMethod> ChainableMethods
+        public Method CurrentMethod
         {
-            get { return _chainableMethods; }
+            get { return _currentMethod; }
             set
             {
-                _chainableMethods = value;
+                _currentMethod = value;
 
-                NotifyPropertyChanged("ChainableMethods");
+                NotifyPropertyChanged(nameof(CurrentMethod));
+                NotifyPropertyChanged(nameof(HasMethod));
             }
         }
 
-        public bool HasProject => CurrentProject != null;
-        public bool HasChanges => (CurrentProject != null) && CurrentProject.IsDirty;
-        public bool CanCreateFile => (CurrentProject != null) && CurrentProject.IsComplete;
+        #endregion
 
-        public List<MethodAction> Actions { get; set; } = new List<MethodAction>
-                                                          {
-                                                              Engine.Actions.Instantiate,
-                                                              Engine.Actions.Continue,
-                                                              Engine.Actions.Execute
-                                                          };
+        #region Public functions
 
         public void CreateNewProject()
         {
-            CurrentProject = new Project("", Language.CSharp);
+            CurrentProject = new Project();
+
+            // This is currently the only output language, 
+            // so select it by default.
+            CurrentProject.OutputLanguage = "C#";
         }
 
-        public void AddMethod()
+        public void LoadProjectFromXML(string serializedProject)
         {
-            if(_currentProject != null)
-            {
-                if(_currentProject.Methods.All(x => x.Name != MethodName))
-                {
-                    _currentProject.AddMethod(MethodAction, MethodName);
+            CurrentProject = Serialization.Deserialize<Project>(serializedProject);
+        }
 
-                    MethodName = "";
-                }
+        public void AddCurrentMethodToProject()
+        {
+            Method.MethodGroup group;
+            Enum.TryParse(CurrentEditingMethodGroup, out group);
+
+            List<string> errorMessages = new List<string>();
+
+            // This null check is needed, 
+            // because Enum.TryParse will set 'group' to 'Instantiating', 
+            // when CurrentEditingMethodGroup is empty.
+            if(CurrentEditingMethodGroup == null)
+            {
+                errorMessages.Add(ErrorMessages.GroupIsRequired);
+            }
+
+            if(group != Method.MethodGroup.Instantiating &&
+               group != Method.MethodGroup.Chaining &&
+               group != Method.MethodGroup.Executing)
+            {
+                errorMessages.Add(ErrorMessages.GroupIsNotValid);
+            }
+
+            if(string.IsNullOrWhiteSpace(CurrentEditingMethodName))
+            {
+                errorMessages.Add(ErrorMessages.NameIsRequired);
+            }
+
+            if(CurrentProject.AlreadyContainsMethodNamed(CurrentEditingMethodName))
+            {
+                errorMessages.Add(ErrorMessages.MethodAlreadyExists);
+            }
+
+            if(errorMessages.Any())
+            {
+                CurrentEditingMethodErrorMessage = string.Join("\r\n", errorMessages.ToArray());
+                return;
+            }
+
+            CurrentEditingMethodErrorMessage = "";
+
+            CurrentProject.AddMethod(new Method(group, CurrentEditingMethodName));
+
+            // Clear input controls
+            CurrentEditingMethodName = "";
+            CurrentEditingMethodErrorMessage = "";
+        }
+
+        public void DeleteMethod(Method method)
+        {
+            CurrentProject.DeleteMethod(method);
+        }
+
+        public void SelectCallableMethodsAfter(Method method)
+        {
+            CurrentMethod = method;
+
+            List<CallableMethodIndicator> callableMethods =
+                new List<CallableMethodIndicator>();
+
+            foreach(Method chainEndingMethod in CurrentProject.ChainEndingMethods)
+            {
+                CallableMethodIndicator callableMethodIndicator =
+                    new CallableMethodIndicator(chainEndingMethod,
+                                                method.MethodsCallableNext
+                                                              .Any(mcn =>
+                                                                       mcn.Group == chainEndingMethod.Group.ToString() &&
+                                                                       mcn.Name == chainEndingMethod.Name &&
+                                                                       mcn.CanCall));
+
+                callableMethods.Add(callableMethodIndicator);
+            }
+
+            CurrentMethod.MethodsCallableNext.Clear();
+
+            foreach(CallableMethodIndicator callableMethod in callableMethods)
+            {
+                CurrentMethod.MethodsCallableNext.Add(callableMethod);
             }
         }
+
+        // For now, instead of editing existing methods,
+        // the user can delete and re-add.
+
+        //public void EditMethod(Method method)
+        //{
+        //    CurrentEditingMethodGroup = method.Group.ToString();
+        //    CurrentEditingMethodName = method.Name;
+        //}
+
+        #endregion
     }
 }

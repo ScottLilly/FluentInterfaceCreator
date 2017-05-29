@@ -1,48 +1,59 @@
-﻿using System.Collections.ObjectModel;
-using System.Linq;
+﻿using System;
+using System.Collections.ObjectModel;
 
 namespace Engine.Models
 {
-    public class Method
+    [Serializable]
+    public class Method : NotificationClassBase
     {
-        public MethodAction ActionToPerform { get; }
-        public string Name { get; }
-        public int ChainIndex { get; }
-
-        public ObservableCollection<ChainableMethod> ChainableMethods { get; }
-
-        public ulong ChainMask
+        public enum MethodGroup
         {
-            get
+            Instantiating,
+            Chaining,
+            Executing
+        }
+
+        #region Properties
+
+        private MethodGroup _group;
+        private string _name;
+
+        public MethodGroup Group
+        {
+            get { return _group; }
+            set
             {
-                ulong mask = 0;
+                _group = value;
 
-                foreach(ChainableMethod method in ChainableMethods.Where(x => x.IsSelected))
-                {
-                    mask += method.MaskValue;
-                }
-
-                return mask;
+                NotifyPropertyChanged(nameof(Group));
             }
         }
 
-        public string SortKey => $"{ActionToPerform.ID}:{Name}";
-
-        public Method(MethodAction actionToPerform, string name, int chainIndex)
+        public string Name
         {
-            ActionToPerform = actionToPerform;
+            get { return _name; }
+            set
+            {
+                _name = value;
+
+                NotifyPropertyChanged(nameof(Name));
+            }
+        }
+
+        public ObservableCollection<CallableMethodIndicator> MethodsCallableNext { get; set; } =
+            new ObservableCollection<CallableMethodIndicator>();
+
+        #endregion
+
+        public Method(MethodGroup group, string name)
+        {
+            Group = group;
             Name = name;
-            ChainIndex = chainIndex;
-
-            ChainableMethods = new ObservableCollection<ChainableMethod>();
         }
 
-        public void AddChainableMethod(Method method)
+        // For serialization
+        private Method()
         {
-            if(ChainableMethods.All(x => x.Method.Name != method.Name))
-            {
-                ChainableMethods.Add(new ChainableMethod(method));
-            }
         }
     }
 }

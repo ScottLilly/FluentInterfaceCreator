@@ -1,110 +1,212 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.Globalization;
 using System.Linq;
-using Engine.Resources;
+using System.Xml.Serialization;
 
 namespace Engine.Models
 {
-    public class Project : BaseNotificationClass
+    [Serializable]
+    public class Project : NotificationClassBase
     {
-        private bool _isComplete;
+        private readonly TextInfo _textInfo =
+            new CultureInfo(CultureInfo.CurrentCulture.Name, true).TextInfo;
+
+        #region Properties
+
+        private string _factoryClassName;
+
+        private string _name;
+        private string _outputLanguage;
         private bool _isDirty;
 
-        public bool IsComplete
+        public string Name
         {
-            get { return _isComplete; }
-            private set
+            get { return _name; }
+            set
             {
-                _isComplete = value;
+                if(_name != value)
+                {
+                    SetDirty();
+                }
 
-                NotifyPropertyChanged("IsComplete");
+                _name = value;
+
+                NotifyPropertyChanged(nameof(Name));
+
+                SetDefaultFactoryClassName("Builder");
+            }
+        }
+
+        public string FactoryClassName
+        {
+            get { return _factoryClassName; }
+            set
+            {
+                _factoryClassName = value;
+
+                NotifyPropertyChanged(nameof(FactoryClassName));
+            }
+        }
+
+        public string OutputLanguage
+        {
+            get { return _outputLanguage; }
+            set
+            {
+                _outputLanguage = value;
+
+                NotifyPropertyChanged(nameof(OutputLanguage));
+            }
+        }
+
+        public ObservableCollection<Method> InstantiatingMethods { get; set; } =
+            new ObservableCollection<Method>();
+
+        public ObservableCollection<Method> ChainingMethods { get; set; } =
+            new ObservableCollection<Method>();
+
+        public ObservableCollection<Method> ExecutingMethods { get; set; } =
+            new ObservableCollection<Method>();
+
+        public ObservableCollection<InterfaceData> Interfaces { get; set; } =
+            new ObservableCollection<InterfaceData>();
+
+        [XmlIgnore]
+        public ObservableCollection<Method> ChainStartingMethods
+        {
+            get
+            {
+                ObservableCollection<Method> methods = new ObservableCollection<Method>();
+
+                foreach(Method method in InstantiatingMethods)
+                {
+                    methods.Add(method);
+                }
+
+                foreach(Method method in ChainingMethods)
+                {
+                    methods.Add(method);
+                }
+
+                return methods;
+            }
+        }
+
+        [XmlIgnore]
+        public ObservableCollection<Method> ChainEndingMethods
+        {
+            get
+            {
+                ObservableCollection<Method> methods = new ObservableCollection<Method>();
+
+                foreach(Method method in ChainingMethods)
+                {
+                    methods.Add(method);
+                }
+
+                foreach(Method method in ExecutingMethods)
+                {
+                    methods.Add(method);
+                }
+
+                return methods;
             }
         }
 
         public bool IsDirty
         {
             get { return _isDirty; }
-            private set
+            set
             {
                 _isDirty = value;
 
-                NotifyPropertyChanged("IsDirty");
+                NotifyPropertyChanged(nameof(IsDirty));
             }
         }
 
-        public ObservableCollection<Method> Methods { get; }
+        #endregion
 
-        public List<Method> ChainableMethods
+        #region Public functions
+
+        public void AddMethod(Method method)
         {
-            get
+            switch(method.Group)
             {
-                return Methods.Where(x =>
-                                         x.ActionToPerform == Actions.Continue ||
-                                         x.ActionToPerform == Actions.Execute)
-                              .OrderBy(x => x.SortKey)
-                              .ToList();
+                case Method.MethodGroup.Instantiating:
+                    InstantiatingMethods.Add(method);
+                    break;
+                case Method.MethodGroup.Chaining:
+                    ChainingMethods.Add(method);
+                    break;
+                case Method.MethodGroup.Executing:
+                    ExecutingMethods.Add(method);
+                    break;
             }
+
+            SetDirty();
+
+            UpdateInterfaces();
+
+            NotifyPropertyChanged(nameof(ChainStartingMethods));
+            NotifyPropertyChanged(nameof(ChainEndingMethods));
         }
 
-        public string Name { get; private set; }
-        public Language OutputLanguage { get; private set; }
-
-        public Project(string name, Language outputLanguage)
+        public void DeleteMethod(Method method)
         {
-            Name = name;
-            OutputLanguage = outputLanguage;
-
-            Methods = new ObservableCollection<Method>();
-
-            IsDirty = false;
-            IsComplete = false;
-        }
-
-        public void AddMethod(MethodAction methodAction, string name)
-        {
-            //TODO: Prevent duplicate method names.
-
-            Method method = new Method(methodAction, name, DetermineChainIndexFor(methodAction));
-
-            Methods.Add(method);
-
-            if(methodAction == Actions.Continue ||
-               methodAction == Actions.Execute)
+            switch(method.Group)
             {
-                foreach(Method existingMethod in
-                    Methods.Where(x =>
-                                      x.ActionToPerform == Actions.Instantiate ||
-                                      x.ActionToPerform == Actions.Continue))
-                {
-                    existingMethod.AddChainableMethod(method);
-                }
+                case Method.MethodGroup.Instantiating:
+                    InstantiatingMethods.Remove(method);
+                    break;
+                case Method.MethodGroup.Chaining:
+                    ChainingMethods.Remove(method);
+                    break;
+                case Method.MethodGroup.Executing:
+                    ExecutingMethods.Remove(method);
+                    break;
             }
 
+            SetDirty();
+            
+            UpdateInterfaces();
+
+            NotifyPropertyChanged(nameof(ChainStartingMethods));
+            NotifyPropertyChanged(nameof(ChainEndingMethods));
+        }
+
+        public bool AlreadyContainsMethodNamed(string methodName)
+        {
+            return
+                InstantiatingMethods.Any(m => m.Name.Equals(methodName, StringComparison.CurrentCultureIgnoreCase)) ||
+                ChainingMethods.Any(m => m.Name.Equals(methodName, StringComparison.CurrentCultureIgnoreCase)) ||
+                ExecutingMethods.Any(m => m.Name.Equals(methodName, StringComparison.CurrentCultureIgnoreCase));
+        }
+
+        #endregion
+
+        #region Private functions
+
+        private void SetDefaultFactoryClassName(string suffix)
+        {
+            if(!string.IsNullOrWhiteSpace(Name) &&
+               string.IsNullOrWhiteSpace(FactoryClassName))
+            {
+                FactoryClassName =
+                    _textInfo.ToTitleCase(Name).Replace(" ", "") + suffix;
+            }
+        }
+
+        private void SetDirty()
+        {
             IsDirty = true;
-            IsComplete = false;
         }
 
-        private int DetermineChainIndexFor(MethodAction methodAction)
+        private void UpdateInterfaces()
         {
-            if(methodAction == Actions.Instantiate)
-            {
-                return Constants.INITIATE_METHOD_ACTION_CHAIN_INDEX;
-            }
-
-            int chainIndex = 0;
-
-            while(Methods.Any(x => x.ChainIndex == chainIndex))
-            {
-                chainIndex++;
-
-                if(chainIndex == 64)
-                {
-                    throw new ArgumentOutOfRangeException(ErrorMessages.CannotAddMoreThan63MethodsToAProject);
-                }
-            }
-
-            return chainIndex;
         }
+
+        #endregion
     }
 }

@@ -70,15 +70,6 @@ namespace FluentInterfaceCreator.Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Action.
-        /// </summary>
-        public static string Action {
-            get {
-                return ResourceManager.GetString("Action", resourceCulture);
-            }
-        }
-        
-        /// <summary>
         ///   Looks up a localized string similar to Add Method.
         /// </summary>
         public static string AddMethod {
@@ -97,6 +88,15 @@ namespace FluentInterfaceCreator.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Application Settings.
+        /// </summary>
+        public static string ApplicationSettings {
+            get {
+                return ResourceManager.GetString("ApplicationSettings", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Fluent Interface Creator.
         /// </summary>
         public static string AppTitle {
@@ -106,16 +106,16 @@ namespace FluentInterfaceCreator.Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Continue.
+        ///   Looks up a localized string similar to Chaining.
         /// </summary>
-        public static string Continue {
+        public static string Chaining {
             get {
-                return ResourceManager.GetString("Continue", resourceCulture);
+                return ResourceManager.GetString("Chaining", resourceCulture);
             }
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Copyright © 2016, Scott Lilly.
+        ///   Looks up a localized string similar to Copyright © 2016 - 2017, Scott Lilly.
         /// </summary>
         public static string CopyrightNotice {
             get {
@@ -142,11 +142,29 @@ namespace FluentInterfaceCreator.Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Execute.
+        ///   Looks up a localized string similar to Delete.
         /// </summary>
-        public static string Execute {
+        public static string Delete {
             get {
-                return ResourceManager.GetString("Execute", resourceCulture);
+                return ResourceManager.GetString("Delete", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Edit.
+        /// </summary>
+        public static string Edit {
+            get {
+                return ResourceManager.GetString("Edit", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Executing.
+        /// </summary>
+        public static string Executing {
+            get {
+                return ResourceManager.GetString("Executing", resourceCulture);
             }
         }
         
@@ -160,11 +178,29 @@ namespace FluentInterfaceCreator.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Factory Class Name:.
+        /// </summary>
+        public static string FactoryClassName {
+            get {
+                return ResourceManager.GetString("FactoryClassName", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to File.
         /// </summary>
         public static string File {
             get {
                 return ResourceManager.GetString("File", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Group.
+        /// </summary>
+        public static string Group {
+            get {
+                return ResourceManager.GetString("Group", resourceCulture);
             }
         }
         
@@ -178,20 +214,11 @@ namespace FluentInterfaceCreator.Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Instantiate.
+        ///   Looks up a localized string similar to Instantiating.
         /// </summary>
-        public static string Instantiate {
+        public static string Instantiating {
             get {
-                return ResourceManager.GetString("Instantiate", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Interfaces.
-        /// </summary>
-        public static string Interfaces {
-            get {
-                return ResourceManager.GetString("Interfaces", resourceCulture);
+                return ResourceManager.GetString("Instantiating", resourceCulture);
             }
         }
         
@@ -219,6 +246,15 @@ namespace FluentInterfaceCreator.Resources {
         public static string LoadProject {
             get {
                 return ResourceManager.GetString("LoadProject", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Method Name.
+        /// </summary>
+        public static string MethodName {
+            get {
+                return ResourceManager.GetString("MethodName", resourceCulture);
             }
         }
         
@@ -268,11 +304,11 @@ namespace FluentInterfaceCreator.Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Select the methods available, after method:.
+        ///   Looks up a localized string similar to Select.
         /// </summary>
-        public static string SelectTheMethodsAvailableAfterMethod {
+        public static string Select {
             get {
-                return ResourceManager.GetString("SelectTheMethodsAvailableAfterMethod", resourceCulture);
+                return ResourceManager.GetString("Select", resourceCulture);
             }
         }
         

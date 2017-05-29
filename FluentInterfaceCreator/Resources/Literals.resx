@@ -120,23 +120,23 @@
   <data name="AboutFluentInterfaceCreator" xml:space="preserve">
     <value>About Fluent Interface Creator</value>
   </data>
-  <data name="Action" xml:space="preserve">
-    <value>Action</value>
-  </data>
   <data name="AddMethod" xml:space="preserve">
     <value>Add Method</value>
   </data>
   <data name="AllRightsReserved" xml:space="preserve">
     <value>All rights reserved.</value>
   </data>
+  <data name="ApplicationSettings" xml:space="preserve">
+    <value>Application Settings</value>
+  </data>
   <data name="AppTitle" xml:space="preserve">
     <value>Fluent Interface Creator</value>
   </data>
-  <data name="Continue" xml:space="preserve">
-    <value>Continue</value>
+  <data name="Chaining" xml:space="preserve">
+    <value>Chaining</value>
   </data>
   <data name="CopyrightNotice" xml:space="preserve">
-    <value>Copyright © 2016, Scott Lilly</value>
+    <value>Copyright © 2016 - 2017, Scott Lilly</value>
   </data>
   <data name="CreateFluentInterfaceFile" xml:space="preserve">
     <value>Create fluent interface file</value>
@@ -144,23 +144,32 @@
   <data name="CreateNewProject" xml:space="preserve">
     <value>Create New Project</value>
   </data>
-  <data name="Execute" xml:space="preserve">
-    <value>Execute</value>
+  <data name="Delete" xml:space="preserve">
+    <value>Delete</value>
+  </data>
+  <data name="Edit" xml:space="preserve">
+    <value>Edit</value>
+  </data>
+  <data name="Executing" xml:space="preserve">
+    <value>Executing</value>
   </data>
   <data name="Exit" xml:space="preserve">
     <value>Exit</value>
   </data>
+  <data name="FactoryClassName" xml:space="preserve">
+    <value>Factory Class Name:</value>
+  </data>
   <data name="File" xml:space="preserve">
     <value>File</value>
+  </data>
+  <data name="Group" xml:space="preserve">
+    <value>Group</value>
   </data>
   <data name="Help" xml:space="preserve">
     <value>Help</value>
   </data>
-  <data name="Instantiate" xml:space="preserve">
-    <value>Instantiate</value>
-  </data>
-  <data name="Interfaces" xml:space="preserve">
-    <value>Interfaces</value>
+  <data name="Instantiating" xml:space="preserve">
+    <value>Instantiating</value>
   </data>
   <data name="Language" xml:space="preserve">
     <value>Language:</value>
@@ -170,6 +179,9 @@
   </data>
   <data name="LoadProject" xml:space="preserve">
     <value>Load Project</value>
+  </data>
+  <data name="MethodName" xml:space="preserve">
+    <value>Method Name</value>
   </data>
   <data name="Methods" xml:space="preserve">
     <value>Methods</value>
@@ -186,13 +198,13 @@
   <data name="Save" xml:space="preserve">
     <value>Save</value>
   </data>
-  <data name="SelectTheMethodsAvailableAfterMethod" xml:space="preserve">
-    <value>Select the methods available, after method:</value>
-  </data>
   <data name="Version" xml:space="preserve">
     <value>Version</value>
   </data>
   <data name="ViewHelp" xml:space="preserve">
     <value>View Help</value>
+  </data>
+  <data name="Select" xml:space="preserve">
+    <value>Select</value>
   </data>
 </root>

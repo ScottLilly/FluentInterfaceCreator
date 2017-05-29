@@ -1,27 +1,18 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.Reflection;
 using System.Windows;
-using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
-using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Shapes;
 
 namespace FluentInterfaceCreator
 {
-    /// <summary>
-    /// Interaction logic for About.xaml
-    /// </summary>
     public partial class About : Window
     {
+        //private string VersionNumber { get; } =
+        //    Assembly.GetExecutingAssembly().GetName().Version.ToString();
+
         public About()
         {
             InitializeComponent();
+
+            VersionNumber.Content = Assembly.GetExecutingAssembly().GetName().Version;
         }
 
         private void OnClick_OK(object sender, RoutedEventArgs e)

@@ -1,28 +1,18 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.IO;
 using System.Windows;
-using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
-using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
-using System.Windows.Shapes;
 using Engine.Models;
+using Engine.Utilities;
 using Engine.ViewModels;
+using Microsoft.Win32;
 
 namespace FluentInterfaceCreator
 {
-    /// <summary>
-    /// Interaction logic for MainWindow.xaml
-    /// </summary>
     public partial class MainWindow : Window
     {
-        readonly ProjectEditorViewModel _projectEditor = new ProjectEditorViewModel();
+        private const string FILE_NAME_EXTENSION = ".ficproj";
+
+        private readonly ProjectEditorViewModel _projectEditor =
+            new ProjectEditorViewModel();
 
         public MainWindow()
         {
@@ -31,26 +21,93 @@ namespace FluentInterfaceCreator
             DataContext = _projectEditor;
         }
 
-        private void OnClick_CreateNewProject(object sender, RoutedEventArgs e)
+        private void CreateNewProject_OnClick(object sender, RoutedEventArgs e)
         {
             _projectEditor.CreateNewProject();
         }
 
-        private void OnClick_Exit(object sender, RoutedEventArgs e)
+        private void Exit_OnClick(object sender, RoutedEventArgs e)
         {
             Close();
         }
 
-        private void OnClick_About(object sender, RoutedEventArgs e)
+        private void About_OnClick(object sender, RoutedEventArgs e)
         {
             About about = new About {Owner = this};
 
             about.ShowDialog();
         }
 
-        private void OnClick_AddMethod(object sender, RoutedEventArgs e)
+        private void DeleteMethod_OnClick(object sender, RoutedEventArgs e)
         {
-            _projectEditor.AddMethod();
+            Method selectedMethod = ((FrameworkElement)sender).DataContext as Method;
+
+            _projectEditor.DeleteMethod(selectedMethod);
+        }
+
+        // For now, instead of editing an existing method,
+        // the user can delete and re-add
+
+        //private void EditMethod_OnClick(object sender, RoutedEventArgs e)
+        //{
+        //    Method selectedMethod = ((FrameworkElement)sender).DataContext as Method;
+        //    _projectEditor.EditMethod(selectedMethod);
+        //}
+
+        private void SaveMethod_OnClick(object sender, RoutedEventArgs e)
+        {
+            _projectEditor.AddCurrentMethodToProject();
+        }
+
+        private void Save_OnClick(object sender, RoutedEventArgs e)
+        {
+            SaveFileDialog dialog =
+                new SaveFileDialog
+                {
+                    FileName = _projectEditor.CurrentProject.Name,
+                    DefaultExt = FILE_NAME_EXTENSION,
+                    Filter = "Fluent Interface Creator projects (*.ficproj)|*.ficproj"
+                };
+
+            bool? result = dialog.ShowDialog(this);
+
+            if(result == true)
+            {
+                File.WriteAllText(dialog.FileName,
+                                  Serialization.Serialize(_projectEditor.CurrentProject));
+            }
+        }
+
+        private void LoadProject_OnClick(object sender, RoutedEventArgs e)
+        {
+            OpenFileDialog dialog =
+                new OpenFileDialog
+                {
+                    DefaultExt = FILE_NAME_EXTENSION,
+                    Filter = "Fluent Interface Creator projects (*.ficproj)|*.ficproj"
+                };
+
+            bool? result = dialog.ShowDialog(this);
+
+            if(result == true)
+            {
+                _projectEditor.LoadProjectFromXML(File.ReadAllText(dialog.FileName));
+            }
+        }
+
+        private void ApplicationSettings_OnClick(object sender, RoutedEventArgs e)
+        {
+            ApplicationSettings settings =
+                new ApplicationSettings {Owner = this};
+
+            settings.ShowDialog();
+        }
+
+        private void SelectFollowingMethods_OnClick(object sender, RoutedEventArgs e)
+        {
+            Method selectedMethod = ((FrameworkElement)sender).DataContext as Method;
+
+            _projectEditor.SelectCallableMethodsAfter(selectedMethod);
         }
     }
 }

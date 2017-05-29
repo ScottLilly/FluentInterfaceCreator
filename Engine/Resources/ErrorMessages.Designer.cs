@@ -61,11 +61,38 @@ namespace Engine.Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Cannot add more than 63 methods to a project..
+        ///   Looks up a localized string similar to &apos;Group&apos; is not valid.
         /// </summary>
-        internal static string CannotAddMoreThan63MethodsToAProject {
+        internal static string GroupIsNotValid {
             get {
-                return ResourceManager.GetString("CannotAddMoreThan63MethodsToAProject", resourceCulture);
+                return ResourceManager.GetString("GroupIsNotValid", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to &apos;Group&apos; is required.
+        /// </summary>
+        internal static string GroupIsRequired {
+            get {
+                return ResourceManager.GetString("GroupIsRequired", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to This method already exists.
+        /// </summary>
+        internal static string MethodAlreadyExists {
+            get {
+                return ResourceManager.GetString("MethodAlreadyExists", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to &apos;Name&apos; is required.
+        /// </summary>
+        internal static string NameIsRequired {
+            get {
+                return ResourceManager.GetString("NameIsRequired", resourceCulture);
             }
         }
     }

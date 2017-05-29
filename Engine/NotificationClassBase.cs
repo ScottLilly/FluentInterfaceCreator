@@ -2,11 +2,11 @@
 
 namespace Engine
 {
-    public abstract class BaseNotificationClass : INotifyPropertyChanged
+    public abstract class NotificationClassBase : INotifyPropertyChanged
     {
         public event PropertyChangedEventHandler PropertyChanged;
 
-        protected virtual void NotifyPropertyChanged(string propertyName)
+        protected void NotifyPropertyChanged(string propertyName)
         {
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
         }

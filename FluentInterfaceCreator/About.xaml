@@ -5,6 +5,7 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:resources="clr-namespace:FluentInterfaceCreator.Resources"
         mc:Ignorable="d"
+        FontSize="10pt"
         Title="{Binding Source={x:Static resources:Literals.AboutFluentInterfaceCreator}}" 
         WindowStartupLocation="CenterOwner"
         ResizeMode="NoResize"
@@ -12,6 +13,7 @@
         Height="450" Width="700">
 
     <Grid Margin="10">
+        
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto"/>
             <RowDefinition Height="Auto"/>
@@ -24,8 +26,11 @@
 
         <Label Grid.Row="0"
                    Content="{Binding Source={x:Static resources:Literals.AppTitle}}"/>
-        <Label Grid.Row="1"
-                   Content="{Binding Source={x:Static resources:Literals.Version}}"/>
+        <StackPanel Grid.Row="1"
+                    Orientation="Horizontal">
+            <Label Content="{Binding Source={x:Static resources:Literals.Version}}"/>
+            <Label Name="VersionNumber"/>
+        </StackPanel>
         <Label Grid.Row="2"
                    Content="{Binding Source={x:Static resources:Literals.CopyrightNotice}}"/>
         <Label Grid.Row="3"
@@ -62,6 +67,7 @@
                 Margin="0,10,0,0"
                 Content="{Binding Source={x:Static resources:Literals.OK}}"
                 Click="OnClick_OK"/>
+        
     </Grid>
 
 </Window>
