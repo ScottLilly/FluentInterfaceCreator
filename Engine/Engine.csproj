@@ -42,6 +42,7 @@
   <ItemGroup>
     <Compile Include="Models\CallableMethodIndicator.cs" />
     <Compile Include="Models\InterfaceData.cs" />
+    <Compile Include="Models\Parameter.cs" />
     <Compile Include="NotificationClassBase.cs" />
     <Compile Include="Models\Method.cs" />
     <Compile Include="Models\Project.cs" />

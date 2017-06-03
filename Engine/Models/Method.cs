@@ -40,6 +40,9 @@ namespace Engine.Models
             }
         }
 
+        public ObservableCollection<Parameter> Parameters { get; set; } =
+            new ObservableCollection<Parameter>();
+
         public ObservableCollection<CallableMethodIndicator> MethodsCallableNext { get; set; } =
             new ObservableCollection<CallableMethodIndicator>();
 
