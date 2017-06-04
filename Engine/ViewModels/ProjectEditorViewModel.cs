@@ -164,29 +164,6 @@ namespace Engine.ViewModels
         public void SelectCallableMethodsAfter(Method method)
         {
             CurrentMethod = method;
-
-            List<CallableMethodIndicator> callableMethods =
-                new List<CallableMethodIndicator>();
-
-            foreach(Method chainEndingMethod in CurrentProject.ChainEndingMethods)
-            {
-                CallableMethodIndicator callableMethodIndicator =
-                    new CallableMethodIndicator(chainEndingMethod,
-                                                method.MethodsCallableNext
-                                                              .Any(mcn =>
-                                                                       mcn.Group == chainEndingMethod.Group.ToString() &&
-                                                                       mcn.Name == chainEndingMethod.Name &&
-                                                                       mcn.CanCall));
-
-                callableMethods.Add(callableMethodIndicator);
-            }
-
-            CurrentMethod.MethodsCallableNext.Clear();
-
-            foreach(CallableMethodIndicator callableMethod in callableMethods)
-            {
-                CurrentMethod.MethodsCallableNext.Add(callableMethod);
-            }
         }
 
         // For now, instead of editing existing methods,

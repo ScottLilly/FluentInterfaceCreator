@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Globalization;
 using System.Linq;
@@ -130,50 +129,99 @@ namespace Engine.Models
 
         #region Public functions
 
-        public void AddMethod(Method method)
+        public void AddMethod(Method methodToAdd)
         {
-            switch(method.Group)
+            switch(methodToAdd.Group)
             {
                 case Method.MethodGroup.Instantiating:
-                    InstantiatingMethods.Add(method);
+                    InstantiatingMethods.Add(methodToAdd);
                     break;
                 case Method.MethodGroup.Chaining:
-                    ChainingMethods.Add(method);
+                    ChainingMethods.Add(methodToAdd);
                     break;
                 case Method.MethodGroup.Executing:
-                    ExecutingMethods.Add(method);
+                    ExecutingMethods.Add(methodToAdd);
                     break;
+                default:
+                    throw new ArgumentException();
             }
 
             SetDirty();
 
-            UpdateInterfaces();
+            foreach(Method instantiatingMethod in InstantiatingMethods)
+            {
+                AddMethodToCallableMethods(instantiatingMethod, methodToAdd);
+            }
+
+            foreach(Method chainingMethod in ChainingMethods)
+            {
+                AddMethodToCallableMethods(chainingMethod, methodToAdd);
+            }
 
             NotifyPropertyChanged(nameof(ChainStartingMethods));
             NotifyPropertyChanged(nameof(ChainEndingMethods));
         }
 
-        public void DeleteMethod(Method method)
+        public void DeleteMethod(Method methodToRemove)
         {
-            switch(method.Group)
+            switch(methodToRemove.Group)
             {
                 case Method.MethodGroup.Instantiating:
-                    InstantiatingMethods.Remove(method);
+                    InstantiatingMethods.Remove(methodToRemove);
                     break;
                 case Method.MethodGroup.Chaining:
-                    ChainingMethods.Remove(method);
+                    ChainingMethods.Remove(methodToRemove);
                     break;
                 case Method.MethodGroup.Executing:
-                    ExecutingMethods.Remove(method);
+                    ExecutingMethods.Remove(methodToRemove);
                     break;
+                default:
+                    throw new ArgumentException();
             }
 
             SetDirty();
-            
-            UpdateInterfaces();
+
+            foreach(Method instantiatingMethod in InstantiatingMethods)
+            {
+                RemoveMethodFromCallableMethods(instantiatingMethod, methodToRemove);
+            }
+
+            foreach(Method chainingMethod in ChainingMethods)
+            {
+                RemoveMethodFromCallableMethods(chainingMethod, methodToRemove);
+            }
 
             NotifyPropertyChanged(nameof(ChainStartingMethods));
             NotifyPropertyChanged(nameof(ChainEndingMethods));
+        }
+
+        private void AddMethodToCallableMethods(Method methodWithCallableMethods,
+                                                Method methodToAdd)
+        {
+            if(!methodWithCallableMethods
+                   .MethodsCallableNext
+                   .Any(cm => cm.Group == methodToAdd.Group.ToString() &&
+                              cm.Name == methodToAdd.Name))
+            {
+                methodWithCallableMethods
+                    .MethodsCallableNext
+                    .Add(new CallableMethodIndicator(methodToAdd));
+            }
+        }
+
+        private void RemoveMethodFromCallableMethods(Method methodWithCallableMethods,
+                                                     Method methodToRemove)
+        {
+            CallableMethodIndicator callableMethodToRemove =
+                methodWithCallableMethods
+                    .MethodsCallableNext
+                    .FirstOrDefault(cm => cm.Group == methodToRemove.Group.ToString() &&
+                                          cm.Name == methodToRemove.Name);
+
+            if(callableMethodToRemove != null)
+            {
+                methodWithCallableMethods.MethodsCallableNext.Remove(callableMethodToRemove);
+            }
         }
 
         public bool AlreadyContainsMethodNamed(string methodName)
@@ -201,10 +249,6 @@ namespace Engine.Models
         private void SetDirty()
         {
             IsDirty = true;
-        }
-
-        private void UpdateInterfaces()
-        {
         }
 
         #endregion

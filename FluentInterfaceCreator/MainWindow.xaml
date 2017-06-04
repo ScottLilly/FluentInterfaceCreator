@@ -339,6 +339,7 @@
                         <ColumnDefinition Width="*"/>
                     </Grid.ColumnDefinitions>
 
+                    <!-- Chain starting methods -->
                     <Label Grid.Row="0" Grid.Column="0"
                            FontWeight="Bold"
                            Content="{Binding Source={x:Static resources:Literals.Methods}}"/>
@@ -378,6 +379,7 @@
 
                     </DataGrid>
 
+                    <!-- Chain ending methods -->
                     <StackPanel Grid.Row="0" Grid.Column="1"
                                 Visibility="{Binding HasMethod, Converter={StaticResource BooleanToVisibility}}"
                                 Orientation="Horizontal">
