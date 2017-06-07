@@ -223,6 +223,15 @@ namespace FluentInterfaceCreator.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Interface Name.
+        /// </summary>
+        public static string InterfaceName {
+            get {
+                return ResourceManager.GetString("InterfaceName", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Language:.
         /// </summary>
         public static string Language {

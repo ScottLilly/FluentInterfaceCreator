@@ -434,6 +434,113 @@
 
                 <Grid Margin="10" >
                     
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto"/>
+                    </Grid.RowDefinitions>
+                    
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="*"/>
+                    </Grid.ColumnDefinitions>
+
+                    <DataGrid Grid.Row="0" Grid.Column="0"
+                              AutoGenerateColumns="False"
+                              HeadersVisibility="Column"
+                              CanUserAddRows="False"
+                              CanUserDeleteRows="False"
+                              ItemsSource="{Binding CurrentProject.Interfaces}">
+                        
+                        <DataGrid.Columns>
+                            <DataGridTextColumn Header="{Binding Source={x:Static resources:Literals.InterfaceName}}"
+                                                IsReadOnly="True" 
+                                                MinWidth="275"
+                                                Binding="{Binding Path=Name}"/>
+
+                            <!--
+                            <DataGridTextColumn Header="Signature"
+                                                IsReadOnly="True" 
+                                                MinWidth="275"
+                                                Binding="{Binding Path=CallableMethodsSignature}"/>
+                            -->
+                            
+                            <DataGridTemplateColumn MinWidth="75">
+                                <DataGridTemplateColumn.CellTemplate>
+                                    <DataTemplate>
+                                        <Button Click="SelectInterfaceToName_OnClick"
+                                                Width="55"
+                                                Content="{Binding Source={x:Static resources:Literals.Select}}"/>
+                                    </DataTemplate>
+                                </DataGridTemplateColumn.CellTemplate>
+                            </DataGridTemplateColumn>
+
+                        </DataGrid.Columns>
+                        
+                    </DataGrid>
+                    
+                    <!-- Interface naming controls -->
+                    <Grid Grid.Row="0" Grid.Column="1"
+                          Visibility="{Binding HasInterface, Converter={StaticResource BooleanToVisibility}}">
+                    
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="Auto"/>
+                        </Grid.RowDefinitions>
+                        
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*"/>
+                        </Grid.ColumnDefinitions>
+
+                        <Label Grid.Row="0" Grid.Column="0"
+                               HorizontalAlignment="Left" 
+                               FontWeight="Bold"
+                               Foreground="Red"
+                               Content="{Binding CurrentEditingInterfaceErrorMessage}"/>
+
+                        <StackPanel Grid.Row="1" Grid.Column="0"
+                                    Orientation="Horizontal">
+
+                            <Label FontWeight="Bold"
+                                   Content="{Binding Source={x:Static resources:Literals.InterfaceName}}"/>
+
+                            <TextBox HorizontalAlignment="Left"
+                                     MinWidth="200"
+                                     Text="{Binding CurrentInterface.Name}"/>
+
+                        </StackPanel>
+
+                        <Label Grid.Row="2" Grid.Column="0"
+                               FontWeight="Bold"
+                               HorizontalAlignment="Center"
+                               Content="Methods using this interface"/>
+
+                        <DataGrid Grid.Row="3" Grid.Column="0"
+                                  AutoGenerateColumns="False"
+                                  HeadersVisibility="Column"
+                                  CanUserAddRows="False"
+                                  CanUserDeleteRows="False"
+                                  ItemsSource="{Binding MethodsUsingThisInterface}">
+
+                            <DataGrid.Columns>
+
+                                <DataGridTextColumn Header="{Binding Source={x:Static resources:Literals.MethodName}}"
+                                                    IsReadOnly="True" 
+                                                    Width="*"
+                                                    Binding="{Binding Path=Name}"/>
+                            
+                            </DataGrid.Columns>
+                            
+                        </DataGrid>
+                        
+                        <Label Grid.Row="4" Grid.Column="0"
+                               FontWeight="Bold"
+                               HorizontalAlignment="Center"
+                               Content="Methods called in this interface"/>
+                    </Grid>
                     
                 </Grid>
 

@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Linq;
 using Engine.Models;
 using Engine.Resources;
@@ -16,6 +17,9 @@ namespace Engine.ViewModels
         private string _currentEditingMethodGroup;
         private string _currentEditingMethodName;
         private Method _currentMethod;
+        private string _currentEditingInterfaceErrorMessage;
+        private string _currentEditingInterfaceName;
+        private InterfaceData _currentInterface;
 
         public List<string> OutputLanguages { get; set; } =
             new List<string> {"C#"};
@@ -25,6 +29,7 @@ namespace Engine.ViewModels
 
         public bool HasProject => CurrentProject != null;
         public bool HasMethod => CurrentMethod != null;
+        public bool HasInterface => CurrentInterface != null;
 
         public Project CurrentProject
         {
@@ -90,6 +95,64 @@ namespace Engine.ViewModels
                 NotifyPropertyChanged(nameof(HasMethod));
             }
         }
+
+        public string CurrentEditingInterfaceErrorMessage
+        {
+            get { return _currentEditingInterfaceErrorMessage; }
+            set
+            {
+                _currentEditingInterfaceErrorMessage = value; 
+                
+                NotifyPropertyChanged(nameof(CurrentEditingInterfaceErrorMessage));
+            }
+        }
+
+        public string CurrentEditingInterfaceName
+        {
+            get { return _currentEditingInterfaceName; }
+            set
+            {
+                _currentEditingInterfaceName = value; 
+                
+                NotifyPropertyChanged(nameof(CurrentEditingInterfaceName));
+            }
+        }
+
+        public InterfaceData CurrentInterface
+        {
+            get { return _currentInterface; }
+            set
+            {
+                _currentInterface = value; 
+                
+                NotifyPropertyChanged(nameof(CurrentInterface));
+                NotifyPropertyChanged(nameof(HasInterface));
+
+                MethodsUsingThisInterface.Clear();
+                foreach(Method method in CurrentProject.ChainStartingMethods)
+                {
+                    if(method.CallableMethodsSignature == CurrentInterface.CallableMethodsSignature)
+                    {
+                        MethodsUsingThisInterface.Add(method);
+                    }
+                }
+
+                //MethodsCalledInThisInterface.Clear();
+                //foreach (Method method in CurrentProject.ChainStartingMethods)
+                //{
+                //    if (method.CallableMethodsSignature == CurrentInterface.CallableMethodsSignature)
+                //    {
+                //        MethodsCalledInThisInterface.Add(method);
+                //    }
+                //}
+            }
+        }
+
+        public ObservableCollection<Method> MethodsUsingThisInterface { get; set; } = 
+            new ObservableCollection<Method>();
+
+        public ObservableCollection<Method> MethodsCalledInThisInterface { get; set; } = 
+            new ObservableCollection<Method>();
 
         #endregion
 

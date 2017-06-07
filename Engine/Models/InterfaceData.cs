@@ -19,6 +19,8 @@ namespace Engine.Models
             }
         }
 
+        public string CallableMethodsSignature { get; set; }
+
         public List<Method> CalledByMethods { get; set; } =
             new List<Method>();
 

@@ -315,3 +315,4 @@ $RECYCLE.BIN/
 
 # NDepend
 NDependOut/*
+.svn/wc.db

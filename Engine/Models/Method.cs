@@ -1,5 +1,7 @@
 ﻿using System;
 using System.Collections.ObjectModel;
+using System.Linq;
+using System.Xml.Serialization;
 
 namespace Engine.Models
 {
@@ -45,6 +47,16 @@ namespace Engine.Models
 
         public ObservableCollection<CallableMethodIndicator> MethodsCallableNext { get; set; } =
             new ObservableCollection<CallableMethodIndicator>();
+
+        // Used to determine methods that can call the same 'next' methods,
+        // to eliminate duplicate InterfaceData objects that identify the same interface.
+        [XmlIgnore]
+        public string CallableMethodsSignature =>
+            string.Join("|", MethodsCallableNext
+                .Where(x => x.CanCall)
+                .OrderBy(x => x.Group)
+                .ThenBy(x => x.Name)
+                .Select(x => $"{x.Group}:{x.Name}"));
 
         #endregion
 

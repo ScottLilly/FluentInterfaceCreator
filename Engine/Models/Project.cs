@@ -1,8 +1,10 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Globalization;
 using System.Linq;
 using System.Xml.Serialization;
+using Engine.Resources;
 
 namespace Engine.Models
 {
@@ -72,6 +74,13 @@ namespace Engine.Models
         public ObservableCollection<InterfaceData> Interfaces { get; set; } =
             new ObservableCollection<InterfaceData>();
 
+        // For this section, a "chain" is two methods, called in order,
+        // during the use of the fluent interface.
+
+        // In these chains, 
+        // the first method must be an InstantiatingMethod or a ChainingMethod. 
+        // The second method must be a ChainingMethod or an ExecutingMethod.
+
         [XmlIgnore]
         public ObservableCollection<Method> ChainStartingMethods
         {
@@ -114,6 +123,9 @@ namespace Engine.Models
             }
         }
 
+        [XmlIgnore]
+        public List<string> InterfaceSignatures { get; set; } = new List<string>();
+
         public bool IsDirty
         {
             get { return _isDirty; }
@@ -143,23 +155,66 @@ namespace Engine.Models
                     ExecutingMethods.Add(methodToAdd);
                     break;
                 default:
-                    throw new ArgumentException();
+                    throw new ArgumentException(ErrorMessages.GroupIsNotValid);
             }
 
             SetDirty();
 
-            foreach(Method instantiatingMethod in InstantiatingMethods)
+            // Add this method as a callable method, to all ChainStarting methods,
+            // if this is a ChainEnding method.
+            if (methodToAdd.Group == Method.MethodGroup.Chaining ||
+               methodToAdd.Group == Method.MethodGroup.Executing)
             {
-                AddMethodToCallableMethods(instantiatingMethod, methodToAdd);
+                foreach (Method instantiatingMethod in InstantiatingMethods)
+                {
+                    AddMethodToCallableMethods(instantiatingMethod, methodToAdd);
+                }
+
+                foreach (Method chainingMethod in ChainingMethods)
+                {
+                    AddMethodToCallableMethods(chainingMethod, methodToAdd);
+                }
             }
 
-            foreach(Method chainingMethod in ChainingMethods)
+            // Add all ChainEndingMethods to this new Method
+            foreach (Method chainEndingMethod in ChainEndingMethods)
             {
-                AddMethodToCallableMethods(chainingMethod, methodToAdd);
+                methodToAdd.MethodsCallableNext.Add(new CallableMethodIndicator(chainEndingMethod));
             }
+
+            UpdateInterfaces();
 
             NotifyPropertyChanged(nameof(ChainStartingMethods));
             NotifyPropertyChanged(nameof(ChainEndingMethods));
+        }
+
+        private void UpdateInterfaces()
+        {
+            Interfaces.Clear();
+
+            foreach(Method instantiatingMethod in InstantiatingMethods
+                .Where(m => !string.IsNullOrWhiteSpace(m.CallableMethodsSignature))
+                .OrderBy(m => m.Group.ToString()).ThenBy(m => m.CallableMethodsSignature))
+            {
+                if(Interfaces.All(i => i.CallableMethodsSignature != instantiatingMethod.CallableMethodsSignature))
+                {
+                    InterfaceData interfaceData = new InterfaceData();
+                    interfaceData.CallableMethodsSignature = instantiatingMethod.CallableMethodsSignature;
+                    Interfaces.Add(interfaceData);
+                }
+            }
+
+            foreach(Method chainingMethod in ChainingMethods
+                .Where(m => !string.IsNullOrWhiteSpace(m.CallableMethodsSignature))
+                .OrderBy(m => m.Group.ToString()).ThenBy(m => m.CallableMethodsSignature))
+            {
+                if(Interfaces.All(i => i.CallableMethodsSignature != chainingMethod.CallableMethodsSignature))
+                {
+                    InterfaceData interfaceData = new InterfaceData();
+                    interfaceData.CallableMethodsSignature = chainingMethod.CallableMethodsSignature;
+                    Interfaces.Add(interfaceData);
+                }
+            }
         }
 
         public void DeleteMethod(Method methodToRemove)
@@ -176,7 +231,7 @@ namespace Engine.Models
                     ExecutingMethods.Remove(methodToRemove);
                     break;
                 default:
-                    throw new ArgumentException();
+                    throw new ArgumentException(ErrorMessages.GroupIsNotValid);
             }
 
             SetDirty();
@@ -190,6 +245,8 @@ namespace Engine.Models
             {
                 RemoveMethodFromCallableMethods(chainingMethod, methodToRemove);
             }
+
+            UpdateInterfaces();
 
             NotifyPropertyChanged(nameof(ChainStartingMethods));
             NotifyPropertyChanged(nameof(ChainEndingMethods));

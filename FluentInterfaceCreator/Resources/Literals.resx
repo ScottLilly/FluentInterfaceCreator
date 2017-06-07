@@ -207,4 +207,7 @@
   <data name="Select" xml:space="preserve">
     <value>Select</value>
   </data>
+  <data name="InterfaceName" xml:space="preserve">
+    <value>Interface Name</value>
+  </data>
 </root>

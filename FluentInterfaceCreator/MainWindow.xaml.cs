@@ -109,5 +109,12 @@ namespace FluentInterfaceCreator
 
             _projectEditor.SelectCallableMethodsAfter(selectedMethod);
         }
+
+        private void SelectInterfaceToName_OnClick(object sender, RoutedEventArgs e)
+        {
+            InterfaceData selectedInterface = ((FrameworkElement)sender).DataContext as InterfaceData;
+
+            _projectEditor.CurrentInterface = selectedInterface;
+        }
     }
 }
