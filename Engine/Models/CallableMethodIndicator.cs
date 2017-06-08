@@ -3,46 +3,13 @@
 namespace Engine.Models
 {
     [Serializable]
-    public class CallableMethodIndicator : NotificationClassBase
+    public class CallableMethodIndicator
     {
         #region Properties
 
-        private string _group;
-        private string _name;
-        private bool _canCall;
-
-        public string Group
-        {
-            get { return _group; }
-            set
-            {
-                _group = value; 
-                
-                NotifyPropertyChanged(nameof(Group));
-            }
-        }
-
-        public string Name
-        {
-            get { return _name; }
-            set
-            {
-                _name = value; 
-                
-                NotifyPropertyChanged(nameof(Name));
-            }
-        }
-
-        public bool CanCall
-        {
-            get { return _canCall; }
-            set
-            {
-                _canCall = value;
-
-                NotifyPropertyChanged(nameof(CanCall));
-            }
-        }
+        public string Group { get; set; }
+        public string Name { get; set; }
+        public bool CanCall { get; set; }
 
         #endregion
 

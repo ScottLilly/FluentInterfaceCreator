@@ -368,7 +368,7 @@
                             <DataGridTemplateColumn MinWidth="75">
                                 <DataGridTemplateColumn.CellTemplate>
                                     <DataTemplate>
-                                        <Button Click="SelectFollowingMethods_OnClick"
+                                        <Button Click="SelectMethodsCallableNext_OnClick"
                                                 Width="55"
                                                 Content="{Binding Source={x:Static resources:Literals.Select}}"/>
                                     </DataTemplate>
@@ -416,7 +416,8 @@
                             <DataGridTemplateColumn>
                                 <DataGridTemplateColumn.CellTemplate>
                                     <DataTemplate>
-                                        <CheckBox IsChecked="{Binding Path=CanCall, UpdateSourceTrigger=PropertyChanged}" />
+                                        <CheckBox IsChecked="{Binding Path=CanCall, UpdateSourceTrigger=PropertyChanged}"
+                                                  Checked="MethodCallableNext_OnChecked"/>
                                     </DataTemplate>
                                 </DataGridTemplateColumn.CellTemplate>
                             </DataGridTemplateColumn>
@@ -455,13 +456,6 @@
                                                 IsReadOnly="True" 
                                                 MinWidth="275"
                                                 Binding="{Binding Path=Name}"/>
-
-                            <!--
-                            <DataGridTextColumn Header="Signature"
-                                                IsReadOnly="True" 
-                                                MinWidth="275"
-                                                Binding="{Binding Path=CallableMethodsSignature}"/>
-                            -->
                             
                             <DataGridTemplateColumn MinWidth="75">
                                 <DataGridTemplateColumn.CellTemplate>
@@ -523,7 +517,7 @@
                                   HeadersVisibility="Column"
                                   CanUserAddRows="False"
                                   CanUserDeleteRows="False"
-                                  ItemsSource="{Binding MethodsUsingThisInterface}">
+                                  ItemsSource="{Binding CurrentInterface.CalledByMethods}">
 
                             <DataGrid.Columns>
 
@@ -540,6 +534,25 @@
                                FontWeight="Bold"
                                HorizontalAlignment="Center"
                                Content="Methods called in this interface"/>
+
+                        <DataGrid Grid.Row="5" Grid.Column="0"
+                                  AutoGenerateColumns="False"
+                                  HeadersVisibility="Column"
+                                  CanUserAddRows="False"
+                                  CanUserDeleteRows="False"
+                                  ItemsSource="{Binding CurrentInterface.CallableMethods}">
+
+                            <DataGrid.Columns>
+
+                                <DataGridTextColumn Header="{Binding Source={x:Static resources:Literals.MethodName}}"
+                                                    IsReadOnly="True" 
+                                                    Width="*"
+                                                    Binding="{Binding Path=Name}"/>
+
+                            </DataGrid.Columns>
+
+                        </DataGrid>
+
                     </Grid>
                     
                 </Grid>

@@ -103,11 +103,16 @@ namespace FluentInterfaceCreator
             settings.ShowDialog();
         }
 
-        private void SelectFollowingMethods_OnClick(object sender, RoutedEventArgs e)
+        private void SelectMethodsCallableNext_OnClick(object sender, RoutedEventArgs e)
         {
             Method selectedMethod = ((FrameworkElement)sender).DataContext as Method;
 
-            _projectEditor.SelectCallableMethodsAfter(selectedMethod);
+            _projectEditor.SelectMethodsCallableNextFor(selectedMethod);
+        }
+
+        private void MethodCallableNext_OnChecked(object sender, RoutedEventArgs e)
+        {
+            _projectEditor.RefreshCurrentProjectInterfaces();
         }
 
         private void SelectInterfaceToName_OnClick(object sender, RoutedEventArgs e)

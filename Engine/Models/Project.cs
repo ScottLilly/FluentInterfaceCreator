@@ -123,9 +123,6 @@ namespace Engine.Models
             }
         }
 
-        [XmlIgnore]
-        public List<string> InterfaceSignatures { get; set; } = new List<string>();
-
         public bool IsDirty
         {
             get { return _isDirty; }
@@ -143,27 +140,44 @@ namespace Engine.Models
 
         public void AddMethod(Method methodToAdd)
         {
-            switch(methodToAdd.Group)
+            AddMethodToCollection(methodToAdd);
+
+            SetDirty();
+
+            AddMethodAsCallableMethod(methodToAdd);
+
+            AddChainEndingMethodsTo(methodToAdd);
+
+            UpdateInterfaces();
+
+            NotifyPropertyChanged(nameof(ChainStartingMethods));
+            NotifyPropertyChanged(nameof(ChainEndingMethods));
+        }
+
+        private void AddMethodToCollection(Method method)
+        {
+            switch(method.Group)
             {
                 case Method.MethodGroup.Instantiating:
-                    InstantiatingMethods.Add(methodToAdd);
+                    InstantiatingMethods.Add(method);
                     break;
                 case Method.MethodGroup.Chaining:
-                    ChainingMethods.Add(methodToAdd);
+                    ChainingMethods.Add(method);
                     break;
                 case Method.MethodGroup.Executing:
-                    ExecutingMethods.Add(methodToAdd);
+                    ExecutingMethods.Add(method);
                     break;
                 default:
                     throw new ArgumentException(ErrorMessages.GroupIsNotValid);
             }
+        }
 
-            SetDirty();
-
+        private void AddMethodAsCallableMethod(Method methodToAdd)
+        {
             // Add this method as a callable method, to all ChainStarting methods,
             // if this is a ChainEnding method.
             if (methodToAdd.Group == Method.MethodGroup.Chaining ||
-               methodToAdd.Group == Method.MethodGroup.Executing)
+                methodToAdd.Group == Method.MethodGroup.Executing)
             {
                 foreach (Method instantiatingMethod in InstantiatingMethods)
                 {
@@ -175,44 +189,77 @@ namespace Engine.Models
                     AddMethodToCallableMethods(chainingMethod, methodToAdd);
                 }
             }
+        }
 
+        private void AddChainEndingMethodsTo(Method method)
+        {
             // Add all ChainEndingMethods to this new Method
             foreach (Method chainEndingMethod in ChainEndingMethods)
             {
-                methodToAdd.MethodsCallableNext.Add(new CallableMethodIndicator(chainEndingMethod));
+                if (!method
+                        .MethodsCallableNext
+                        .Any(cm => cm.Group == chainEndingMethod.Group.ToString() &&
+                                   cm.Name == chainEndingMethod.Name))
+                {
+                    method.MethodsCallableNext.Add(new CallableMethodIndicator(chainEndingMethod));
+                }
             }
-
-            UpdateInterfaces();
-
-            NotifyPropertyChanged(nameof(ChainStartingMethods));
-            NotifyPropertyChanged(nameof(ChainEndingMethods));
         }
 
-        private void UpdateInterfaces()
+        internal void UpdateInterfaces()
         {
             Interfaces.Clear();
 
-            foreach(Method instantiatingMethod in InstantiatingMethods
-                .Where(m => !string.IsNullOrWhiteSpace(m.CallableMethodsSignature))
-                .OrderBy(m => m.Group.ToString()).ThenBy(m => m.CallableMethodsSignature))
+            PopulateInterfacesForMethods(InstantiatingMethods);
+            PopulateInterfacesForMethods(ChainingMethods);
+        }
+
+        private void PopulateInterfacesForMethods(IEnumerable<Method> methods)
+        {
+            foreach(Method method in methods
+                .Where(m => !string.IsNullOrWhiteSpace(m.CallableMethodsSignature)))
             {
-                if(Interfaces.All(i => i.CallableMethodsSignature != instantiatingMethod.CallableMethodsSignature))
+                InterfaceData interfaceData =
+                    Interfaces.FirstOrDefault(i => i.CallableMethodsSignature == method.CallableMethodsSignature);
+
+                if(interfaceData == null)
                 {
-                    InterfaceData interfaceData = new InterfaceData();
-                    interfaceData.CallableMethodsSignature = instantiatingMethod.CallableMethodsSignature;
+                    interfaceData = new InterfaceData();
+
+                    interfaceData.CalledByMethods.Add(method);
+
+                    foreach (CallableMethodIndicator callableMethod in
+                        method.MethodsCallableNext.Where(m => m.CanCall))
+                    {
+                        switch(callableMethod.Group)
+                        {
+                            case "Instantiating":
+                                interfaceData
+                                    .CallableMethods
+                                    .Add(InstantiatingMethods
+                                             .First(m => m.Name == callableMethod.Name));
+                                break;
+                            case "Chaining":
+                                interfaceData
+                                    .CallableMethods
+                                    .Add(ChainingMethods
+                                             .First(m => m.Name == callableMethod.Name));
+                                break;
+                            case "Executing":
+                                interfaceData
+                                    .CallableMethods
+                                    .Add(ExecutingMethods
+                                             .First(m => m.Name == callableMethod.Name));
+                                break;
+                        }
+                    }
+
+                    interfaceData.CallableMethodsSignature = method.CallableMethodsSignature;
                     Interfaces.Add(interfaceData);
                 }
-            }
-
-            foreach(Method chainingMethod in ChainingMethods
-                .Where(m => !string.IsNullOrWhiteSpace(m.CallableMethodsSignature))
-                .OrderBy(m => m.Group.ToString()).ThenBy(m => m.CallableMethodsSignature))
-            {
-                if(Interfaces.All(i => i.CallableMethodsSignature != chainingMethod.CallableMethodsSignature))
+                else
                 {
-                    InterfaceData interfaceData = new InterfaceData();
-                    interfaceData.CallableMethodsSignature = chainingMethod.CallableMethodsSignature;
-                    Interfaces.Add(interfaceData);
+                    interfaceData.CalledByMethods.Add(method);
                 }
             }
         }

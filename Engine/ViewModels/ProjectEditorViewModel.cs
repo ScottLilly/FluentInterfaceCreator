@@ -127,32 +127,8 @@ namespace Engine.ViewModels
                 
                 NotifyPropertyChanged(nameof(CurrentInterface));
                 NotifyPropertyChanged(nameof(HasInterface));
-
-                MethodsUsingThisInterface.Clear();
-                foreach(Method method in CurrentProject.ChainStartingMethods)
-                {
-                    if(method.CallableMethodsSignature == CurrentInterface.CallableMethodsSignature)
-                    {
-                        MethodsUsingThisInterface.Add(method);
-                    }
-                }
-
-                //MethodsCalledInThisInterface.Clear();
-                //foreach (Method method in CurrentProject.ChainStartingMethods)
-                //{
-                //    if (method.CallableMethodsSignature == CurrentInterface.CallableMethodsSignature)
-                //    {
-                //        MethodsCalledInThisInterface.Add(method);
-                //    }
-                //}
             }
         }
-
-        public ObservableCollection<Method> MethodsUsingThisInterface { get; set; } = 
-            new ObservableCollection<Method>();
-
-        public ObservableCollection<Method> MethodsCalledInThisInterface { get; set; } = 
-            new ObservableCollection<Method>();
 
         #endregion
 
@@ -161,6 +137,9 @@ namespace Engine.ViewModels
         public void CreateNewProject()
         {
             CurrentProject = new Project();
+
+            CurrentMethod = null;
+            CurrentInterface = null;
 
             // This is currently the only output language, 
             // so select it by default.
@@ -224,7 +203,7 @@ namespace Engine.ViewModels
             CurrentProject.DeleteMethod(method);
         }
 
-        public void SelectCallableMethodsAfter(Method method)
+        public void SelectMethodsCallableNextFor(Method method)
         {
             CurrentMethod = method;
         }
@@ -239,5 +218,10 @@ namespace Engine.ViewModels
         //}
 
         #endregion
+
+        public void RefreshCurrentProjectInterfaces()
+        {
+            CurrentProject.UpdateInterfaces();
+        }
     }
 }
