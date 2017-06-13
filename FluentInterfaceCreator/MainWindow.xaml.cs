@@ -59,7 +59,7 @@ namespace FluentInterfaceCreator
             _projectEditor.AddCurrentMethodToProject();
         }
 
-        private void Save_OnClick(object sender, RoutedEventArgs e)
+        private void SaveProject_OnClick(object sender, RoutedEventArgs e)
         {
             SaveFileDialog dialog =
                 new SaveFileDialog
@@ -120,6 +120,11 @@ namespace FluentInterfaceCreator
             InterfaceData selectedInterface = ((FrameworkElement)sender).DataContext as InterfaceData;
 
             _projectEditor.CurrentInterface = selectedInterface;
+        }
+
+        private void SaveInterfaceName_OnClick(object sender, RoutedEventArgs e)
+        {
+            _projectEditor.SaveInterfaceName();
         }
     }
 }

@@ -61,6 +61,15 @@ namespace Engine.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Another interface already has this name.
+        /// </summary>
+        public static string AnotherInterfaceAlreadyHasThisName {
+            get {
+                return ResourceManager.GetString("AnotherInterfaceAlreadyHasThisName", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to &apos;Group&apos; is not valid.
         /// </summary>
         public static string GroupIsNotValid {
@@ -75,6 +84,15 @@ namespace Engine.Resources {
         public static string GroupIsRequired {
             get {
                 return ResourceManager.GetString("GroupIsRequired", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to &apos;Interface Name&apos; is required.
+        /// </summary>
+        public static string InterfaceNameIsRequired {
+            get {
+                return ResourceManager.GetString("InterfaceNameIsRequired", resourceCulture);
             }
         }
         

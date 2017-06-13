@@ -117,11 +117,17 @@
   <resheader name="writer">
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
+  <data name="AnotherInterfaceAlreadyHasThisName" xml:space="preserve">
+    <value>Another interface already has this name</value>
+  </data>
   <data name="GroupIsNotValid" xml:space="preserve">
     <value>'Group' is not valid</value>
   </data>
   <data name="GroupIsRequired" xml:space="preserve">
     <value>'Group' is required</value>
+  </data>
+  <data name="InterfaceNameIsRequired" xml:space="preserve">
+    <value>'Interface Name' is required</value>
   </data>
   <data name="MethodAlreadyExists" xml:space="preserve">
     <value>This method already exists</value>

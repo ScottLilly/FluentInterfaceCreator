@@ -123,8 +123,18 @@ namespace Engine.ViewModels
             get { return _currentInterface; }
             set
             {
-                _currentInterface = value; 
-                
+                _currentInterface = value;
+
+                if(CurrentInterface == null)
+                {
+                    CurrentEditingInterfaceName = null;
+                    CurrentEditingInterfaceErrorMessage = null;
+                }
+                else
+                {
+                    CurrentEditingInterfaceName = CurrentInterface.Name;
+                }
+
                 NotifyPropertyChanged(nameof(CurrentInterface));
                 NotifyPropertyChanged(nameof(HasInterface));
             }
@@ -222,6 +232,37 @@ namespace Engine.ViewModels
         public void RefreshCurrentProjectInterfaces()
         {
             CurrentProject.UpdateInterfaces();
+        }
+
+        public void SaveInterfaceName()
+        {
+            List<string> errorMessages = new List<string>();
+
+            if(string.IsNullOrWhiteSpace(CurrentEditingInterfaceName))
+            {
+                errorMessages.Add(ErrorMessages.InterfaceNameIsRequired);
+            }
+
+            if(!string.IsNullOrWhiteSpace(CurrentEditingInterfaceName) &&
+               CurrentProject.Interfaces.Any(interfaceData =>
+                                                 interfaceData.Name == CurrentEditingInterfaceName &&
+                                                 interfaceData != CurrentInterface))
+            {
+                errorMessages.Add(ErrorMessages.AnotherInterfaceAlreadyHasThisName);
+            }
+
+            if(errorMessages.Any())
+            {
+                CurrentEditingInterfaceErrorMessage = string.Join("\r\n", errorMessages.ToArray());
+                return;
+            }
+
+            CurrentEditingInterfaceErrorMessage = "";
+
+            CurrentInterface.Name = CurrentEditingInterfaceName;
+
+            // Clear input controls
+            CurrentInterface = null;
         }
     }
 }
