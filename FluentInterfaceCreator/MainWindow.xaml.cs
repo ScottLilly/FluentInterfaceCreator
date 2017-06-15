@@ -126,5 +126,10 @@ namespace FluentInterfaceCreator
         {
             _projectEditor.SaveInterfaceName();
         }
+
+        private void CreateFluentInterface_OnClick(object sender, RoutedEventArgs e)
+        {
+            _projectEditor.CreateFluentInterface();
+        }
     }
 }

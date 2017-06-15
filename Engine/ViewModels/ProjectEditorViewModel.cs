@@ -264,5 +264,10 @@ namespace Engine.ViewModels
             // Clear input controls
             CurrentInterface = null;
         }
+
+        public void CreateFluentInterface()
+        {
+            CurrentProject.CreateFluentInterface();
+        }
     }
 }

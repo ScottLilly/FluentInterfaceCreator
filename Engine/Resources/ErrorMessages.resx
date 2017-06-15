@@ -129,6 +129,9 @@
   <data name="InterfaceNameIsRequired" xml:space="preserve">
     <value>'Interface Name' is required</value>
   </data>
+  <data name="InvalidLanguage" xml:space="preserve">
+    <value>Invalid language</value>
+  </data>
   <data name="MethodAlreadyExists" xml:space="preserve">
     <value>This method already exists</value>
   </data>

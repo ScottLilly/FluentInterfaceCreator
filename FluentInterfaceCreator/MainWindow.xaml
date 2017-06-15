@@ -594,6 +594,7 @@
                     
                     <Grid.ColumnDefinitions>
                         <ColumnDefinition Width="Auto"/>
+                        <ColumnDefinition Width="300"/>
                         <ColumnDefinition Width="*"/>
                     </Grid.ColumnDefinitions>
 
@@ -614,12 +615,23 @@
                               ItemsSource="{Binding OutputLanguages}"
                               SelectedItem="{Binding CurrentProject.OutputLanguage}"/>
 
-                    <Button Grid.Row="3" Grid.Column="1" 
-                            HorizontalAlignment="Left"
+                    <Button Grid.Row="0" Grid.Column="2" 
+                            HorizontalAlignment="Center"
+                            VerticalAlignment="Top"
                             Width="250"
                             Padding="3"
+                            Click="CreateFluentInterface_OnClick"
                             Content="{Binding Source={x:Static resources:Literals.CreateFluentInterfaceFile}}"/>
 
+                    <TextBox Grid.Row="1" Grid.Column="2"
+                             Grid.RowSpan="3"
+                             TextWrapping="Wrap"
+                             VerticalAlignment="Stretch"
+                             Background="Azure"
+                             IsReadOnly="True"
+                             Height="500"
+                             VerticalScrollBarVisibility="Visible"
+                             Text="{Binding CurrentProject.FluentInterfaceAsOneFile}"/>
                 </Grid>
 
             </TabItem>

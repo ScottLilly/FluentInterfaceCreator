@@ -3,7 +3,9 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Globalization;
 using System.Linq;
+using System.Text;
 using System.Xml.Serialization;
+using Engine.FluentInterfaceCreators;
 using Engine.Resources;
 
 namespace Engine.Models
@@ -21,6 +23,7 @@ namespace Engine.Models
         private string _name;
         private string _outputLanguage;
         private bool _isDirty;
+        private string _fluentInterfaceAsOneFile;
 
         public string Name
         {
@@ -62,6 +65,12 @@ namespace Engine.Models
             }
         }
 
+        [XmlIgnore]
+        public bool IncludeRegions { get; set; } = true;
+
+        [XmlIgnore]
+        public List<string> AdditionalReferences { get; set; } = new List<string>();
+
         public ObservableCollection<Method> InstantiatingMethods { get; set; } =
             new ObservableCollection<Method>();
 
@@ -73,6 +82,18 @@ namespace Engine.Models
 
         public ObservableCollection<InterfaceData> Interfaces { get; set; } =
             new ObservableCollection<InterfaceData>();
+
+        [XmlIgnore]
+        public string FluentInterfaceAsOneFile
+        {
+            get { return _fluentInterfaceAsOneFile; }
+            set
+            {
+                _fluentInterfaceAsOneFile = value; 
+                
+                NotifyPropertyChanged(nameof(FluentInterfaceAsOneFile));
+            }
+        }
 
         // For this section, a "chain" is two methods, called in order,
         // during the use of the fluent interface.
@@ -334,6 +355,16 @@ namespace Engine.Models
                 InstantiatingMethods.Any(m => m.Name.Equals(methodName, StringComparison.CurrentCultureIgnoreCase)) ||
                 ChainingMethods.Any(m => m.Name.Equals(methodName, StringComparison.CurrentCultureIgnoreCase)) ||
                 ExecutingMethods.Any(m => m.Name.Equals(methodName, StringComparison.CurrentCultureIgnoreCase));
+        }
+
+        public void CreateFluentInterface()
+        {
+            IFluentInterfaceCreator creator = 
+                FluentInterfaceCreatorFactory.GetCreatorForLanguage(OutputLanguage);
+
+            // TODO: Add way to create single-file, or multiple file, fluent interfaces
+            // Multiple file will put the interfaces in individual files.
+            FluentInterfaceAsOneFile = creator.CreateFluentInterfaceFor(this);
         }
 
         #endregion

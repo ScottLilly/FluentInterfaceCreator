@@ -97,6 +97,15 @@ namespace Engine.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Invalid language.
+        /// </summary>
+        public static string InvalidLanguage {
+            get {
+                return ResourceManager.GetString("InvalidLanguage", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to This method already exists.
         /// </summary>
         public static string MethodAlreadyExists {

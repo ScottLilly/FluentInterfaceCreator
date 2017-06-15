@@ -40,6 +40,9 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="FluentInterfaceCreators\CSharpSingleFileCreator.cs" />
+    <Compile Include="FluentInterfaceCreators\FluentInterfaceCreatorFactory.cs" />
+    <Compile Include="FluentInterfaceCreators\IFluentInterfaceCreator.cs" />
     <Compile Include="Models\CallableMethodIndicator.cs" />
     <Compile Include="Models\InterfaceData.cs" />
     <Compile Include="Models\Parameter.cs" />
