@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Collections.ObjectModel;
 using System.Linq;
 using Engine.Models;
 using Engine.Resources;
@@ -267,7 +266,7 @@ namespace Engine.ViewModels
 
         public void CreateFluentInterface()
         {
-            CurrentProject.CreateFluentInterface();
+            CurrentProject.CreateFluentInterfaceFiles();
         }
     }
 }

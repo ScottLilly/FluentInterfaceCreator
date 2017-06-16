@@ -196,6 +196,15 @@ namespace FluentInterfaceCreator.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to File Name:.
+        /// </summary>
+        public static string FileName {
+            get {
+                return ResourceManager.GetString("FileName", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Group.
         /// </summary>
         public static string Group {

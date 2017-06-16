@@ -210,4 +210,7 @@
   <data name="InterfaceName" xml:space="preserve">
     <value>Interface Name</value>
   </data>
+  <data name="FileName" xml:space="preserve">
+    <value>File Name:</value>
+  </data>
 </root>

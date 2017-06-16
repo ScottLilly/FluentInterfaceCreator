@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Globalization;
 using System.Linq;
-using System.Text;
 using System.Xml.Serialization;
 using Engine.FluentInterfaceCreators;
 using Engine.Resources;
@@ -16,14 +15,20 @@ namespace Engine.Models
         private readonly TextInfo _textInfo =
             new CultureInfo(CultureInfo.CurrentCulture.Name, true).TextInfo;
 
-        #region Properties
+        #region Events
 
-        private string _factoryClassName;
+        public event EventHandler FluentInterfaceFilesUpdated;
+
+        #endregion
+
+        #region Properties
 
         private string _name;
         private string _outputLanguage;
+        private string _factoryClassNamespace;
+        private string _factoryClassName;
+
         private bool _isDirty;
-        private string _fluentInterfaceAsOneFile;
 
         public string Name
         {
@@ -43,17 +48,6 @@ namespace Engine.Models
             }
         }
 
-        public string FactoryClassName
-        {
-            get { return _factoryClassName; }
-            set
-            {
-                _factoryClassName = value;
-
-                NotifyPropertyChanged(nameof(FactoryClassName));
-            }
-        }
-
         public string OutputLanguage
         {
             get { return _outputLanguage; }
@@ -66,10 +60,30 @@ namespace Engine.Models
         }
 
         [XmlIgnore]
-        public bool IncludeRegions { get; set; } = true;
+        public List<string> ClassReferences { get; set; } = new List<string>();
 
         [XmlIgnore]
-        public List<string> AdditionalReferences { get; set; } = new List<string>();
+        public string FactoryClassNamespace
+        {
+            get { return _factoryClassNamespace; }
+            set
+            {
+                _factoryClassNamespace = value; 
+                
+                NotifyPropertyChanged(nameof(FactoryClassName));
+            }
+        }
+
+        public string FactoryClassName
+        {
+            get { return _factoryClassName; }
+            set
+            {
+                _factoryClassName = value;
+
+                NotifyPropertyChanged(nameof(FactoryClassName));
+            }
+        }
 
         public ObservableCollection<Method> InstantiatingMethods { get; set; } =
             new ObservableCollection<Method>();
@@ -84,16 +98,8 @@ namespace Engine.Models
             new ObservableCollection<InterfaceData>();
 
         [XmlIgnore]
-        public string FluentInterfaceAsOneFile
-        {
-            get { return _fluentInterfaceAsOneFile; }
-            set
-            {
-                _fluentInterfaceAsOneFile = value; 
-                
-                NotifyPropertyChanged(nameof(FluentInterfaceAsOneFile));
-            }
-        }
+        public string InterfaceListAsCommaSeparatedString => 
+            string.Join(", ", Interfaces.Select(i => i.Name));
 
         // For this section, a "chain" is two methods, called in order,
         // during the use of the fluent interface.
@@ -143,6 +149,10 @@ namespace Engine.Models
                 return methods;
             }
         }
+
+        [XmlIgnore]
+        public ObservableCollection<FluentInterfaceFile> FluentInterfaceFiles { get; set; } = 
+            new ObservableCollection<FluentInterfaceFile>();
 
         public bool IsDirty
         {
@@ -357,14 +367,22 @@ namespace Engine.Models
                 ExecutingMethods.Any(m => m.Name.Equals(methodName, StringComparison.CurrentCultureIgnoreCase));
         }
 
-        public void CreateFluentInterface()
+        public void CreateFluentInterfaceFiles()
         {
             IFluentInterfaceCreator creator = 
                 FluentInterfaceCreatorFactory.GetCreatorForLanguage(OutputLanguage);
 
-            // TODO: Add way to create single-file, or multiple file, fluent interfaces
-            // Multiple file will put the interfaces in individual files.
-            FluentInterfaceAsOneFile = creator.CreateFluentInterfaceFor(this);
+            List<FluentInterfaceFile> files = 
+                creator.CreateFluentInterfaceFilesFor(this, FileCreationOption.SingleFile);
+
+            FluentInterfaceFiles.Clear();
+
+            foreach (FluentInterfaceFile fluentInterfaceFile in files)
+            {
+                FluentInterfaceFiles.Add(fluentInterfaceFile);
+            }
+
+            OnFluentInterfaceFilesUpdated();
         }
 
         #endregion
@@ -384,6 +402,11 @@ namespace Engine.Models
         private void SetDirty()
         {
             IsDirty = true;
+        }
+
+        private void OnFluentInterfaceFilesUpdated()
+        {
+            FluentInterfaceFilesUpdated?.Invoke(this, new EventArgs());
         }
 
         #endregion

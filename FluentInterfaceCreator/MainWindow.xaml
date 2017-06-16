@@ -5,6 +5,7 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:resources="clr-namespace:FluentInterfaceCreator.Resources"
         xmlns:viewModels="clr-namespace:Engine.ViewModels;assembly=Engine"
+        xmlns:models="clr-namespace:Engine.Models;assembly=Engine"
         d:DataContext="{d:DesignInstance viewModels:ProjectEditorViewModel}"
         mc:Ignorable="d"
         FontSize="10pt"
@@ -12,6 +13,7 @@
         Height="768" Width="1024">
 
     <Window.Resources>
+        
         <Style TargetType="TextBox">
             <Setter Property="Margin" Value="3"/>
             <Setter Property="Padding" Value="3"/>
@@ -34,6 +36,20 @@
         </Style>
 
         <BooleanToVisibilityConverter x:Key="BooleanToVisibility" />
+
+        <DataTemplate x:Key="FluentInterfaceFileHeaderTemplate" DataType="{x:Type models:FluentInterfaceFile}">
+            <TextBlock Text="{Binding FileName}"/>
+        </DataTemplate>
+
+        <DataTemplate x:Key="FluentInterfaceFileContentTemplate" DataType="{x:Type models:FluentInterfaceFile}">
+            <TextBox TextWrapping="Wrap"
+                     VerticalAlignment="Stretch"
+                     Background="Azure"
+                     IsReadOnly="True"
+                     VerticalScrollBarVisibility="Visible"
+                     Text="{Binding Contents}"/>
+        </DataTemplate>
+        
     </Window.Resources>
 
     <Grid>
@@ -583,56 +599,83 @@
             <!-- Create the output file(s) for the fluent interface -->
             <TabItem Header="Create Fluent Interface File(s)">
                 
-                <Grid Margin="10">
-                    
+                <Grid>
                     <Grid.RowDefinitions>
-                        <RowDefinition Height="Auto"/>
-                        <RowDefinition Height="Auto"/>
-                        <RowDefinition Height="50"/>
-                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="*"/>
                     </Grid.RowDefinitions>
                     
                     <Grid.ColumnDefinitions>
                         <ColumnDefinition Width="Auto"/>
-                        <ColumnDefinition Width="300"/>
                         <ColumnDefinition Width="*"/>
                     </Grid.ColumnDefinitions>
 
-                    <Label Grid.Row="0" Grid.Column="0"
-                           FontWeight="Bold"
-                           Content="{Binding Source={x:Static resources:Literals.FactoryClassName}}"/>
-                    <TextBox Grid.Row="0" Grid.Column="1"
-                             Width="250"
-                             HorizontalAlignment="Left"
-                             Text="{Binding CurrentProject.FactoryClassName}"/>
+                    <!-- Fluent interface file parameters -->
+                    <Grid Grid.Row="0" Grid.Column="0"
+                          Margin="10">
+                        
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="50"/>
+                            <RowDefinition Height="Auto"/>
+                        </Grid.RowDefinitions>
 
-                    <Label Grid.Row="1" Grid.Column="0"
-                           FontWeight="Bold"
-                           Content="{Binding Source={x:Static resources:Literals.Language}}"/>
-                    <ComboBox Grid.Row="1" Grid.Column="1"
-                              Width="150"
-                              HorizontalAlignment="Left"
-                              ItemsSource="{Binding OutputLanguages}"
-                              SelectedItem="{Binding CurrentProject.OutputLanguage}"/>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="Auto"/>
+                            <ColumnDefinition Width="300"/>
+                        </Grid.ColumnDefinitions>
 
-                    <Button Grid.Row="0" Grid.Column="2" 
-                            HorizontalAlignment="Center"
-                            VerticalAlignment="Top"
-                            Width="250"
-                            Padding="3"
-                            Click="CreateFluentInterface_OnClick"
-                            Content="{Binding Source={x:Static resources:Literals.CreateFluentInterfaceFile}}"/>
+                        <Label Grid.Row="0" Grid.Column="0"
+                               FontWeight="Bold"
+                               Content="{Binding Source={x:Static resources:Literals.FactoryClassName}}"/>
+                        <TextBox Grid.Row="0" Grid.Column="1"
+                                 Width="250"
+                                 HorizontalAlignment="Left"
+                                 Text="{Binding CurrentProject.FactoryClassName}"/>
 
-                    <TextBox Grid.Row="1" Grid.Column="2"
-                             Grid.RowSpan="3"
-                             TextWrapping="Wrap"
-                             VerticalAlignment="Stretch"
-                             Background="Azure"
-                             IsReadOnly="True"
-                             Height="500"
-                             VerticalScrollBarVisibility="Visible"
-                             Text="{Binding CurrentProject.FluentInterfaceAsOneFile}"/>
+                        <Label Grid.Row="1" Grid.Column="0"
+                               FontWeight="Bold"
+                               Content="{Binding Source={x:Static resources:Literals.Language}}"/>
+                        <ComboBox Grid.Row="1" Grid.Column="1"
+                                  Width="150"
+                                  HorizontalAlignment="Left"
+                                  ItemsSource="{Binding OutputLanguages}"
+                                  SelectedItem="{Binding CurrentProject.OutputLanguage}"/>
+                    </Grid>
+
+                    <!-- Fluent interface files (output) -->
+                    <Grid Grid.Row="0" Grid.Column="1"
+                          Margin="10">
+
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="50"/>
+                            <RowDefinition Height="*"/>
+                        </Grid.RowDefinitions>
+
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*"/>
+                        </Grid.ColumnDefinitions>
+
+                        <Button Grid.Row="0" Grid.Column="0" 
+                                HorizontalAlignment="Center"
+                                VerticalAlignment="Top"
+                                Width="250"
+                                Padding="3"
+                                Click="CreateFluentInterface_OnClick"
+                                Content="{Binding Source={x:Static resources:Literals.CreateFluentInterfaceFile}}"/>
+
+                        <TabControl Grid.Row="3" Grid.Column="0"
+                                    x:Name="FluentInterfaceFilesTabControl"
+                                    ItemsSource="{Binding CurrentProject.FluentInterfaceFiles}"
+                                    ItemTemplate="{StaticResource FluentInterfaceFileHeaderTemplate}"
+                                    ContentTemplate="{StaticResource FluentInterfaceFileContentTemplate}"/>
+                        
+                    </Grid>
+
                 </Grid>
+                
 
             </TabItem>
 

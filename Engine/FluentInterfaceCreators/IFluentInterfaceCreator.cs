@@ -1,9 +1,10 @@
-﻿using Engine.Models;
+﻿using System.Collections.Generic;
+using Engine.Models;
 
 namespace Engine.FluentInterfaceCreators
 {
     public interface IFluentInterfaceCreator
     {
-        string CreateFluentInterfaceFor(Project project);
+        List<FluentInterfaceFile> CreateFluentInterfaceFilesFor(Project project, FileCreationOption fileCreationOption);
     }
 }
