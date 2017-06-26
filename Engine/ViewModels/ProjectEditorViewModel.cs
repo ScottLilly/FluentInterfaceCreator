@@ -15,6 +15,7 @@ namespace Engine.ViewModels
         private string _currentEditingMethodErrorMessage;
         private string _currentEditingMethodGroup;
         private string _currentEditingMethodName;
+        private Datatype _currentEditingMethodReturnDatatype;
         private Method _currentMethod;
         private string _currentEditingInterfaceErrorMessage;
         private string _currentEditingInterfaceName;
@@ -29,6 +30,7 @@ namespace Engine.ViewModels
         public bool HasProject => CurrentProject != null;
         public bool HasMethod => CurrentMethod != null;
         public bool HasInterface => CurrentInterface != null;
+        public bool ShouldDisplayDatatype => CurrentEditingMethodGroup == "Executing";
 
         public Project CurrentProject
         {
@@ -69,6 +71,7 @@ namespace Engine.ViewModels
                 _currentEditingMethodGroup = value;
 
                 NotifyPropertyChanged(nameof(CurrentEditingMethodGroup));
+                NotifyPropertyChanged(nameof(ShouldDisplayDatatype));
             }
         }
 
@@ -80,6 +83,17 @@ namespace Engine.ViewModels
                 _currentEditingMethodName = value;
 
                 NotifyPropertyChanged(nameof(CurrentEditingMethodName));
+            }
+        }
+
+        public Datatype CurrentEditingMethodReturnDatatype
+        {
+            get { return _currentEditingMethodReturnDatatype; }
+            set
+            {
+                _currentEditingMethodReturnDatatype = value;
+
+                NotifyPropertyChanged(nameof(CurrentEditingMethodReturnDatatype));
             }
         }
 
@@ -100,8 +114,8 @@ namespace Engine.ViewModels
             get { return _currentEditingInterfaceErrorMessage; }
             set
             {
-                _currentEditingInterfaceErrorMessage = value; 
-                
+                _currentEditingInterfaceErrorMessage = value;
+
                 NotifyPropertyChanged(nameof(CurrentEditingInterfaceErrorMessage));
             }
         }
@@ -111,8 +125,8 @@ namespace Engine.ViewModels
             get { return _currentEditingInterfaceName; }
             set
             {
-                _currentEditingInterfaceName = value; 
-                
+                _currentEditingInterfaceName = value;
+
                 NotifyPropertyChanged(nameof(CurrentEditingInterfaceName));
             }
         }
@@ -200,7 +214,12 @@ namespace Engine.ViewModels
 
             CurrentEditingMethodErrorMessage = "";
 
-            CurrentProject.AddMethod(new Method(group, CurrentEditingMethodName));
+            CurrentProject
+                .AddMethod(
+                           new Method(group, CurrentEditingMethodName,
+                                      CurrentEditingMethodGroup == "Executing"
+                                          ? CurrentEditingMethodReturnDatatype.Name
+                                          : ""));
 
             // Clear input controls
             CurrentEditingMethodName = "";
@@ -216,17 +235,6 @@ namespace Engine.ViewModels
         {
             CurrentMethod = method;
         }
-
-        // For now, instead of editing existing methods,
-        // the user can delete and re-add.
-
-        //public void EditMethod(Method method)
-        //{
-        //    CurrentEditingMethodGroup = method.Group.ToString();
-        //    CurrentEditingMethodName = method.Name;
-        //}
-
-        #endregion
 
         public void RefreshCurrentProjectInterfaces()
         {
@@ -268,5 +276,7 @@ namespace Engine.ViewModels
         {
             CurrentProject.CreateFluentInterfaceFiles();
         }
+
+        #endregion
     }
 }

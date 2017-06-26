@@ -6,6 +6,7 @@ using System.Linq;
 using System.Xml.Serialization;
 using Engine.FluentInterfaceCreators;
 using Engine.Resources;
+using Engine.Utilities;
 
 namespace Engine.Models
 {
@@ -56,8 +57,14 @@ namespace Engine.Models
                 _outputLanguage = value;
 
                 NotifyPropertyChanged(nameof(OutputLanguage));
+
+                UpdateNativeDatatypes();
             }
         }
+
+        [XmlIgnore]
+        public ObservableCollection<Datatype> Datatypes { get; set; } = 
+            new ObservableCollection<Datatype>();
 
         [XmlIgnore]
         public List<string> ClassReferences { get; set; } = new List<string>();
@@ -151,8 +158,18 @@ namespace Engine.Models
         }
 
         [XmlIgnore]
-        public ObservableCollection<FluentInterfaceFile> FluentInterfaceFiles { get; set; } = 
+        public ObservableCollection<FluentInterfaceFile> SingleFluentInterfaceFile { get; set; } =
             new ObservableCollection<FluentInterfaceFile>();
+
+        [XmlIgnore]
+        public ObservableCollection<FluentInterfaceFile> SeparateFluentInterfaceFiles { get; set; } = 
+            new ObservableCollection<FluentInterfaceFile>();
+
+        [XmlIgnore]
+        public bool HasSingleFluentInterfaceFile => SingleFluentInterfaceFile.Any();
+
+        [XmlIgnore]
+        public bool HasSeparateFluentInterfaceFiles => SeparateFluentInterfaceFiles.Any();
 
         public bool IsDirty
         {
@@ -369,17 +386,21 @@ namespace Engine.Models
 
         public void CreateFluentInterfaceFiles()
         {
+            // Clear out the current fluent interface files
+            SingleFluentInterfaceFile.Clear();
+            SeparateFluentInterfaceFiles.Clear();
+
             IFluentInterfaceCreator creator = 
                 FluentInterfaceCreatorFactory.GetCreatorForLanguage(OutputLanguage);
 
+            SingleFluentInterfaceFile.Add(creator.CreateSingleFluentInterfaceFileFor(this));
+            
             List<FluentInterfaceFile> files = 
-                creator.CreateFluentInterfaceFilesFor(this, FileCreationOption.SingleFile);
-
-            FluentInterfaceFiles.Clear();
+                creator.CreateSeparateFluentInterfaceFilesFor(this);
 
             foreach (FluentInterfaceFile fluentInterfaceFile in files)
             {
-                FluentInterfaceFiles.Add(fluentInterfaceFile);
+                SeparateFluentInterfaceFiles.Add(fluentInterfaceFile);
             }
 
             OnFluentInterfaceFilesUpdated();
@@ -407,6 +428,28 @@ namespace Engine.Models
         private void OnFluentInterfaceFilesUpdated()
         {
             FluentInterfaceFilesUpdated?.Invoke(this, new EventArgs());
+
+            NotifyPropertyChanged(nameof(HasSingleFluentInterfaceFile));
+            NotifyPropertyChanged(nameof(HasSeparateFluentInterfaceFiles));
+        }
+
+        private void UpdateNativeDatatypes()
+        {
+            // Remove existing native datatypes
+            List<Datatype> nativeDatatypes =
+                Datatypes.Where(d => d.IsNative).ToList();
+
+            foreach (Datatype nativeDatatype in nativeDatatypes)
+            {
+                Datatypes.Remove(nativeDatatype);
+            }
+
+            // Insert native datatypes for current language
+            foreach (Datatype nativeDatatype in 
+                OutputLanguageDetails.NativeDatatypesFor(OutputLanguage))
+            {
+                Datatypes.Add(nativeDatatype);
+            }
         }
 
         #endregion

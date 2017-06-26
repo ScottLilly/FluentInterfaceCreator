@@ -5,6 +5,7 @@ namespace Engine.FluentInterfaceCreators
 {
     public interface IFluentInterfaceCreator
     {
-        List<FluentInterfaceFile> CreateFluentInterfaceFilesFor(Project project, FileCreationOption fileCreationOption);
+        FluentInterfaceFile CreateSingleFluentInterfaceFileFor(Project project);
+        List<FluentInterfaceFile> CreateSeparateFluentInterfaceFilesFor(Project project);
     }
 }

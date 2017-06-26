@@ -124,11 +124,11 @@ namespace FluentInterfaceCreator.Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Create fluent interface file.
+        ///   Looks up a localized string similar to Create fluent interface files.
         /// </summary>
-        public static string CreateFluentInterfaceFile {
+        public static string CreateFluentInterfaceFiles {
             get {
-                return ResourceManager.GetString("CreateFluentInterfaceFile", resourceCulture);
+                return ResourceManager.GetString("CreateFluentInterfaceFiles", resourceCulture);
             }
         }
         
@@ -309,6 +309,24 @@ namespace FluentInterfaceCreator.Resources {
         public static string ProjectName {
             get {
                 return ResourceManager.GetString("ProjectName", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Project Settings.
+        /// </summary>
+        public static string ProjectSettings {
+            get {
+                return ResourceManager.GetString("ProjectSettings", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Return Type:.
+        /// </summary>
+        public static string ReturnType {
+            get {
+                return ResourceManager.GetString("ReturnType", resourceCulture);
             }
         }
         

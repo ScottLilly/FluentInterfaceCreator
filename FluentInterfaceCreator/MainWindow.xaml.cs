@@ -1,6 +1,7 @@
 ﻿using System.IO;
 using System.Linq;
 using System.Windows;
+using System.Windows.Controls;
 using Engine.Models;
 using Engine.Utilities;
 using Engine.ViewModels;
@@ -140,9 +141,14 @@ namespace FluentInterfaceCreator
 
         private void CurrentProject_FluentInterfaceFilesUpdated(object sender, System.EventArgs e)
         {
-            if(_projectEditor.CurrentProject.FluentInterfaceFiles.Any())
+            if (_projectEditor.CurrentProject.HasSingleFluentInterfaceFile)
             {
-                FluentInterfaceFilesTabControl.SelectedIndex = 0;
+                FluentInterfaceSingleFilesTabControl.SelectedIndex = 0;
+            }
+
+            if (_projectEditor.CurrentProject.HasSeparateFluentInterfaceFiles)
+            {
+                FluentInterfaceSeparateFilesTabControl.SelectedIndex = 0;
             }
         }
     }

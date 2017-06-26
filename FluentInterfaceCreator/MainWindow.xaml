@@ -82,33 +82,56 @@
             </MenuItem>
         </Menu>
 
-        <!-- Project Header -->
-        <Grid Grid.Row="1"
-              Margin="10"
-              Visibility="{Binding HasProject, Converter={StaticResource BooleanToVisibility}}">
-            <Grid.RowDefinitions>
-                <RowDefinition Height="Auto"/>
-            </Grid.RowDefinitions>
-
-            <Grid.ColumnDefinitions>
-                <ColumnDefinition Width="Auto"/>
-                <ColumnDefinition Width="*"/>
-            </Grid.ColumnDefinitions>
-
-            <Label Grid.Row="0" Grid.Column="0"
-                   FontWeight="Bold"
-                   Content="{Binding Source={x:Static resources:Literals.ProjectName}}"/>
-            <TextBox Grid.Row="0" Grid.Column="1"
-                     Width="250"
-                     HorizontalAlignment="Left"
-                     Text="{Binding CurrentProject.Name}"/>
-        </Grid>
-
         <!-- Work Area -->
         <TabControl Grid.Row="2"
-                    Margin="10, 0, 10, 0"
+                    Margin="10"
                     Visibility="{Binding HasProject, Converter={StaticResource BooleanToVisibility}}">
         
+            <!-- Project settings information -->
+            <TabItem Header="{Binding Source={x:Static resources:Literals.ProjectSettings}}">
+                
+                <Grid Margin="10">
+
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="Auto"/>
+                    </Grid.RowDefinitions>
+
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="Auto"/>
+                        <ColumnDefinition Width="*"/>
+                    </Grid.ColumnDefinitions>
+
+                    <Label Grid.Row="0" Grid.Column="0"
+                           FontWeight="Bold"
+                           Content="{Binding Source={x:Static resources:Literals.ProjectName}}"/>
+                    <TextBox Grid.Row="0" Grid.Column="1"
+                             Width="250"
+                             HorizontalAlignment="Left"
+                             Text="{Binding CurrentProject.Name}"/>
+
+                    <Label Grid.Row="1" Grid.Column="0"
+                           FontWeight="Bold"
+                           Content="{Binding Source={x:Static resources:Literals.FactoryClassName}}"/>
+                    <TextBox Grid.Row="1" Grid.Column="1"
+                             Width="250"
+                             HorizontalAlignment="Left"
+                             Text="{Binding CurrentProject.FactoryClassName}"/>
+
+                    <Label Grid.Row="2" Grid.Column="0"
+                           FontWeight="Bold"
+                           Content="{Binding Source={x:Static resources:Literals.Language}}"/>
+                    <ComboBox Grid.Row="2" Grid.Column="1"
+                              Width="150"
+                              HorizontalAlignment="Left"
+                              ItemsSource="{Binding OutputLanguages}"
+                              SelectedItem="{Binding CurrentProject.OutputLanguage}"/>
+
+                </Grid>
+                
+            </TabItem>
+            
             <!-- Enter the methods in the fluent interface -->
             <TabItem Header="Enter Methods">
                 
@@ -289,6 +312,7 @@
                             <RowDefinition Height="Auto"/>
                             <RowDefinition Height="Auto"/>
                             <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="Auto"/>
                             <RowDefinition Height="15"/>
                             <RowDefinition Height="Auto"/>
                         </Grid.RowDefinitions>
@@ -313,26 +337,41 @@
 
                         <Label Grid.Row="2" Grid.Column="0"
                                FontWeight="Bold"
+                               MinWidth="100"
                                Content="{Binding Source={x:Static resources:Literals.Group}}"/>
                         <ComboBox Grid.Row="2" Grid.Column="1"
                                   MinWidth="200"
                                   HorizontalAlignment="Left"
                                   ItemsSource="{Binding MethodGroups}"
-                                  SelectedItem="{Binding CurrentEditingMethodGroup}" />
+                                  SelectedItem="{Binding CurrentEditingMethodGroup}"/>
 
                         <Label Grid.Row="3" Grid.Column="0"
                                FontWeight="Bold"
+                               MinWidth="100"
                                Content="{Binding Source={x:Static resources:Literals.Name}}"/>
                         <TextBox Grid.Row="3" Grid.Column="1"
                                  HorizontalAlignment="Left"
                                  MinWidth="200"
                                  Text="{Binding CurrentEditingMethodName}"/>
                         
-                        <Button Grid.Row="5" Grid.Column="0"
+                        <Label Grid.Row="4" Grid.Column="0"
+                               FontWeight="Bold"
+                               MinWidth="100"
+                               Visibility="{Binding ShouldDisplayDatatype, Converter={StaticResource BooleanToVisibility}}"
+                               Content="{Binding Source={x:Static resources:Literals.ReturnType}}"/>
+                        <ComboBox Grid.Row="4" Grid.Column="1"
+                                  HorizontalAlignment="Left"
+                                  MinWidth="200"
+                                  Visibility="{Binding ShouldDisplayDatatype, Converter={StaticResource BooleanToVisibility}}"
+                                  ItemsSource="{Binding CurrentProject.Datatypes}"
+                                  DisplayMemberPath="Name"
+                                  SelectedItem="{Binding CurrentEditingMethodReturnDatatype}"/>
+                        
+                        <Button Grid.Row="6" Grid.Column="0"
                                 Grid.ColumnSpan="2"
                                 HorizontalAlignment="Center"
                                 Content="Save"
-                                Width="100"
+                                MinWidth="100"
                                 Click="SaveMethod_OnClick"/>
                     </Grid>
                     
@@ -599,83 +638,52 @@
             <!-- Create the output file(s) for the fluent interface -->
             <TabItem Header="Create Fluent Interface File(s)">
                 
-                <Grid>
+                <Grid Margin="10">
                     <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="Auto"/>
                         <RowDefinition Height="*"/>
                     </Grid.RowDefinitions>
-                    
+
                     <Grid.ColumnDefinitions>
-                        <ColumnDefinition Width="Auto"/>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="10"/>
                         <ColumnDefinition Width="*"/>
                     </Grid.ColumnDefinitions>
 
-                    <!-- Fluent interface file parameters -->
-                    <Grid Grid.Row="0" Grid.Column="0"
-                          Margin="10">
-                        
-                        <Grid.RowDefinitions>
-                            <RowDefinition Height="Auto"/>
-                            <RowDefinition Height="Auto"/>
-                            <RowDefinition Height="50"/>
-                            <RowDefinition Height="Auto"/>
-                        </Grid.RowDefinitions>
+                    <Button Grid.Row="0" Grid.Column="0" 
+                            HorizontalAlignment="Center"
+                            VerticalAlignment="Top"
+                            Width="250"
+                            Padding="3"
+                            Click="CreateFluentInterface_OnClick"
+                            Content="{Binding Source={x:Static resources:Literals.CreateFluentInterfaceFiles}}"/>
 
-                        <Grid.ColumnDefinitions>
-                            <ColumnDefinition Width="Auto"/>
-                            <ColumnDefinition Width="300"/>
-                        </Grid.ColumnDefinitions>
+                    <Label Grid.Row="1" Grid.Column="0"
+                           FontWeight="Bold"
+                           HorizontalAlignment="Center"
+                           Content="Single File"/>
 
-                        <Label Grid.Row="0" Grid.Column="0"
-                               FontWeight="Bold"
-                               Content="{Binding Source={x:Static resources:Literals.FactoryClassName}}"/>
-                        <TextBox Grid.Row="0" Grid.Column="1"
-                                 Width="250"
-                                 HorizontalAlignment="Left"
-                                 Text="{Binding CurrentProject.FactoryClassName}"/>
+                    <Label Grid.Row="1" Grid.Column="2"
+                           FontWeight="Bold"
+                           HorizontalAlignment="Center"
+                           Content="Individual Files"/>
 
-                        <Label Grid.Row="1" Grid.Column="0"
-                               FontWeight="Bold"
-                               Content="{Binding Source={x:Static resources:Literals.Language}}"/>
-                        <ComboBox Grid.Row="1" Grid.Column="1"
-                                  Width="150"
-                                  HorizontalAlignment="Left"
-                                  ItemsSource="{Binding OutputLanguages}"
-                                  SelectedItem="{Binding CurrentProject.OutputLanguage}"/>
-                    </Grid>
+                    <TabControl Grid.Row="2" Grid.Column="0"
+                                x:Name="FluentInterfaceSingleFilesTabControl"
+                                Visibility="{Binding CurrentProject.HasSingleFluentInterfaceFile, Converter={StaticResource BooleanToVisibility}}"
+                                ItemsSource="{Binding CurrentProject.SingleFluentInterfaceFile}"
+                                ItemTemplate="{StaticResource FluentInterfaceFileHeaderTemplate}"
+                                ContentTemplate="{StaticResource FluentInterfaceFileContentTemplate}"/>
 
-                    <!-- Fluent interface files (output) -->
-                    <Grid Grid.Row="0" Grid.Column="1"
-                          Margin="10">
-
-                        <Grid.RowDefinitions>
-                            <RowDefinition Height="Auto"/>
-                            <RowDefinition Height="Auto"/>
-                            <RowDefinition Height="50"/>
-                            <RowDefinition Height="*"/>
-                        </Grid.RowDefinitions>
-
-                        <Grid.ColumnDefinitions>
-                            <ColumnDefinition Width="*"/>
-                        </Grid.ColumnDefinitions>
-
-                        <Button Grid.Row="0" Grid.Column="0" 
-                                HorizontalAlignment="Center"
-                                VerticalAlignment="Top"
-                                Width="250"
-                                Padding="3"
-                                Click="CreateFluentInterface_OnClick"
-                                Content="{Binding Source={x:Static resources:Literals.CreateFluentInterfaceFile}}"/>
-
-                        <TabControl Grid.Row="3" Grid.Column="0"
-                                    x:Name="FluentInterfaceFilesTabControl"
-                                    ItemsSource="{Binding CurrentProject.FluentInterfaceFiles}"
-                                    ItemTemplate="{StaticResource FluentInterfaceFileHeaderTemplate}"
-                                    ContentTemplate="{StaticResource FluentInterfaceFileContentTemplate}"/>
-                        
-                    </Grid>
+                    <TabControl Grid.Row="2" Grid.Column="2"
+                                x:Name="FluentInterfaceSeparateFilesTabControl"
+                                Visibility="{Binding CurrentProject.HasSeparateFluentInterfaceFiles, Converter={StaticResource BooleanToVisibility}}"
+                                ItemsSource="{Binding CurrentProject.SeparateFluentInterfaceFiles}"
+                                ItemTemplate="{StaticResource FluentInterfaceFileHeaderTemplate}"
+                                ContentTemplate="{StaticResource FluentInterfaceFileContentTemplate}"/>
 
                 </Grid>
-                
 
             </TabItem>
 

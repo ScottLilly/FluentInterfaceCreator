@@ -138,8 +138,8 @@
   <data name="CopyrightNotice" xml:space="preserve">
     <value>Copyright © 2016 - 2017, Scott Lilly</value>
   </data>
-  <data name="CreateFluentInterfaceFile" xml:space="preserve">
-    <value>Create fluent interface file</value>
+  <data name="CreateFluentInterfaceFiles" xml:space="preserve">
+    <value>Create fluent interface files</value>
   </data>
   <data name="CreateNewProject" xml:space="preserve">
     <value>Create New Project</value>
@@ -212,5 +212,11 @@
   </data>
   <data name="FileName" xml:space="preserve">
     <value>File Name:</value>
+  </data>
+  <data name="ProjectSettings" xml:space="preserve">
+    <value>Project Settings</value>
+  </data>
+  <data name="ReturnType" xml:space="preserve">
+    <value>Return Type:</value>
   </data>
 </root>

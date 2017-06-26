@@ -40,14 +40,17 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="FluentInterfaceCreators\CSharpSingleFileCreator.cs" />
+    <Compile Include="FluentInterfaceCreators\CSharpFluentInterfaceFileCreator.cs" />
     <Compile Include="FluentInterfaceCreators\Enums.cs" />
     <Compile Include="FluentInterfaceCreators\FluentInterfaceCreatorFactory.cs" />
     <Compile Include="FluentInterfaceCreators\IFluentInterfaceCreator.cs" />
     <Compile Include="Models\CallableMethodIndicator.cs" />
+    <Compile Include="Models\Datatype.cs" />
     <Compile Include="Models\FluentInterfaceFile.cs" />
     <Compile Include="Models\InterfaceData.cs" />
+    <Compile Include="Models\NativeDatatype.cs" />
     <Compile Include="Models\Parameter.cs" />
+    <Compile Include="Models\UserDatatype.cs" />
     <Compile Include="NotificationClassBase.cs" />
     <Compile Include="Models\Method.cs" />
     <Compile Include="Models\Project.cs" />
@@ -58,6 +61,7 @@
       <DesignTime>True</DesignTime>
       <DependentUpon>ErrorMessages.resx</DependentUpon>
     </Compile>
+    <Compile Include="Utilities\OutputLanguageDetails.cs" />
     <Compile Include="Utilities\Serialization.cs" />
     <Compile Include="ViewModels\ProjectEditorViewModel.cs" />
   </ItemGroup>

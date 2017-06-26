@@ -19,6 +19,7 @@ namespace Engine.Models
 
         private MethodGroup _group;
         private string _name;
+        private string _returnDatatype;
 
         public MethodGroup Group
         {
@@ -42,6 +43,18 @@ namespace Engine.Models
             }
         }
 
+        // Only used for Executing methods
+        public string ReturnDatatype
+        {
+            get { return _returnDatatype; }
+            set
+            {
+                _returnDatatype = value;
+
+                NotifyPropertyChanged(nameof(ReturnDatatype));
+            }
+        }
+
         public ObservableCollection<Parameter> Parameters { get; set; } =
             new ObservableCollection<Parameter>();
 
@@ -60,10 +73,11 @@ namespace Engine.Models
 
         #endregion
 
-        public Method(MethodGroup group, string name)
+        public Method(MethodGroup group, string name, string returnDatatype = "")
         {
             Group = group;
             Name = name;
+            ReturnDatatype = returnDatatype;
         }
 
         // For serialization

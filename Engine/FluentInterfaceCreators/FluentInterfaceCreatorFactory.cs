@@ -10,7 +10,7 @@ namespace Engine.FluentInterfaceCreators
             switch(language)
             {
                 case "C#":
-                    return new CSharpSingleFileCreator();
+                    return new CSharpFluentInterfaceFileCreator();
                 default:
                     throw new ArgumentException(ErrorMessages.InvalidLanguage, language);
             }
