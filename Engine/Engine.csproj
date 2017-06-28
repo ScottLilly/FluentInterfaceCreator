@@ -61,6 +61,7 @@
       <DesignTime>True</DesignTime>
       <DependentUpon>ErrorMessages.resx</DependentUpon>
     </Compile>
+    <Compile Include="Utilities\Extensions.cs" />
     <Compile Include="Utilities\OutputLanguageDetails.cs" />
     <Compile Include="Utilities\Serialization.cs" />
     <Compile Include="ViewModels\ProjectEditorViewModel.cs" />

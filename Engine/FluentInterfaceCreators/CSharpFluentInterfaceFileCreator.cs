@@ -2,6 +2,7 @@
 using System.Linq;
 using System.Text;
 using Engine.Models;
+using Engine.Utilities;
 
 namespace Engine.FluentInterfaceCreators
 {
@@ -16,7 +17,7 @@ namespace Engine.FluentInterfaceCreators
         {
             _project = project;
 
-            var interfaces = CreateInterfaceFiles();
+            List<FluentInterfaceFile> interfaces = CreateInterfaceFiles(1);
 
             return CreateSingleFile(interfaces);
         }
@@ -29,7 +30,7 @@ namespace Engine.FluentInterfaceCreators
             List<FluentInterfaceFile> files = new List<FluentInterfaceFile>();
 
             files.Add(CreateSingleFile());
-            files.AddRange(CreateInterfaceFiles(false));
+            files.AddRange(CreateInterfaceFiles(0));
 
             return files;
         }
@@ -107,7 +108,7 @@ namespace Engine.FluentInterfaceCreators
                 builder.AppendLine("\t// Interfaces");
                 builder.AppendLine("");
 
-                foreach (FluentInterfaceFile interfaceFile in interfaces)
+                foreach(FluentInterfaceFile interfaceFile in interfaces)
                 {
                     builder.AppendLine(interfaceFile.Contents);
                 }
@@ -120,7 +121,7 @@ namespace Engine.FluentInterfaceCreators
                                            builder.ToString());
         }
 
-        private List<FluentInterfaceFile> CreateInterfaceFiles(bool includeTab = true)
+        private List<FluentInterfaceFile> CreateInterfaceFiles(int indentLevels)
         {
             List<FluentInterfaceFile> interfaces = new List<FluentInterfaceFile>();
 
@@ -128,17 +129,9 @@ namespace Engine.FluentInterfaceCreators
             {
                 StringBuilder builder = new StringBuilder();
 
-                if (includeTab)
-                {
-                    builder.Append("\t");
-                }
-                builder.AppendLine($"public interface {interfaceData.Name}");
+                builder.AppendTabPrefixedLine(indentLevels, $"public interface {interfaceData.Name}");
 
-                if(includeTab)
-                {
-                    builder.Append("\t");
-                }
-                builder.AppendLine("{");
+                builder.AppendTabPrefixedLine(indentLevels, "{");
 
                 foreach(Method callableMethod in
                     interfaceData.CallableMethods
@@ -149,29 +142,18 @@ namespace Engine.FluentInterfaceCreators
                         _project.Interfaces
                                 .FirstOrDefault(i => i.CalledByMethods.Exists(cm => cm.Name == callableMethod.Name));
 
-                    if (includeTab)
-                    {
-                        builder.Append("\t");
-                    }
-                    builder.AppendLine($"\t{returnInterface?.Name} {callableMethod.Name}();");
+                    builder.AppendTabPrefixedLine(indentLevels, $"\t{returnInterface?.Name} {callableMethod.Name}();");
                 }
 
                 foreach(Method callableMethod in
                     interfaceData.CallableMethods
                                  .Where(cm => cm.Group == Method.MethodGroup.Executing))
                 {
-                    if (includeTab)
-                    {
-                        builder.Append("\t");
-                    }
-                    builder.AppendLine($"\t{callableMethod.ReturnDatatype} {callableMethod.Name}();");
+                    builder.AppendTabPrefixedLine(indentLevels,
+                                                  $"\t{callableMethod.ReturnDatatype} {callableMethod.Name}();");
                 }
 
-                if (includeTab)
-                {
-                    builder.Append("\t");
-                }
-                builder.AppendLine("}");
+                builder.AppendTabPrefixedLine(indentLevels, "}");
 
                 interfaces.Add(new FluentInterfaceFile($"{interfaceData.Name}{FILE_NAME_EXTENSION}",
                                                        builder.ToString()));
