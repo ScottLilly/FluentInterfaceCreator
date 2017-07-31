@@ -484,6 +484,15 @@ namespace FluentInterfaceCreator.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Support Page:.
+        /// </summary>
+        public static string SupportPage {
+            get {
+                return ResourceManager.GetString("SupportPage", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Create Fluent Interface File(s).
         /// </summary>
         public static string TabHeaderCreateFluentInterfaceFiles {

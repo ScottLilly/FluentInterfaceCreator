@@ -279,4 +279,7 @@
   <data name="MethodsUsingThisInterface" xml:space="preserve">
     <value>Methods using this interface</value>
   </data>
+  <data name="SupportPage" xml:space="preserve">
+    <value>Support Page:</value>
+  </data>
 </root>
