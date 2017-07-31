@@ -121,7 +121,7 @@
     <value>About Fluent Interface Creator</value>
   </data>
   <data name="AddMethod" xml:space="preserve">
-    <value>Add Method</value>
+    <value>Add New Method</value>
   </data>
   <data name="AllRightsReserved" xml:space="preserve">
     <value>All rights reserved.</value>
@@ -134,9 +134,6 @@
   </data>
   <data name="Chaining" xml:space="preserve">
     <value>Chaining</value>
-  </data>
-  <data name="CopyrightNotice" xml:space="preserve">
-    <value>Copyright © 2016 - 2017, Scott Lilly</value>
   </data>
   <data name="CreateFluentInterfaceFiles" xml:space="preserve">
     <value>Create fluent interface files</value>
@@ -213,10 +210,73 @@
   <data name="FileName" xml:space="preserve">
     <value>File Name:</value>
   </data>
-  <data name="ProjectSettings" xml:space="preserve">
+  <data name="TabHeaderProjectSettings" xml:space="preserve">
     <value>Project Settings</value>
   </data>
   <data name="ReturnType" xml:space="preserve">
     <value>Return Type:</value>
+  </data>
+  <data name="FactoryClassNamespace" xml:space="preserve">
+    <value>Factory Class Namespace:</value>
+  </data>
+  <data name="Namespace" xml:space="preserve">
+    <value>Namespace</value>
+  </data>
+  <data name="AddNewDatatype" xml:space="preserve">
+    <value>Add New Datatype</value>
+  </data>
+  <data name="Datatype" xml:space="preserve">
+    <value>Datatype</value>
+  </data>
+  <data name="DatatypeNamespace" xml:space="preserve">
+    <value>Datatype Namespace:</value>
+  </data>
+  <data name="AddCustomDatatypes" xml:space="preserve">
+    <value>Add Custom Datatypes</value>
+  </data>
+  <data name="Parameters" xml:space="preserve">
+    <value>Parameters</value>
+  </data>
+  <data name="AddParameter" xml:space="preserve">
+    <value>Add Parameter</value>
+  </data>
+  <data name="SaveMethod" xml:space="preserve">
+    <value>Save Method</value>
+  </data>
+  <data name="SaveToDisk" xml:space="preserve">
+    <value>Save to disk</value>
+  </data>
+  <data name="DatatypeColon" xml:space="preserve">
+    <value>Datatype:</value>
+  </data>
+  <data name="TabHeaderEnterMethods" xml:space="preserve">
+    <value>Enter Methods</value>
+  </data>
+  <data name="TabHeaderCreateFluentInterfaceFiles" xml:space="preserve">
+    <value>Create Fluent Interface File(s)</value>
+  </data>
+  <data name="TabHeaderNameInterfaces" xml:space="preserve">
+    <value>Name Interfaces</value>
+  </data>
+  <data name="TabHeaderSetCallingOrder" xml:space="preserve">
+    <value>Set Calling Order</value>
+  </data>
+  <data name="SaveIndividualFiles" xml:space="preserve">
+    <value>Save Individual Files</value>
+  </data>
+  <data name="SaveSingleFile" xml:space="preserve">
+    <value>Save Single File</value>
+  </data>
+  <data name="Method" xml:space="preserve">
+    <value>Method</value>
+  </data>
+  <data name="SelectedMethod" xml:space="preserve">
+    <value>Selected Method:</value>
+  </data>
+  <data name="MethodsCalledInThisInterface" xml:space="preserve">
+    <value>Methods called in this interface</value>
+  </data>
+  <data name="MethodsUsingThisInterface" xml:space="preserve">
+    <value>Methods using this interface</value>
   </data>
 </root>

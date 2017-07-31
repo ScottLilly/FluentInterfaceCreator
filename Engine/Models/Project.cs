@@ -3,10 +3,11 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Globalization;
 using System.Linq;
+using System.Reflection;
 using System.Xml.Serialization;
+using Engine.Common;
 using Engine.FluentInterfaceCreators;
 using Engine.Resources;
-using Engine.Utilities;
 
 namespace Engine.Models
 {
@@ -29,18 +30,13 @@ namespace Engine.Models
         private string _factoryClassNamespace;
         private string _factoryClassName;
 
-        private bool _isDirty;
+        public ProjectVersion Version { get; set; }
 
         public string Name
         {
             get { return _name; }
             set
             {
-                if(_name != value)
-                {
-                    SetDirty();
-                }
-
                 _name = value;
 
                 NotifyPropertyChanged(nameof(Name));
@@ -62,14 +58,9 @@ namespace Engine.Models
             }
         }
 
-        [XmlIgnore]
         public ObservableCollection<Datatype> Datatypes { get; set; } = 
             new ObservableCollection<Datatype>();
 
-        [XmlIgnore]
-        public List<string> ClassReferences { get; set; } = new List<string>();
-
-        [XmlIgnore]
         public string FactoryClassNamespace
         {
             get { return _factoryClassNamespace; }
@@ -171,29 +162,32 @@ namespace Engine.Models
         [XmlIgnore]
         public bool HasSeparateFluentInterfaceFiles => SeparateFluentInterfaceFiles.Any();
 
-        public bool IsDirty
-        {
-            get { return _isDirty; }
-            set
-            {
-                _isDirty = value;
+        #endregion
 
-                NotifyPropertyChanged(nameof(IsDirty));
-            }
+        #region Constructors
+
+        public Project() : this(Assembly.GetExecutingAssembly().GetName().Version.ToString())
+        {
+        }
+
+        public Project(string version)
+        {
+            Version = new ProjectVersion(version);
         }
 
         #endregion
 
         #region Public functions
 
+        public void DeleteDatatype(Datatype datatype)
+        {
+            Datatypes.Remove(datatype);
+        }
+
         public void AddMethod(Method methodToAdd)
         {
             AddMethodToCollection(methodToAdd);
-
-            SetDirty();
-
             AddMethodAsCallableMethod(methodToAdd);
-
             AddChainEndingMethodsTo(methodToAdd);
 
             UpdateInterfaces();
@@ -202,17 +196,153 @@ namespace Engine.Models
             NotifyPropertyChanged(nameof(ChainEndingMethods));
         }
 
+        public void DeleteMethod(Method methodToRemove)
+        {
+            switch(methodToRemove.Group)
+            {
+                case Enums.MethodGroup.Instantiating:
+                    InstantiatingMethods.Remove(methodToRemove);
+                    break;
+                case Enums.MethodGroup.Chaining:
+                    ChainingMethods.Remove(methodToRemove);
+                    break;
+                case Enums.MethodGroup.Executing:
+                    ExecutingMethods.Remove(methodToRemove);
+                    break;
+                default:
+                    throw new ArgumentException(ErrorMessages.GroupIsNotValid);
+            }
+
+            foreach(Method instantiatingMethod in InstantiatingMethods)
+            {
+                RemoveMethodFromCallableMethods(instantiatingMethod, methodToRemove);
+            }
+
+            foreach(Method chainingMethod in ChainingMethods)
+            {
+                RemoveMethodFromCallableMethods(chainingMethod, methodToRemove);
+            }
+
+            UpdateInterfaces();
+
+            NotifyPropertyChanged(nameof(ChainStartingMethods));
+            NotifyPropertyChanged(nameof(ChainEndingMethods));
+        }
+
+        public bool AlreadyContainsThisMethodSignature(string methodName, List<Parameter> parameters)
+        {
+            foreach(Method method in InstantiatingMethods
+                .Where(m => m.Name.Equals(methodName, StringComparison.CurrentCultureIgnoreCase) &&
+                            m.Parameters.Count == parameters.Count))
+            {
+                if(parameters.Count == 0 ||
+                   parameters.Where((t, i) => method.Parameters[i].DataType == t.DataType).Any())
+                {
+                    return true;
+                }
+            }
+
+            foreach(Method method in ChainingMethods
+                .Where(m => m.Name.Equals(methodName, StringComparison.CurrentCultureIgnoreCase) &&
+                            m.Parameters.Count == parameters.Count))
+            {
+                if(parameters.Count == 0 ||
+                   parameters.Where((t, i) => method.Parameters[i].DataType == t.DataType).Any())
+                {
+                    return true;
+                }
+            }
+
+            foreach(Method method in ExecutingMethods
+                .Where(m => m.Name.Equals(methodName, StringComparison.CurrentCultureIgnoreCase) &&
+                            m.Parameters.Count == parameters.Count))
+            {
+                if(parameters.Count == 0 ||
+                   parameters.Where((t, i) => method.Parameters[i].DataType == t.DataType).Any())
+                {
+                    return true;
+                }
+            }
+
+            return false;
+        }
+
+        public void CreateFluentInterfaceFiles()
+        {
+            SingleFluentInterfaceFile.Clear();
+            SeparateFluentInterfaceFiles.Clear();
+
+            FluentInterfaceFileCreatorBase creator = 
+                FluentInterfaceCreatorFactory.GetFluentInterfaceFileCreator(OutputLanguage, this);
+
+            SingleFluentInterfaceFile.Add(creator.CreateSingleFile());
+            
+            IEnumerable<FluentInterfaceFile> files = creator.CreateIndividualFiles();
+
+            foreach (FluentInterfaceFile fluentInterfaceFile in files)
+            {
+                SeparateFluentInterfaceFiles.Add(fluentInterfaceFile);
+            }
+
+            OnFluentInterfaceFilesUpdated();
+        }
+
+        #endregion
+
+        #region Internal functions
+
+        internal void UpdateNativeDatatypes()
+        {
+            // Remove existing native datatypes
+            List<Datatype> nativeDatatypes =
+                Datatypes.Where(d => d.IsNative).ToList();
+
+            foreach (Datatype nativeDatatype in nativeDatatypes)
+            {
+                Datatypes.Remove(nativeDatatype);
+            }
+
+            // Insert native datatypes for current language
+            foreach (Datatype nativeDatatype in
+                OutputLanguageDetails.NativeDatatypesFor(OutputLanguage))
+            {
+                Datatypes.Add(nativeDatatype);
+            }
+        }
+
+        internal void UpdateInterfaces()
+        {
+            Interfaces.Clear();
+
+            PopulateInterfacesForMethods(InstantiatingMethods);
+            PopulateInterfacesForMethods(ChainingMethods);
+        }
+
+        #endregion
+
+        #region Private functions
+
+        private void SetDefaultFactoryClassName(string suffix)
+        {
+            if(!string.IsNullOrWhiteSpace(Name) &&
+               string.IsNullOrWhiteSpace(FactoryClassName))
+            {
+                FactoryClassName =
+                    _textInfo.ToTitleCase(Name).Replace(" ", "") + suffix;
+            }
+        }
+
         private void AddMethodToCollection(Method method)
         {
-            switch(method.Group)
+            switch (method.Group)
             {
-                case Method.MethodGroup.Instantiating:
+                case Enums.MethodGroup.Instantiating:
                     InstantiatingMethods.Add(method);
                     break;
-                case Method.MethodGroup.Chaining:
+                case Enums.MethodGroup.Chaining:
                     ChainingMethods.Add(method);
                     break;
-                case Method.MethodGroup.Executing:
+                case Enums.MethodGroup.Executing:
                     ExecutingMethods.Add(method);
                     break;
                 default:
@@ -224,8 +354,8 @@ namespace Engine.Models
         {
             // Add this method as a callable method, to all ChainStarting methods,
             // if this is a ChainEnding method.
-            if (methodToAdd.Group == Method.MethodGroup.Chaining ||
-                methodToAdd.Group == Method.MethodGroup.Executing)
+            if (methodToAdd.Group == Enums.MethodGroup.Chaining ||
+                methodToAdd.Group == Enums.MethodGroup.Executing)
             {
                 foreach (Method instantiatingMethod in InstantiatingMethods)
                 {
@@ -247,30 +377,22 @@ namespace Engine.Models
                 if (!method
                         .MethodsCallableNext
                         .Any(cm => cm.Group == chainEndingMethod.Group.ToString() &&
-                                   cm.Name == chainEndingMethod.Name))
+                                   cm.DatatypeSignature == chainEndingMethod.DatatypeSignature))
                 {
                     method.MethodsCallableNext.Add(new CallableMethodIndicator(chainEndingMethod));
                 }
             }
         }
 
-        internal void UpdateInterfaces()
-        {
-            Interfaces.Clear();
-
-            PopulateInterfacesForMethods(InstantiatingMethods);
-            PopulateInterfacesForMethods(ChainingMethods);
-        }
-
         private void PopulateInterfacesForMethods(IEnumerable<Method> methods)
         {
-            foreach(Method method in methods
+            foreach (Method method in methods
                 .Where(m => !string.IsNullOrWhiteSpace(m.CallableMethodsSignature)))
             {
                 InterfaceData interfaceData =
                     Interfaces.FirstOrDefault(i => i.CallableMethodsSignature == method.CallableMethodsSignature);
 
-                if(interfaceData == null)
+                if (interfaceData == null)
                 {
                     interfaceData = new InterfaceData();
 
@@ -279,25 +401,25 @@ namespace Engine.Models
                     foreach (CallableMethodIndicator callableMethod in
                         method.MethodsCallableNext.Where(m => m.CanCall))
                     {
-                        switch(callableMethod.Group)
+                        switch (callableMethod.Group)
                         {
                             case "Instantiating":
                                 interfaceData
                                     .CallableMethods
                                     .Add(InstantiatingMethods
-                                             .First(m => m.Name == callableMethod.Name));
+                                             .First(m => m.Signature == callableMethod.Signature));
                                 break;
                             case "Chaining":
                                 interfaceData
                                     .CallableMethods
                                     .Add(ChainingMethods
-                                             .First(m => m.Name == callableMethod.Name));
+                                             .First(m => m.Signature == callableMethod.Signature));
                                 break;
                             case "Executing":
                                 interfaceData
                                     .CallableMethods
                                     .Add(ExecutingMethods
-                                             .First(m => m.Name == callableMethod.Name));
+                                             .First(m => m.Signature == callableMethod.Signature));
                                 break;
                         }
                     }
@@ -312,48 +434,13 @@ namespace Engine.Models
             }
         }
 
-        public void DeleteMethod(Method methodToRemove)
-        {
-            switch(methodToRemove.Group)
-            {
-                case Method.MethodGroup.Instantiating:
-                    InstantiatingMethods.Remove(methodToRemove);
-                    break;
-                case Method.MethodGroup.Chaining:
-                    ChainingMethods.Remove(methodToRemove);
-                    break;
-                case Method.MethodGroup.Executing:
-                    ExecutingMethods.Remove(methodToRemove);
-                    break;
-                default:
-                    throw new ArgumentException(ErrorMessages.GroupIsNotValid);
-            }
-
-            SetDirty();
-
-            foreach(Method instantiatingMethod in InstantiatingMethods)
-            {
-                RemoveMethodFromCallableMethods(instantiatingMethod, methodToRemove);
-            }
-
-            foreach(Method chainingMethod in ChainingMethods)
-            {
-                RemoveMethodFromCallableMethods(chainingMethod, methodToRemove);
-            }
-
-            UpdateInterfaces();
-
-            NotifyPropertyChanged(nameof(ChainStartingMethods));
-            NotifyPropertyChanged(nameof(ChainEndingMethods));
-        }
-
         private void AddMethodToCallableMethods(Method methodWithCallableMethods,
                                                 Method methodToAdd)
         {
-            if(!methodWithCallableMethods
-                   .MethodsCallableNext
-                   .Any(cm => cm.Group == methodToAdd.Group.ToString() &&
-                              cm.Name == methodToAdd.Name))
+            if (!methodWithCallableMethods
+                    .MethodsCallableNext
+                    .Any(cm => cm.Group == methodToAdd.Group.ToString() &&
+                               cm.DatatypeSignature == methodToAdd.DatatypeSignature))
             {
                 methodWithCallableMethods
                     .MethodsCallableNext
@@ -370,59 +457,10 @@ namespace Engine.Models
                     .FirstOrDefault(cm => cm.Group == methodToRemove.Group.ToString() &&
                                           cm.Name == methodToRemove.Name);
 
-            if(callableMethodToRemove != null)
+            if (callableMethodToRemove != null)
             {
                 methodWithCallableMethods.MethodsCallableNext.Remove(callableMethodToRemove);
             }
-        }
-
-        public bool AlreadyContainsMethodNamed(string methodName)
-        {
-            return
-                InstantiatingMethods.Any(m => m.Name.Equals(methodName, StringComparison.CurrentCultureIgnoreCase)) ||
-                ChainingMethods.Any(m => m.Name.Equals(methodName, StringComparison.CurrentCultureIgnoreCase)) ||
-                ExecutingMethods.Any(m => m.Name.Equals(methodName, StringComparison.CurrentCultureIgnoreCase));
-        }
-
-        public void CreateFluentInterfaceFiles()
-        {
-            // Clear out the current fluent interface files
-            SingleFluentInterfaceFile.Clear();
-            SeparateFluentInterfaceFiles.Clear();
-
-            IFluentInterfaceCreator creator = 
-                FluentInterfaceCreatorFactory.GetCreatorForLanguage(OutputLanguage);
-
-            SingleFluentInterfaceFile.Add(creator.CreateSingleFluentInterfaceFileFor(this));
-            
-            List<FluentInterfaceFile> files = 
-                creator.CreateSeparateFluentInterfaceFilesFor(this);
-
-            foreach (FluentInterfaceFile fluentInterfaceFile in files)
-            {
-                SeparateFluentInterfaceFiles.Add(fluentInterfaceFile);
-            }
-
-            OnFluentInterfaceFilesUpdated();
-        }
-
-        #endregion
-
-        #region Private functions
-
-        private void SetDefaultFactoryClassName(string suffix)
-        {
-            if(!string.IsNullOrWhiteSpace(Name) &&
-               string.IsNullOrWhiteSpace(FactoryClassName))
-            {
-                FactoryClassName =
-                    _textInfo.ToTitleCase(Name).Replace(" ", "") + suffix;
-            }
-        }
-
-        private void SetDirty()
-        {
-            IsDirty = true;
         }
 
         private void OnFluentInterfaceFilesUpdated()
@@ -431,25 +469,6 @@ namespace Engine.Models
 
             NotifyPropertyChanged(nameof(HasSingleFluentInterfaceFile));
             NotifyPropertyChanged(nameof(HasSeparateFluentInterfaceFiles));
-        }
-
-        private void UpdateNativeDatatypes()
-        {
-            // Remove existing native datatypes
-            List<Datatype> nativeDatatypes =
-                Datatypes.Where(d => d.IsNative).ToList();
-
-            foreach (Datatype nativeDatatype in nativeDatatypes)
-            {
-                Datatypes.Remove(nativeDatatype);
-            }
-
-            // Insert native datatypes for current language
-            foreach (Datatype nativeDatatype in 
-                OutputLanguageDetails.NativeDatatypesFor(OutputLanguage))
-            {
-                Datatypes.Add(nativeDatatype);
-            }
         }
 
         #endregion

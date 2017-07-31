@@ -70,11 +70,38 @@ namespace FluentInterfaceCreator.Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Add Method.
+        ///   Looks up a localized string similar to Add Custom Datatypes.
+        /// </summary>
+        public static string AddCustomDatatypes {
+            get {
+                return ResourceManager.GetString("AddCustomDatatypes", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Add New Method.
         /// </summary>
         public static string AddMethod {
             get {
                 return ResourceManager.GetString("AddMethod", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Add New Datatype.
+        /// </summary>
+        public static string AddNewDatatype {
+            get {
+                return ResourceManager.GetString("AddNewDatatype", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Add Parameter.
+        /// </summary>
+        public static string AddParameter {
+            get {
+                return ResourceManager.GetString("AddParameter", resourceCulture);
             }
         }
         
@@ -115,15 +142,6 @@ namespace FluentInterfaceCreator.Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Copyright © 2016 - 2017, Scott Lilly.
-        /// </summary>
-        public static string CopyrightNotice {
-            get {
-                return ResourceManager.GetString("CopyrightNotice", resourceCulture);
-            }
-        }
-        
-        /// <summary>
         ///   Looks up a localized string similar to Create fluent interface files.
         /// </summary>
         public static string CreateFluentInterfaceFiles {
@@ -138,6 +156,33 @@ namespace FluentInterfaceCreator.Resources {
         public static string CreateNewProject {
             get {
                 return ResourceManager.GetString("CreateNewProject", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Datatype.
+        /// </summary>
+        public static string Datatype {
+            get {
+                return ResourceManager.GetString("Datatype", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Datatype:.
+        /// </summary>
+        public static string DatatypeColon {
+            get {
+                return ResourceManager.GetString("DatatypeColon", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Datatype Namespace:.
+        /// </summary>
+        public static string DatatypeNamespace {
+            get {
+                return ResourceManager.GetString("DatatypeNamespace", resourceCulture);
             }
         }
         
@@ -183,6 +228,15 @@ namespace FluentInterfaceCreator.Resources {
         public static string FactoryClassName {
             get {
                 return ResourceManager.GetString("FactoryClassName", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Factory Class Namespace:.
+        /// </summary>
+        public static string FactoryClassNamespace {
+            get {
+                return ResourceManager.GetString("FactoryClassNamespace", resourceCulture);
             }
         }
         
@@ -268,6 +322,15 @@ namespace FluentInterfaceCreator.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Method.
+        /// </summary>
+        public static string Method {
+            get {
+                return ResourceManager.GetString("Method", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Method Name.
         /// </summary>
         public static string MethodName {
@@ -286,11 +349,38 @@ namespace FluentInterfaceCreator.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Methods called in this interface.
+        /// </summary>
+        public static string MethodsCalledInThisInterface {
+            get {
+                return ResourceManager.GetString("MethodsCalledInThisInterface", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Methods using this interface.
+        /// </summary>
+        public static string MethodsUsingThisInterface {
+            get {
+                return ResourceManager.GetString("MethodsUsingThisInterface", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Name.
         /// </summary>
         public static string Name {
             get {
                 return ResourceManager.GetString("Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Namespace.
+        /// </summary>
+        public static string Namespace {
+            get {
+                return ResourceManager.GetString("Namespace", resourceCulture);
             }
         }
         
@@ -304,20 +394,20 @@ namespace FluentInterfaceCreator.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Parameters.
+        /// </summary>
+        public static string Parameters {
+            get {
+                return ResourceManager.GetString("Parameters", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Project Name:.
         /// </summary>
         public static string ProjectName {
             get {
                 return ResourceManager.GetString("ProjectName", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Project Settings.
-        /// </summary>
-        public static string ProjectSettings {
-            get {
-                return ResourceManager.GetString("ProjectSettings", resourceCulture);
             }
         }
         
@@ -340,11 +430,101 @@ namespace FluentInterfaceCreator.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Save Individual Files.
+        /// </summary>
+        public static string SaveIndividualFiles {
+            get {
+                return ResourceManager.GetString("SaveIndividualFiles", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Save Method.
+        /// </summary>
+        public static string SaveMethod {
+            get {
+                return ResourceManager.GetString("SaveMethod", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Save Single File.
+        /// </summary>
+        public static string SaveSingleFile {
+            get {
+                return ResourceManager.GetString("SaveSingleFile", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Save to disk.
+        /// </summary>
+        public static string SaveToDisk {
+            get {
+                return ResourceManager.GetString("SaveToDisk", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Select.
         /// </summary>
         public static string Select {
             get {
                 return ResourceManager.GetString("Select", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Selected Method:.
+        /// </summary>
+        public static string SelectedMethod {
+            get {
+                return ResourceManager.GetString("SelectedMethod", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Create Fluent Interface File(s).
+        /// </summary>
+        public static string TabHeaderCreateFluentInterfaceFiles {
+            get {
+                return ResourceManager.GetString("TabHeaderCreateFluentInterfaceFiles", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Enter Methods.
+        /// </summary>
+        public static string TabHeaderEnterMethods {
+            get {
+                return ResourceManager.GetString("TabHeaderEnterMethods", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Name Interfaces.
+        /// </summary>
+        public static string TabHeaderNameInterfaces {
+            get {
+                return ResourceManager.GetString("TabHeaderNameInterfaces", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Project Settings.
+        /// </summary>
+        public static string TabHeaderProjectSettings {
+            get {
+                return ResourceManager.GetString("TabHeaderProjectSettings", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Set Calling Order.
+        /// </summary>
+        public static string TabHeaderSetCallingOrder {
+            get {
+                return ResourceManager.GetString("TabHeaderSetCallingOrder", resourceCulture);
             }
         }
         

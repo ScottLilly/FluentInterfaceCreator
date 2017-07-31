@@ -1,4 +1,5 @@
-﻿using System.Reflection;
+﻿using System;
+using System.Reflection;
 using System.Windows;
 
 namespace FluentInterfaceCreator
@@ -13,6 +14,7 @@ namespace FluentInterfaceCreator
             InitializeComponent();
 
             VersionNumber.Content = Assembly.GetExecutingAssembly().GetName().Version;
+            CopyrightNotice.Content = $"Copyright © 2016 - {DateTime.Now.Year}, Scott Lilly";
         }
 
         private void OnClick_OK(object sender, RoutedEventArgs e)

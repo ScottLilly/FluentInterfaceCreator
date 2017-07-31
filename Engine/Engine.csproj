@@ -40,18 +40,18 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Common\Enums.cs" />
+    <Compile Include="FluentInterfaceCreators\FluentInterfaceFileCreatorBase.cs" />
     <Compile Include="FluentInterfaceCreators\CSharpFluentInterfaceFileCreator.cs" />
-    <Compile Include="FluentInterfaceCreators\Enums.cs" />
     <Compile Include="FluentInterfaceCreators\FluentInterfaceCreatorFactory.cs" />
-    <Compile Include="FluentInterfaceCreators\IFluentInterfaceCreator.cs" />
     <Compile Include="Models\CallableMethodIndicator.cs" />
     <Compile Include="Models\Datatype.cs" />
     <Compile Include="Models\FluentInterfaceFile.cs" />
     <Compile Include="Models\InterfaceData.cs" />
-    <Compile Include="Models\NativeDatatype.cs" />
+    <Compile Include="FluentInterfaceCreators\Line.cs" />
     <Compile Include="Models\Parameter.cs" />
-    <Compile Include="Models\UserDatatype.cs" />
-    <Compile Include="NotificationClassBase.cs" />
+    <Compile Include="Models\ProjectVersion.cs" />
+    <Compile Include="Common\NotificationClassBase.cs" />
     <Compile Include="Models\Method.cs" />
     <Compile Include="Models\Project.cs" />
     <Compile Include="Properties\Annotations.cs" />
@@ -61,8 +61,7 @@
       <DesignTime>True</DesignTime>
       <DependentUpon>ErrorMessages.resx</DependentUpon>
     </Compile>
-    <Compile Include="Utilities\Extensions.cs" />
-    <Compile Include="Utilities\OutputLanguageDetails.cs" />
+    <Compile Include="Common\OutputLanguageDetails.cs" />
     <Compile Include="Utilities\Serialization.cs" />
     <Compile Include="ViewModels\ProjectEditorViewModel.cs" />
   </ItemGroup>
@@ -70,6 +69,7 @@
     <EmbeddedResource Include="Resources\ErrorMessages.resx">
       <Generator>PublicResXFileCodeGenerator</Generator>
       <LastGenOutput>ErrorMessages.Designer.cs</LastGenOutput>
+      <SubType>Designer</SubType>
     </EmbeddedResource>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

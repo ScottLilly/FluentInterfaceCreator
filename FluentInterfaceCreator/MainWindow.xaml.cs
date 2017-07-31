@@ -1,17 +1,18 @@
 ﻿using System.IO;
-using System.Linq;
 using System.Windows;
-using System.Windows.Controls;
+using System.Windows.Forms;
 using Engine.Models;
 using Engine.Utilities;
 using Engine.ViewModels;
-using Microsoft.Win32;
+using FluentInterfaceCreator.Resources;
+using OpenFileDialog = Microsoft.Win32.OpenFileDialog;
+using SaveFileDialog = Microsoft.Win32.SaveFileDialog;
 
 namespace FluentInterfaceCreator
 {
     public partial class MainWindow : Window
     {
-        private const string FILE_NAME_EXTENSION = ".ficproj";
+        private const string FILE_NAME_EXTENSION = ".ficp";
 
         private readonly ProjectEditorViewModel _projectEditor =
             new ProjectEditorViewModel();
@@ -39,7 +40,7 @@ namespace FluentInterfaceCreator
                 new OpenFileDialog
                 {
                     DefaultExt = FILE_NAME_EXTENSION,
-                    Filter = "Fluent Interface Creator projects (*.ficproj)|*.ficproj"
+                    Filter = "Fluent Interface Creator projects (*.ficp)|*.ficp"
                 };
 
             bool? result = dialog.ShowDialog(this);
@@ -51,14 +52,6 @@ namespace FluentInterfaceCreator
                 _projectEditor.CurrentProject.FluentInterfaceFilesUpdated +=
                     CurrentProject_FluentInterfaceFilesUpdated;
             }
-        }
-
-        private void ApplicationSettings_OnClick(object sender, RoutedEventArgs e)
-        {
-            ApplicationSettings settings =
-                new ApplicationSettings { Owner = this };
-
-            settings.ShowDialog();
         }
 
         private void Exit_OnClick(object sender, RoutedEventArgs e)
@@ -79,9 +72,33 @@ namespace FluentInterfaceCreator
 
         #endregion
 
+        private void AddNewDatatype_OnClick(object sender, RoutedEventArgs e)
+        {
+            _projectEditor.AddNewDatatype();
+        }
+
+        private void DeleteDatatype_OnClick(object sender, RoutedEventArgs e)
+        {
+            Datatype selectedDatatype = ((FrameworkElement)sender).DataContext as Datatype;
+
+            _projectEditor.DeleteDatatype(selectedDatatype);
+        }
+
+        private void SaveMethodParameter_OnClick(object sender, RoutedEventArgs e)
+        {
+            _projectEditor.AddParameterToMethod();
+        }
+
+        private void DeleteMethodParameter_OnClick(object sender, RoutedEventArgs e)
+        {
+            Parameter selectedParameter = ((FrameworkElement)sender).DataContext as Parameter;
+
+            _projectEditor.DeleteParameter(selectedParameter);
+        }
+
         private void SaveMethod_OnClick(object sender, RoutedEventArgs e)
         {
-            _projectEditor.AddCurrentMethodToProject();
+            _projectEditor.AddNewMethod();
         }
 
         private void DeleteMethod_OnClick(object sender, RoutedEventArgs e)
@@ -115,28 +132,9 @@ namespace FluentInterfaceCreator
             _projectEditor.SaveInterfaceName();
         }
 
-        private void CreateFluentInterface_OnClick(object sender, RoutedEventArgs e)
+        private void CreateFluentInterfaceFiles_OnClick(object sender, RoutedEventArgs e)
         {
             _projectEditor.CreateFluentInterface();
-        }
-
-        private void SaveProject_OnClick(object sender, RoutedEventArgs e)
-        {
-            SaveFileDialog dialog =
-                new SaveFileDialog
-                {
-                    FileName = _projectEditor.CurrentProject.Name,
-                    DefaultExt = FILE_NAME_EXTENSION,
-                    Filter = "Fluent Interface Creator projects (*.ficproj)|*.ficproj"
-                };
-
-            bool? result = dialog.ShowDialog(this);
-
-            if (result == true)
-            {
-                File.WriteAllText(dialog.FileName,
-                                  Serialization.Serialize(_projectEditor.CurrentProject));
-            }
         }
 
         private void CurrentProject_FluentInterfaceFilesUpdated(object sender, System.EventArgs e)
@@ -149,6 +147,65 @@ namespace FluentInterfaceCreator
             if (_projectEditor.CurrentProject.HasSeparateFluentInterfaceFiles)
             {
                 FluentInterfaceSeparateFilesTabControl.SelectedIndex = 0;
+            }
+        }
+
+        private void SaveSingleBuilderFileToDisk_OnClick(object sender, RoutedEventArgs e)
+        {
+            // This requires adding a project reference to System.Windows.Forms.dll
+            FolderBrowserDialog dialog =
+                new FolderBrowserDialog
+                {
+                    Description = Literals.SaveSingleFile,
+                    ShowNewFolderButton = true
+                };
+
+            if(dialog.ShowDialog() == System.Windows.Forms.DialogResult.OK)
+            {
+                foreach(FluentInterfaceFile file in 
+                    _projectEditor.CurrentProject.SingleFluentInterfaceFile)
+                {
+                    File.WriteAllText(Path.Combine(dialog.SelectedPath, file.FileName), file.Contents);
+                }
+            }
+        }
+
+        private void SaveSeparateFilesToDisk_OnClick(object sender, RoutedEventArgs e)
+        {
+            // This requires adding a project reference to System.Windows.Forms.dll
+            FolderBrowserDialog dialog =
+                new FolderBrowserDialog
+                {
+                    Description = Literals.SaveIndividualFiles,
+                    ShowNewFolderButton = true
+                };
+
+            if (dialog.ShowDialog() == System.Windows.Forms.DialogResult.OK)
+            {
+                foreach (FluentInterfaceFile file in
+                    _projectEditor.CurrentProject.SeparateFluentInterfaceFiles)
+                {
+                    File.WriteAllText(Path.Combine(dialog.SelectedPath, file.FileName), file.Contents);
+                }
+            }
+        }
+
+        private void SaveProject_OnClick(object sender, RoutedEventArgs e)
+        {
+            SaveFileDialog dialog =
+                new SaveFileDialog
+                {
+                    FileName = _projectEditor.CurrentProject.Name,
+                    DefaultExt = FILE_NAME_EXTENSION,
+                    Filter = "Fluent Interface Creator projects (*.ficp)|*.ficp"
+                };
+
+            bool? result = dialog.ShowDialog(this);
+
+            if (result == true)
+            {
+                File.WriteAllText(dialog.FileName,
+                                  Serialization.Serialize(_projectEditor.CurrentProject));
             }
         }
     }

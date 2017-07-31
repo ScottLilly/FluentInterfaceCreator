@@ -120,11 +120,26 @@
   <data name="AnotherInterfaceAlreadyHasThisName" xml:space="preserve">
     <value>Another interface already has this name</value>
   </data>
+  <data name="AnotherParameterAlreadyHasThisName" xml:space="preserve">
+    <value>Another parameter already has this name</value>
+  </data>
+  <data name="DatatypeAlreadyExists" xml:space="preserve">
+    <value>Datatype already exists</value>
+  </data>
+  <data name="DatatypeCannotContainAnInternalSpace" xml:space="preserve">
+    <value>Datatype cannot contain an internal space</value>
+  </data>
+  <data name="DatatypeIsRequired" xml:space="preserve">
+    <value>'Datatype' is required</value>
+  </data>
   <data name="GroupIsNotValid" xml:space="preserve">
     <value>'Group' is not valid</value>
   </data>
   <data name="GroupIsRequired" xml:space="preserve">
     <value>'Group' is required</value>
+  </data>
+  <data name="InterfaceNameCannotContainAnInternalSpace" xml:space="preserve">
+    <value>Interface name cannot contain an internal space</value>
   </data>
   <data name="InterfaceNameIsRequired" xml:space="preserve">
     <value>'Interface Name' is required</value>
@@ -133,9 +148,18 @@
     <value>Invalid language</value>
   </data>
   <data name="MethodAlreadyExists" xml:space="preserve">
-    <value>This method already exists</value>
+    <value>A method exists with this name and signature</value>
+  </data>
+  <data name="NameCannotContainAnInternalSpace" xml:space="preserve">
+    <value>'Name' cannot contain an internal space</value>
   </data>
   <data name="NameIsRequired" xml:space="preserve">
     <value>'Name' is required</value>
+  </data>
+  <data name="NamespaceCannotContainAnInternalSpace" xml:space="preserve">
+    <value>Namespace cannot contain an internal space</value>
+  </data>
+  <data name="ReturnTypeIsRequired" xml:space="preserve">
+    <value>'Return Type' is required</value>
   </data>
 </root>

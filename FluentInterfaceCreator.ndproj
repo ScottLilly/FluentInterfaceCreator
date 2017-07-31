@@ -3450,7 +3450,7 @@ select new {
 //</HowToFix>]]></Query>
     </Group>
     <Group Name="Architecture" Active="True" ShownInReport="False">
-      <Query Active="True" DisplayList="True" DisplayStat="False" DisplaySelectionView="False" IsCriticalRule="True"><![CDATA[// <Name>Avoid namespaces mutually dependent</Name>
+      <Query Active="False" DisplayList="True" DisplayStat="False" DisplaySelectionView="False" IsCriticalRule="True"><![CDATA[// <Name>Avoid namespaces mutually dependent</Name>
 warnif count > 0
 
 // Optimization: restraint application assemblies set
@@ -4196,7 +4196,7 @@ select new {
 // This is a *sample rule* there is nothing to fix *as is*. 
 //</HowToFix>]]></Query>
     </Group>
-    <Group Name="API Breaking Changes" Active="True" ShownInReport="True">
+    <Group Name="API Breaking Changes" Active="False" ShownInReport="True">
       <Query Active="True" DisplayList="True" DisplayStat="False" DisplaySelectionView="False" IsCriticalRule="True"><![CDATA[// <Name>API Breaking Changes: Types</Name>
 
 warnif count > 0 from t in codeBase.OlderVersion().Application.Types
@@ -5407,8 +5407,7 @@ let canMethodBeConsideredAsDeadProc = new Func<IMethod, bool>(
          !m.IsClassConstructor &&      // The IL code never explicitly calls class constructors.
          !m.IsFinalizer &&             // The IL code never explicitly calls finalizers.
          !m.IsVirtual &&               // Only check for non virtual method that are not seen as used in IL.
-         !(m.IsConstructor &&          // Don't take account of protected ctor that might be call by a derived ctors.
-           m.IsProtected) &&
+         !m.IsConstructor &&
          !m.IsEventAdder &&            // The IL code never explicitly calls events adder/remover.
          !m.IsEventRemover &&
          !m.IsGeneratedByCompiler &&
@@ -7008,7 +7007,7 @@ select new {
 //<HowToFix>
 // Suffix the names of matched exception classes with **Exception**.
 //</HowToFix>]]></Query>
-      <Query Active="True" DisplayList="True" DisplayStat="False" DisplaySelectionView="False" IsCriticalRule="True"><![CDATA[// <Name>Attribute class name should be suffixed with 'Attribute'</Name>
+      <Query Active="False" DisplayList="True" DisplayStat="False" DisplaySelectionView="False" IsCriticalRule="True"><![CDATA[// <Name>Attribute class name should be suffixed with 'Attribute'</Name>
 warnif count > 0 from t in Application.Types where 
    t.IsAttributeClass && 
   !t.NameLike (@"Attribute$") 
@@ -7865,7 +7864,7 @@ select new {
 // If you do not want the assembly to be visible to COM clients, set the
 // attribute value to **false**.
 //</HowToFix>]]></Query>
-        <Query Active="True" DisplayList="True" DisplayStat="False" DisplaySelectionView="False" IsCriticalRule="False"><![CDATA[// <Name>Mark attributes with AttributeUsageAttribute</Name>
+        <Query Active="False" DisplayList="True" DisplayStat="False" DisplaySelectionView="False" IsCriticalRule="False"><![CDATA[// <Name>Mark attributes with AttributeUsageAttribute</Name>
 warnif count > 0
 from t in JustMyCode.Types where 
    t.DeriveFrom ("System.Attribute".AllowNoMatch()) &&
@@ -9009,7 +9008,7 @@ select n
 // Online documentation:
 // http://www.ndepend.com/docs/cqlinq-syntax#NotMyCode
 //</Description>]]></Query>
-      <Query Active="True" DisplayList="True" DisplayStat="False" DisplaySelectionView="False" IsCriticalRule="False"><![CDATA[// <Name>Discard generated Types from JustMyCode</Name>             
+      <Query Active="True" DisplayList="False" DisplayStat="False" DisplaySelectionView="False" IsCriticalRule="False"><![CDATA[// <Name>Discard generated Types from JustMyCode</Name>             
 notmycode
 
 // Define some sets to quickly test EntityFramework generated types
@@ -9026,6 +9025,8 @@ from t in Application.Types where
   (t.IsGeneratedByCompiler && 
    t.ParentNamespace.Name.Length == 0 &&
    t.SimpleNameLike("AnonymousType")) ||
+
+  t.ParentNamespace.Name =="Engine.Annotations" ||
 
   // Resources, Settings, or typed DataSet generated types for example, are tagged with this attribute
   t.HasAttribute ("System.CodeDom.Compiler.GeneratedCodeAttribute".AllowNoMatch()) ||

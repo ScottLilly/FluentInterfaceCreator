@@ -70,6 +70,42 @@ namespace Engine.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Another parameter already has this name.
+        /// </summary>
+        public static string AnotherParameterAlreadyHasThisName {
+            get {
+                return ResourceManager.GetString("AnotherParameterAlreadyHasThisName", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Datatype already exists.
+        /// </summary>
+        public static string DatatypeAlreadyExists {
+            get {
+                return ResourceManager.GetString("DatatypeAlreadyExists", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Datatype cannot contain an internal space.
+        /// </summary>
+        public static string DatatypeCannotContainAnInternalSpace {
+            get {
+                return ResourceManager.GetString("DatatypeCannotContainAnInternalSpace", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to &apos;Datatype&apos; is required.
+        /// </summary>
+        public static string DatatypeIsRequired {
+            get {
+                return ResourceManager.GetString("DatatypeIsRequired", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to &apos;Group&apos; is not valid.
         /// </summary>
         public static string GroupIsNotValid {
@@ -84,6 +120,15 @@ namespace Engine.Resources {
         public static string GroupIsRequired {
             get {
                 return ResourceManager.GetString("GroupIsRequired", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Interface name cannot contain an internal space.
+        /// </summary>
+        public static string InterfaceNameCannotContainAnInternalSpace {
+            get {
+                return ResourceManager.GetString("InterfaceNameCannotContainAnInternalSpace", resourceCulture);
             }
         }
         
@@ -106,11 +151,20 @@ namespace Engine.Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to This method already exists.
+        ///   Looks up a localized string similar to A method exists with this name and signature.
         /// </summary>
         public static string MethodAlreadyExists {
             get {
                 return ResourceManager.GetString("MethodAlreadyExists", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to &apos;Name&apos; cannot contain an internal space.
+        /// </summary>
+        public static string NameCannotContainAnInternalSpace {
+            get {
+                return ResourceManager.GetString("NameCannotContainAnInternalSpace", resourceCulture);
             }
         }
         
@@ -120,6 +174,24 @@ namespace Engine.Resources {
         public static string NameIsRequired {
             get {
                 return ResourceManager.GetString("NameIsRequired", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Namespace cannot contain an internal space.
+        /// </summary>
+        public static string NamespaceCannotContainAnInternalSpace {
+            get {
+                return ResourceManager.GetString("NamespaceCannotContainAnInternalSpace", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to &apos;Return Type&apos; is required.
+        /// </summary>
+        public static string ReturnTypeIsRequired {
+            get {
+                return ResourceManager.GetString("ReturnTypeIsRequired", resourceCulture);
             }
         }
     }

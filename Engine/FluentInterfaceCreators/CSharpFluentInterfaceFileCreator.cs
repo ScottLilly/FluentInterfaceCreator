@@ -1,58 +1,83 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
-using System.Text;
+using Engine.Common;
 using Engine.Models;
-using Engine.Utilities;
 
 namespace Engine.FluentInterfaceCreators
 {
-    internal class CSharpFluentInterfaceFileCreator : IFluentInterfaceCreator
+    internal sealed class CSharpFluentInterfaceFileCreator : FluentInterfaceFileCreatorBase
     {
         private const string FILE_NAME_EXTENSION = ".cs";
 
-        private Project _project;
-
-        public FluentInterfaceFile CreateSingleFluentInterfaceFileFor(
-            Project project)
+        private enum InterfaceLocation
         {
-            _project = project;
-
-            List<FluentInterfaceFile> interfaces = CreateInterfaceFiles(1);
-
-            return CreateSingleFile(interfaces);
+            InBuilderFile,
+            InSeparateFiles
         }
 
-        public List<FluentInterfaceFile> CreateSeparateFluentInterfaceFilesFor(
-            Project project)
+        internal CSharpFluentInterfaceFileCreator(Project project) : base(project)
         {
-            _project = project;
+        }
 
+        internal override FluentInterfaceFile CreateSingleFile()
+        {
+            return CreateBuilderFile(InterfaceLocation.InBuilderFile);
+        }
+
+        internal override IEnumerable<FluentInterfaceFile> CreateIndividualFiles()
+        {
             List<FluentInterfaceFile> files = new List<FluentInterfaceFile>();
 
-            files.Add(CreateSingleFile());
-            files.AddRange(CreateInterfaceFiles(0));
+            files.Add(CreateBuilderFile(InterfaceLocation.InSeparateFiles));
+            files.AddRange(CreateInterfaceFiles(InterfaceLocation.InSeparateFiles));
 
             return files;
         }
 
-        private FluentInterfaceFile CreateSingleFile(List<FluentInterfaceFile> interfaces = null)
+        private FluentInterfaceFile CreateBuilderFile(InterfaceLocation interfaceLocation)
         {
-            StringBuilder builder = new StringBuilder();
+            FluentInterfaceFile builder = 
+                new FluentInterfaceFile($"{_project.FactoryClassName}{FILE_NAME_EXTENSION}");
 
-            // Using statements
+            // Find namespaces needed for "using" statements
+            List<string> namespacesNeeded = new List<string>();
 
+            foreach(Method method in _project.InstantiatingMethods)
+            {
+                namespacesNeeded.AddRange(method.NamespacesNeeded);
+            }
+
+            foreach(Method method in _project.ChainingMethods)
+            {
+                namespacesNeeded.AddRange(method.NamespacesNeeded);
+            }
+
+            foreach(Method method in _project.ExecutingMethods)
+            {
+                namespacesNeeded.AddRange(method.NamespacesNeeded);
+            }
+
+            // Add "using" statements
+            foreach(string ns in namespacesNeeded.Distinct().OrderBy(n => n))
+            {
+                builder.AddLine(0, $"using {ns};");
+            }
+
+            if(namespacesNeeded.Any())
+            {
+                builder.AddBlankLine();
+            }
 
             // Namespace definition
-            builder.AppendLine($"namespace {_project.FactoryClassName}");
-            builder.AppendLine("{");
+            builder.AddLine(0, $"namespace {_project.FactoryClassNamespace}");
+            builder.AddLine(0, "{");
 
             // Class definition
-            builder
-                .AppendLine($"\tpublic class {_project.FactoryClassName} : {_project.InterfaceListAsCommaSeparatedString}");
-            builder.AppendLine("\t{");
+            builder.AddLine(1, $"public class {_project.FactoryClassName} : {_project.InterfaceListAsCommaSeparatedString}");
+            builder.AddLine(1, "{");
 
             // Instantiating functions
-            builder.AppendLine("\t\t// Instantiating functions");
+            builder.AddLine(2, "// Instantiating functions");
 
             foreach(Method method in _project.InstantiatingMethods)
             {
@@ -60,17 +85,17 @@ namespace Engine.FluentInterfaceCreators
 
                 if(returnDataType != null)
                 {
-                    builder.AppendLine();
-                    builder.AppendLine($"\t\tpublic static {returnDataType.Name} {method.Name}()");
-                    builder.AppendLine("\t\t{");
-                    builder.AppendLine($"\t\t\treturn new {_project.FactoryClassName}();");
-                    builder.AppendLine("\t\t}");
+                    builder.AddBlankLine();
+                    builder.AddLine(2, $"public static {returnDataType.Name} {method.Signature}");
+                    builder.AddLine(2, "{");
+                    builder.AddLine(3, $"return new {_project.FactoryClassName}();");
+                    builder.AddLine(2, "}");
                 }
             }
 
             // Chaining functions
-            builder.AppendLine();
-            builder.AppendLine("\t\t// Chaining functions");
+            builder.AddBlankLine();
+            builder.AddLine(2, "// Chaining functions");
 
             foreach(Method method in _project.ChainingMethods)
             {
@@ -78,85 +103,117 @@ namespace Engine.FluentInterfaceCreators
 
                 if(returnDataType != null)
                 {
-                    builder.AppendLine();
-                    builder.AppendLine($"\t\tpublic {returnDataType.Name} {method.Name}()");
-                    builder.AppendLine("\t\t{");
-                    builder.AppendLine("\t\t\treturn this;");
-                    builder.AppendLine("\t\t}");
+                    builder.AddBlankLine();
+                    builder.AddLine(2, $"public {returnDataType.Name} {method.Signature}");
+                    builder.AddLine(2, "{");
+                    builder.AddLine(3, "return this;");
+                    builder.AddLine(2, "}");
                 }
             }
 
             // Executing functions
-            builder.AppendLine();
-            builder.AppendLine("\t\t// Executing functions");
+            builder.AddBlankLine();
+            builder.AddLine(2, "// Executing functions");
 
             foreach(Method method in _project.ExecutingMethods)
             {
-                builder.AppendLine();
-                builder.AppendLine($"\t\tpublic {method.ReturnDatatype} {method.Name}()");
-                builder.AppendLine("\t\t{");
-                builder.AppendLine("\t\t}");
+                builder.AddBlankLine();
+                builder.AddLine(2, $"public {method.ReturnDatatype.Name} {method.Signature}");
+                builder.AddLine(2, "{");
+                builder.AddLine(2, "}");
             }
 
             // Close class definition
-            builder.AppendLine("\t}");
+            builder.AddLine(1, "}");
 
             // Append interfaces
-            if(interfaces != null)
+            if(interfaceLocation == InterfaceLocation.InBuilderFile)
             {
-                builder.AppendLine("");
-                builder.AppendLine("\t// Interfaces");
-                builder.AppendLine("");
+                List<FluentInterfaceFile> interfaces =
+                    CreateInterfaceFiles(InterfaceLocation.InBuilderFile);
+
+                builder.AddBlankLine();
+                builder.AddLine(1, "// Interfaces");
 
                 foreach(FluentInterfaceFile interfaceFile in interfaces)
                 {
-                    builder.AppendLine(interfaceFile.Contents);
+                    builder.AddBlankLine();
+                    builder.AddLine(0, interfaceFile.Contents);
                 }
             }
 
             // Close namespace definition
-            builder.AppendLine("}");
+            builder.AddLine(0, "}");
 
-            return new FluentInterfaceFile($"{_project.FactoryClassName}{FILE_NAME_EXTENSION}",
-                                           builder.ToString());
+            return builder;
         }
 
-        private List<FluentInterfaceFile> CreateInterfaceFiles(int indentLevels)
+        private List<FluentInterfaceFile> CreateInterfaceFiles(InterfaceLocation interfaceLocation)
         {
             List<FluentInterfaceFile> interfaces = new List<FluentInterfaceFile>();
 
             foreach(InterfaceData interfaceData in _project.Interfaces)
             {
-                StringBuilder builder = new StringBuilder();
+                FluentInterfaceFile interfaceFile =
+                    new FluentInterfaceFile($"{interfaceData.Name}{FILE_NAME_EXTENSION}");
 
-                builder.AppendTabPrefixedLine(indentLevels, $"public interface {interfaceData.Name}");
+                if(interfaceLocation == InterfaceLocation.InSeparateFiles)
+                {
+                    // Find namespaces needed for "using" statements
+                    List<string> namespacesNeeded = new List<string>();
 
-                builder.AppendTabPrefixedLine(indentLevels, "{");
+                    foreach(Method method in interfaceData.CallableMethods)
+                    {
+                        namespacesNeeded.AddRange(method.NamespacesNeeded);
+                    }
+
+                    // Add "using" statements
+                    foreach(string ns in namespacesNeeded.Distinct().OrderBy(n => n))
+                    {
+                        interfaceFile.AddLine(0, $"using {ns};");
+                    }
+
+                    if(namespacesNeeded.Any())
+                    {
+                        interfaceFile.AddBlankLine();
+                    }
+
+                    // Start namespace
+                    interfaceFile.AddLine(0, $"namespace {_project.FactoryClassNamespace}");
+                    interfaceFile.AddLine(0, "{");
+                }
+
+                interfaceFile.AddLine(1, $"public interface {interfaceData.Name}");
+
+                interfaceFile.AddLine(1, "{");
 
                 foreach(Method callableMethod in
                     interfaceData.CallableMethods
-                                 .Where(cm => cm.Group == Method.MethodGroup.Instantiating ||
-                                              cm.Group == Method.MethodGroup.Chaining))
+                                 .Where(cm => cm.Group == Enums.MethodGroup.Instantiating ||
+                                              cm.Group == Enums.MethodGroup.Chaining))
                 {
                     InterfaceData returnInterface =
                         _project.Interfaces
                                 .FirstOrDefault(i => i.CalledByMethods.Exists(cm => cm.Name == callableMethod.Name));
 
-                    builder.AppendTabPrefixedLine(indentLevels, $"\t{returnInterface?.Name} {callableMethod.Name}();");
+                    interfaceFile.AddLine(2, $"{returnInterface?.Name} {callableMethod.Signature};");
                 }
 
                 foreach(Method callableMethod in
                     interfaceData.CallableMethods
-                                 .Where(cm => cm.Group == Method.MethodGroup.Executing))
+                                 .Where(cm => cm.Group == Enums.MethodGroup.Executing))
                 {
-                    builder.AppendTabPrefixedLine(indentLevels,
-                                                  $"\t{callableMethod.ReturnDatatype} {callableMethod.Name}();");
+                    interfaceFile.AddLine(2, $"{callableMethod.ReturnDatatype.Name} {callableMethod.Signature};");
                 }
 
-                builder.AppendTabPrefixedLine(indentLevels, "}");
+                interfaceFile.AddLine(1, "}");
 
-                interfaces.Add(new FluentInterfaceFile($"{interfaceData.Name}{FILE_NAME_EXTENSION}",
-                                                       builder.ToString()));
+                if(interfaceLocation == InterfaceLocation.InSeparateFiles)
+                {
+                    interfaceFile.AddLine(0, "}");
+                }
+
+                interfaces.Add(interfaceFile);
             }
 
             return interfaces;

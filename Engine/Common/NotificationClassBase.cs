@@ -1,6 +1,6 @@
 ﻿using System.ComponentModel;
 
-namespace Engine
+namespace Engine.Common
 {
     public abstract class NotificationClassBase : INotifyPropertyChanged
     {

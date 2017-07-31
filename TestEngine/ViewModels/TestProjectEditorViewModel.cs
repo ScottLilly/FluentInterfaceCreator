@@ -40,7 +40,7 @@ namespace TestEngine.ViewModels
             // Missing Group, missing Name
             viewModel.CurrentEditingMethodGroup = null;
 
-            viewModel.AddCurrentMethodToProject();
+            viewModel.AddNewMethod();
 
             Assert.Contains(ErrorMessages.GroupIsRequired,
                             viewModel.CurrentEditingMethodErrorMessage);
@@ -50,7 +50,7 @@ namespace TestEngine.ViewModels
             // Invalid Group
             //viewModel.CurrentEditingMethodGroup = "ASD";
 
-            //viewModel.AddCurrentMethodToProject();
+            //viewModel.AddNewMethod();
 
             //Assert.Contains(ErrorMessages.GroupIsNotValid,
             //                viewModel.CurrentEditingMethodErrorMessage);
@@ -58,7 +58,7 @@ namespace TestEngine.ViewModels
             // Has valid Group, missing Name
             viewModel.CurrentEditingMethodGroup = "Instantiating";
 
-            viewModel.AddCurrentMethodToProject();
+            viewModel.AddNewMethod();
 
             Assert.DoesNotContain(ErrorMessages.GroupIsRequired,
                                   viewModel.CurrentEditingMethodErrorMessage);
@@ -68,7 +68,7 @@ namespace TestEngine.ViewModels
             // Has valid Group and valid Name
             viewModel.CurrentEditingMethodName = "CreateEmail";
 
-            viewModel.AddCurrentMethodToProject();
+            viewModel.AddNewMethod();
 
             Assert.DoesNotContain(ErrorMessages.GroupIsRequired,
                                   viewModel.CurrentEditingMethodErrorMessage);
@@ -78,7 +78,7 @@ namespace TestEngine.ViewModels
             // Has valid Group, duplicate Name
             viewModel.CurrentEditingMethodName = "CreateEmail";
 
-            viewModel.AddCurrentMethodToProject();
+            viewModel.AddNewMethod();
 
             Assert.DoesNotContain(ErrorMessages.GroupIsRequired,
                                   viewModel.CurrentEditingMethodErrorMessage);
