@@ -1,5 +1,5 @@
 Project: FluentInterfaceCreator
-Author website: http://scottlilly.com
+Author website: https://scottlilly.com/fluent-interface-creator/
 
 Copyright (C) 2016 - 2017 Scott Lilly
 
