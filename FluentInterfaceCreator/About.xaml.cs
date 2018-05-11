@@ -7,9 +7,6 @@ namespace FluentInterfaceCreator
 {
     public partial class About : Window
     {
-        //private string VersionNumber { get; } =
-        //    Assembly.GetExecutingAssembly().GetName().Version.ToString();
-
         public About()
         {
             InitializeComponent();

@@ -309,10 +309,10 @@ $RECYCLE.BIN/
 *.db
 *.db
 .svn/*
+svn*.*
 
 # CodeRush
 *.cr
 
 # NDepend
 NDependOut/*
-.svn/wc.db
