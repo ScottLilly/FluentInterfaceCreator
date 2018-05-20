@@ -79,7 +79,7 @@ namespace FluentInterfaceCreator.Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Add New Method.
+        ///   Looks up a localized string similar to Add Method.
         /// </summary>
         public static string AddMethod {
             get {
@@ -93,6 +93,15 @@ namespace FluentInterfaceCreator.Resources {
         public static string AddNewDatatype {
             get {
                 return ResourceManager.GetString("AddNewDatatype", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Add New Method.
+        /// </summary>
+        public static string AddNewMethod {
+            get {
+                return ResourceManager.GetString("AddNewMethod", resourceCulture);
             }
         }
         
@@ -169,20 +178,11 @@ namespace FluentInterfaceCreator.Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Datatype:.
+        ///   Looks up a localized string similar to Datatypes.
         /// </summary>
-        public static string DatatypeColon {
+        public static string Datatypes {
             get {
-                return ResourceManager.GetString("DatatypeColon", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Datatype Namespace:.
-        /// </summary>
-        public static string DatatypeNamespace {
-            get {
-                return ResourceManager.GetString("DatatypeNamespace", resourceCulture);
+                return ResourceManager.GetString("Datatypes", resourceCulture);
             }
         }
         
@@ -205,6 +205,15 @@ namespace FluentInterfaceCreator.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Enter Methods.
+        /// </summary>
+        public static string EnterMethods {
+            get {
+                return ResourceManager.GetString("EnterMethods", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Executing.
         /// </summary>
         public static string Executing {
@@ -223,7 +232,7 @@ namespace FluentInterfaceCreator.Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Factory Class Name:.
+        ///   Looks up a localized string similar to Factory Class Name.
         /// </summary>
         public static string FactoryClassName {
             get {
@@ -232,7 +241,7 @@ namespace FluentInterfaceCreator.Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Factory Class Namespace:.
+        ///   Looks up a localized string similar to Factory Class Namespace.
         /// </summary>
         public static string FactoryClassNamespace {
             get {
@@ -246,15 +255,6 @@ namespace FluentInterfaceCreator.Resources {
         public static string File {
             get {
                 return ResourceManager.GetString("File", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to File Name:.
-        /// </summary>
-        public static string FileName {
-            get {
-                return ResourceManager.GetString("FileName", resourceCulture);
             }
         }
         
@@ -295,7 +295,7 @@ namespace FluentInterfaceCreator.Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Language:.
+        ///   Looks up a localized string similar to Language.
         /// </summary>
         public static string Language {
             get {
@@ -376,6 +376,15 @@ namespace FluentInterfaceCreator.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Name Interfaces.
+        /// </summary>
+        public static string NameInterfaces {
+            get {
+                return ResourceManager.GetString("NameInterfaces", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Namespace.
         /// </summary>
         public static string Namespace {
@@ -403,7 +412,7 @@ namespace FluentInterfaceCreator.Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Project Name:.
+        ///   Looks up a localized string similar to Project Name.
         /// </summary>
         public static string ProjectName {
             get {
@@ -412,7 +421,16 @@ namespace FluentInterfaceCreator.Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Return Type:.
+        ///   Looks up a localized string similar to Project Settings.
+        /// </summary>
+        public static string ProjectSettings {
+            get {
+                return ResourceManager.GetString("ProjectSettings", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Return Type.
         /// </summary>
         public static string ReturnType {
             get {
@@ -421,47 +439,38 @@ namespace FluentInterfaceCreator.Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Save.
+        ///   Looks up a localized string similar to Save fluent interface (in multiple files).
         /// </summary>
-        public static string Save {
+        public static string SaveFluentInterfaceInMultipleFiles {
             get {
-                return ResourceManager.GetString("Save", resourceCulture);
+                return ResourceManager.GetString("SaveFluentInterfaceInMultipleFiles", resourceCulture);
             }
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Save Individual Files.
+        ///   Looks up a localized string similar to Save fluent interface (in single file).
         /// </summary>
-        public static string SaveIndividualFiles {
+        public static string SaveFluentInterfaceInSingleFile {
             get {
-                return ResourceManager.GetString("SaveIndividualFiles", resourceCulture);
+                return ResourceManager.GetString("SaveFluentInterfaceInSingleFile", resourceCulture);
             }
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Save Method.
+        ///   Looks up a localized string similar to Save Name.
         /// </summary>
-        public static string SaveMethod {
+        public static string SaveName {
             get {
-                return ResourceManager.GetString("SaveMethod", resourceCulture);
+                return ResourceManager.GetString("SaveName", resourceCulture);
             }
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Save Single File.
+        ///   Looks up a localized string similar to Save Project.
         /// </summary>
-        public static string SaveSingleFile {
+        public static string SaveProject {
             get {
-                return ResourceManager.GetString("SaveSingleFile", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Save to disk.
-        /// </summary>
-        public static string SaveToDisk {
-            get {
-                return ResourceManager.GetString("SaveToDisk", resourceCulture);
+                return ResourceManager.GetString("SaveProject", resourceCulture);
             }
         }
         
@@ -475,7 +484,7 @@ namespace FluentInterfaceCreator.Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Selected Method:.
+        ///   Looks up a localized string similar to Selected Method.
         /// </summary>
         public static string SelectedMethod {
             get {
@@ -484,56 +493,20 @@ namespace FluentInterfaceCreator.Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Support Page:.
+        ///   Looks up a localized string similar to Set Calling Order.
+        /// </summary>
+        public static string SetCallingOrder {
+            get {
+                return ResourceManager.GetString("SetCallingOrder", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Support Page.
         /// </summary>
         public static string SupportPage {
             get {
                 return ResourceManager.GetString("SupportPage", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Create Fluent Interface File(s).
-        /// </summary>
-        public static string TabHeaderCreateFluentInterfaceFiles {
-            get {
-                return ResourceManager.GetString("TabHeaderCreateFluentInterfaceFiles", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Enter Methods.
-        /// </summary>
-        public static string TabHeaderEnterMethods {
-            get {
-                return ResourceManager.GetString("TabHeaderEnterMethods", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Name Interfaces.
-        /// </summary>
-        public static string TabHeaderNameInterfaces {
-            get {
-                return ResourceManager.GetString("TabHeaderNameInterfaces", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Project Settings.
-        /// </summary>
-        public static string TabHeaderProjectSettings {
-            get {
-                return ResourceManager.GetString("TabHeaderProjectSettings", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Set Calling Order.
-        /// </summary>
-        public static string TabHeaderSetCallingOrder {
-            get {
-                return ResourceManager.GetString("TabHeaderSetCallingOrder", resourceCulture);
             }
         }
         

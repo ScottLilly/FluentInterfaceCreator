@@ -1,7 +1,7 @@
 ﻿using System.IO;
 using System.Xml.Serialization;
 
-namespace Engine.Utilities
+namespace Engine.Shared
 {
     public static class Serialization
     {

@@ -26,16 +26,20 @@
         </Grid.RowDefinitions>
 
         <Label Grid.Row="0"
-                   Content="{Binding Source={x:Static resources:Literals.AppTitle}}"/>
+               Content="{Binding Source={x:Static resources:Literals.AppTitle}}"/>
+
         <StackPanel Grid.Row="1"
                     Orientation="Horizontal">
             <Label Content="{Binding Source={x:Static resources:Literals.Version}}"/>
             <Label Name="VersionNumber"/>
         </StackPanel>
+        
         <Label Grid.Row="2"
                Name="CopyrightNotice"/>
+        
         <Label Grid.Row="3"
                Content="{Binding Source={x:Static resources:Literals.AllRightsReserved}}"/>
+        
         <TextBlock Grid.Row="4"
                    Margin="5,5,0,0">
             <TextBlock Text="{Binding Source={x:Static resources:Literals.SupportPage}}"/>

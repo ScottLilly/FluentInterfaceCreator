@@ -63,15 +63,12 @@
     <Compile Include="ApplicationSettings.xaml.cs">
       <DependentUpon>ApplicationSettings.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Converters\BooleanConverter.cs" />
+    <Compile Include="Converters\ConfigurableBooleanToVisibilityConverter.cs" />
     <Compile Include="Resources\Literals.Designer.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
       <DependentUpon>Literals.resx</DependentUpon>
-    </Compile>
-    <Compile Include="Resources\Literals.es.Designer.cs">
-      <AutoGen>True</AutoGen>
-      <DesignTime>True</DesignTime>
-      <DependentUpon>Literals.es.resx</DependentUpon>
     </Compile>
     <Compile Include="UserSettings.Designer.cs">
       <AutoGen>True</AutoGen>
@@ -116,10 +113,6 @@
     <EmbeddedResource Include="Properties\Resources.resx">
       <Generator>ResXFileCodeGenerator</Generator>
       <LastGenOutput>Resources.Designer.cs</LastGenOutput>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Resources\Literals.es.resx">
-      <Generator>PublicResXFileCodeGenerator</Generator>
-      <LastGenOutput>Literals.es.Designer.cs</LastGenOutput>
     </EmbeddedResource>
     <EmbeddedResource Include="Resources\Literals.resx">
       <Generator>PublicResXFileCodeGenerator</Generator>

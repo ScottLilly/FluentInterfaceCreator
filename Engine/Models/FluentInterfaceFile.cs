@@ -1,38 +1,20 @@
 ﻿using System.Collections.Generic;
 using System.Text;
-using Engine.FluentInterfaceCreators;
+using Engine.Shared;
 
 namespace Engine.Models
 {
     public class FluentInterfaceFile
     {
+        private const string TAB_CHARACTER = "\t";
+
         private readonly List<Line> _lines = new List<Line>();
 
-        public string FileName { get; set; }
+        public string Name { get; }
 
-        public string Contents
+        public FluentInterfaceFile(string name)
         {
-            get
-            {
-                StringBuilder outputString = new StringBuilder();
-
-                foreach(Line outputLine in _lines)
-                {
-                    for(int i = 0; i < outputLine.IndentationLevels; i++)
-                    {
-                        outputString.Append("\t");
-                    }
-
-                    outputString.AppendLine(outputLine.Text);
-                }
-
-                return outputString.ToString();
-            }
-        }
-
-        public FluentInterfaceFile(string fileName)
-        {
-            FileName = fileName;
+            Name = name;
         }
 
         public void AddLine(int indentationLevels, string text)
@@ -43,6 +25,31 @@ namespace Engine.Models
         public void AddBlankLine()
         {
             _lines.Add(new Line(0, ""));
+        }
+
+        public string FormattedText()
+        {
+            StringBuilder outputString = new StringBuilder();
+
+            foreach (Line outputLine in _lines)
+            {
+                outputString.Append(TAB_CHARACTER.Repeated(outputLine.IndentationDepth));
+                outputString.AppendLine(outputLine.Text);
+            }
+
+            return outputString.ToString();
+        }
+
+        private struct Line
+        {
+            public int IndentationDepth { get; }
+            public string Text { get; }
+
+            internal Line(int indentationDepth, string text)
+            {
+                IndentationDepth = indentationDepth;
+                Text = text;
+            }
         }
     }
 }

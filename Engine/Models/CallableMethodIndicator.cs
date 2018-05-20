@@ -1,8 +1,5 @@
-﻿using System;
-
-namespace Engine.Models
+﻿namespace Engine.Models
 {
-    [Serializable]
     public class CallableMethodIndicator
     {
         public string Group { get; set; }
@@ -20,8 +17,8 @@ namespace Engine.Models
             CanCall = canCall;
         }
 
-        // For serialization
-        private CallableMethodIndicator()
+        // For deserialization
+        internal CallableMethodIndicator()
         {
         }
     }

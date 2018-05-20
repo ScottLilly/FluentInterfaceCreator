@@ -1,31 +1,51 @@
 ﻿using System;
 using System.Collections.Generic;
-using Engine.Common;
+using Engine.Resources;
+using Engine.Shared;
+using PropertyChanged;
 
 namespace Engine.Models
 {
-    [Serializable]
-    public class InterfaceData : NotificationClassBase
+    [AddINotifyPropertyChangedInterface]
+    public class InterfaceData
     {
-        private string _name;
+        public string Name { get; set; }
+        public string CallableMethodsSignature { get; set; }
+        public List<Method> CalledByMethods { get; set; } = new List<Method>();
+        public List<Method> CallableMethods { get; set; } = new List<Method>();
 
-        public string Name
+        public IEnumerable<string> ValidationErrors()
         {
-            get { return _name; }
-            set
+            if(Name.IsEmpty())
             {
-                _name = value;
+                yield return ErrorMessages.NameIsRequired;
+            }
+            else
+            {
+                if(Name.HasAnInternalSpace())
+                {
+                    yield return ErrorMessages.NameCannotContainAnInternalSpace;
+                }
 
-                NotifyPropertyChanged(nameof(Name));
+                if (Name.ContainsInvalidCharacter())
+                {
+                    yield return ErrorMessages.NameCannotContainSpecialCharacters;
+                }
             }
         }
 
-        public string CallableMethodsSignature { get; set; }
+        public bool Matches(InterfaceData interfaceData, bool isCaseSensitive = true)
+        {
+            if(Name.IsEmpty() || interfaceData.Name.IsEmpty())
+            {
+                return false;
+            }
 
-        public List<Method> CalledByMethods { get; set; } =
-            new List<Method>();
+            StringComparison comparisonMethod = isCaseSensitive
+                                                    ? StringComparison.CurrentCulture
+                                                    : StringComparison.CurrentCultureIgnoreCase;
 
-        public List<Method> CallableMethods { get; set; } =
-            new List<Method>();
+            return Name.Equals(interfaceData.Name.Trim(), comparisonMethod);
+        }
     }
 }

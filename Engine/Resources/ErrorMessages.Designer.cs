@@ -61,20 +61,20 @@ namespace Engine.Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Another interface already has this name.
+        ///   Looks up a localized string similar to Another interface has this name.
         /// </summary>
-        public static string AnotherInterfaceAlreadyHasThisName {
+        public static string AnotherInterfaceHasThisName {
             get {
-                return ResourceManager.GetString("AnotherInterfaceAlreadyHasThisName", resourceCulture);
+                return ResourceManager.GetString("AnotherInterfaceHasThisName", resourceCulture);
             }
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Another parameter already has this name.
+        ///   Looks up a localized string similar to Another parameter has this name.
         /// </summary>
-        public static string AnotherParameterAlreadyHasThisName {
+        public static string AnotherParameterHasThisName {
             get {
-                return ResourceManager.GetString("AnotherParameterAlreadyHasThisName", resourceCulture);
+                return ResourceManager.GetString("AnotherParameterHasThisName", resourceCulture);
             }
         }
         
@@ -84,15 +84,6 @@ namespace Engine.Resources {
         public static string DatatypeAlreadyExists {
             get {
                 return ResourceManager.GetString("DatatypeAlreadyExists", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Datatype cannot contain an internal space.
-        /// </summary>
-        public static string DatatypeCannotContainAnInternalSpace {
-            get {
-                return ResourceManager.GetString("DatatypeCannotContainAnInternalSpace", resourceCulture);
             }
         }
         
@@ -124,24 +115,6 @@ namespace Engine.Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Interface name cannot contain an internal space.
-        /// </summary>
-        public static string InterfaceNameCannotContainAnInternalSpace {
-            get {
-                return ResourceManager.GetString("InterfaceNameCannotContainAnInternalSpace", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to &apos;Interface Name&apos; is required.
-        /// </summary>
-        public static string InterfaceNameIsRequired {
-            get {
-                return ResourceManager.GetString("InterfaceNameIsRequired", resourceCulture);
-            }
-        }
-        
-        /// <summary>
         ///   Looks up a localized string similar to Invalid language.
         /// </summary>
         public static string InvalidLanguage {
@@ -151,7 +124,7 @@ namespace Engine.Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to A method exists with this name and signature.
+        ///   Looks up a localized string similar to A method exists with this signature.
         /// </summary>
         public static string MethodAlreadyExists {
             get {
@@ -169,6 +142,15 @@ namespace Engine.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to &apos;Name&apos; cannot contain special characters.
+        /// </summary>
+        public static string NameCannotContainSpecialCharacters {
+            get {
+                return ResourceManager.GetString("NameCannotContainSpecialCharacters", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to &apos;Name&apos; is required.
         /// </summary>
         public static string NameIsRequired {
@@ -178,11 +160,20 @@ namespace Engine.Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Namespace cannot contain an internal space.
+        ///   Looks up a localized string similar to &apos;Namespace&apos; cannot contain an internal space.
         /// </summary>
         public static string NamespaceCannotContainAnInternalSpace {
             get {
                 return ResourceManager.GetString("NamespaceCannotContainAnInternalSpace", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to &apos;Namespace&apos; cannot contain special characters.
+        /// </summary>
+        public static string NamespaceCannotContainSpecialCharacters {
+            get {
+                return ResourceManager.GetString("NamespaceCannotContainSpecialCharacters", resourceCulture);
             }
         }
         

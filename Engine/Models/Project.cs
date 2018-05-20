@@ -4,210 +4,130 @@ using System.Collections.ObjectModel;
 using System.Globalization;
 using System.Linq;
 using System.Reflection;
-using System.Xml.Serialization;
-using Engine.Common;
-using Engine.FluentInterfaceCreators;
 using Engine.Resources;
+using Engine.Shared;
+using PropertyChanged;
 
 namespace Engine.Models
 {
-    [Serializable]
-    public class Project : NotificationClassBase
+    [AddINotifyPropertyChangedInterface]
+    public class Project
     {
-        private readonly TextInfo _textInfo =
-            new CultureInfo(CultureInfo.CurrentCulture.Name, true).TextInfo;
-
-        #region Events
-
-        public event EventHandler FluentInterfaceFilesUpdated;
-
-        #endregion
-
         #region Properties
 
+        public OutputLanguage OutputLanguage { get; set; }
+
         private string _name;
-        private string _outputLanguage;
-        private string _factoryClassNamespace;
-        private string _factoryClassName;
-
-        public ProjectVersion Version { get; set; }
-
         public string Name
         {
-            get { return _name; }
+            get => _name;
             set
             {
                 _name = value;
 
-                NotifyPropertyChanged(nameof(Name));
-
-                SetDefaultFactoryClassName("Builder");
+                SetDefaultFactoryClassName();
             }
         }
 
-        public string OutputLanguage
-        {
-            get { return _outputLanguage; }
-            set
-            {
-                _outputLanguage = value;
+        public string FactoryClassNamespace { get; set; }
 
-                NotifyPropertyChanged(nameof(OutputLanguage));
+        public string FactoryClassName { get; set; }
 
-                UpdateNativeDatatypes();
-            }
-        }
-
-        public ObservableCollection<Datatype> Datatypes { get; set; } = 
+        public ObservableCollection<Datatype> Datatypes { get; } =
             new ObservableCollection<Datatype>();
 
-        public string FactoryClassNamespace
-        {
-            get { return _factoryClassNamespace; }
-            set
-            {
-                _factoryClassNamespace = value; 
-                
-                NotifyPropertyChanged(nameof(FactoryClassName));
-            }
-        }
-
-        public string FactoryClassName
-        {
-            get { return _factoryClassName; }
-            set
-            {
-                _factoryClassName = value;
-
-                NotifyPropertyChanged(nameof(FactoryClassName));
-            }
-        }
-
-        public ObservableCollection<Method> InstantiatingMethods { get; set; } =
+        public ObservableCollection<Method> InstantiatingMethods { get; } =
             new ObservableCollection<Method>();
 
-        public ObservableCollection<Method> ChainingMethods { get; set; } =
+        public ObservableCollection<Method> ChainingMethods { get; } =
             new ObservableCollection<Method>();
 
-        public ObservableCollection<Method> ExecutingMethods { get; set; } =
+        public ObservableCollection<Method> ExecutingMethods { get; } =
             new ObservableCollection<Method>();
 
-        public ObservableCollection<InterfaceData> Interfaces { get; set; } =
+        public ObservableCollection<InterfaceData> Interfaces { get; } =
             new ObservableCollection<InterfaceData>();
 
-        [XmlIgnore]
         public string InterfaceListAsCommaSeparatedString => 
             string.Join(", ", Interfaces.Select(i => i.Name));
 
         // For this section, a "chain" is two methods, called in order,
         // during the use of the fluent interface.
-
-        // In these chains, 
-        // the first method must be an InstantiatingMethod or a ChainingMethod. 
+        // The first method must be an InstantiatingMethod or a ChainingMethod. 
         // The second method must be a ChainingMethod or an ExecutingMethod.
+        public ObservableCollection<Method> ChainStartingMethods { get; } = 
+            new ObservableCollection<Method>();
 
-        [XmlIgnore]
-        public ObservableCollection<Method> ChainStartingMethods
-        {
-            get
-            {
-                ObservableCollection<Method> methods = new ObservableCollection<Method>();
+        public ObservableCollection<Method> ChainEndingMethods { get; } =
+            new ObservableCollection<Method>();
 
-                foreach(Method method in InstantiatingMethods)
-                {
-                    methods.Add(method);
-                }
-
-                foreach(Method method in ChainingMethods)
-                {
-                    methods.Add(method);
-                }
-
-                return methods;
-            }
-        }
-
-        [XmlIgnore]
-        public ObservableCollection<Method> ChainEndingMethods
-        {
-            get
-            {
-                ObservableCollection<Method> methods = new ObservableCollection<Method>();
-
-                foreach(Method method in ChainingMethods)
-                {
-                    methods.Add(method);
-                }
-
-                foreach(Method method in ExecutingMethods)
-                {
-                    methods.Add(method);
-                }
-
-                return methods;
-            }
-        }
-
-        [XmlIgnore]
-        public ObservableCollection<FluentInterfaceFile> SingleFluentInterfaceFile { get; set; } =
-            new ObservableCollection<FluentInterfaceFile>();
-
-        [XmlIgnore]
-        public ObservableCollection<FluentInterfaceFile> SeparateFluentInterfaceFiles { get; set; } = 
-            new ObservableCollection<FluentInterfaceFile>();
-
-        [XmlIgnore]
-        public bool HasSingleFluentInterfaceFile => SingleFluentInterfaceFile.Any();
-
-        [XmlIgnore]
-        public bool HasSeparateFluentInterfaceFiles => SeparateFluentInterfaceFiles.Any();
+        public bool CanCreateFiles => FactoryClassName.HasText();
 
         #endregion
 
         #region Constructors
 
-        public Project() : this(Assembly.GetExecutingAssembly().GetName().Version.ToString())
+        public Project(OutputLanguage outputLanguage)
         {
+            OutputLanguage = outputLanguage;
+
+            foreach(Datatype datatype in outputLanguage.NativeDatatypes)
+            {
+                AddDatatype(datatype);
+            }
         }
 
-        public Project(string version)
+        // For Serialization
+        internal Project()
         {
-            Version = new ProjectVersion(version);
         }
 
         #endregion
 
         #region Public functions
 
+        public void AddDatatype(Datatype datatype)
+        {
+            Datatypes.Add(datatype);
+        }
+
         public void DeleteDatatype(Datatype datatype)
         {
             Datatypes.Remove(datatype);
         }
 
-        public void AddMethod(Method methodToAdd)
+        public void AddMethod(Method method)
         {
-            AddMethodToCollection(methodToAdd);
-            AddMethodAsCallableMethod(methodToAdd);
-            AddChainEndingMethodsTo(methodToAdd);
+            AddMethodToCollection(method);
+            AddMethodAsCallableMethod(method);
+            AddChainEndingMethodsTo(method);
 
             UpdateInterfaces();
-
-            NotifyPropertyChanged(nameof(ChainStartingMethods));
-            NotifyPropertyChanged(nameof(ChainEndingMethods));
         }
 
-        public void DeleteMethod(Method methodToRemove)
+        public bool HasMethodWithMatchingSignature(Method method)
         {
-            switch(methodToRemove.Group)
+            return InstantiatingMethods.Any(m => m.Matches(method, OutputLanguage.IsCaseSensitive)) ||
+                   ChainEndingMethods.Any(m => m.Matches(method, OutputLanguage.IsCaseSensitive)) ||
+                   ExecutingMethods.Any(m => m.Matches(method, OutputLanguage.IsCaseSensitive));
+        }
+
+        public void DeleteMethod(Method method)
+        {
+            switch (method.Group)
             {
-                case Enums.MethodGroup.Instantiating:
-                    InstantiatingMethods.Remove(methodToRemove);
+                case Method.MethodGroup.Instantiating:
+                    InstantiatingMethods.Remove(method);
+                    ChainStartingMethods.Remove(method);
                     break;
-                case Enums.MethodGroup.Chaining:
-                    ChainingMethods.Remove(methodToRemove);
+                case Method.MethodGroup.Chaining:
+                    ChainingMethods.Remove(method);
+                    ChainStartingMethods.Remove(method);
+                    ChainEndingMethods.Remove(method);
                     break;
-                case Enums.MethodGroup.Executing:
-                    ExecutingMethods.Remove(methodToRemove);
+                case Method.MethodGroup.Executing:
+                    ExecutingMethods.Remove(method);
+                    ChainEndingMethods.Remove(method);
                     break;
                 default:
                     throw new ArgumentException(ErrorMessages.GroupIsNotValid);
@@ -215,100 +135,20 @@ namespace Engine.Models
 
             foreach(Method instantiatingMethod in InstantiatingMethods)
             {
-                RemoveMethodFromCallableMethods(instantiatingMethod, methodToRemove);
+                RemoveMethodFromCallableMethods(instantiatingMethod, method);
             }
 
             foreach(Method chainingMethod in ChainingMethods)
             {
-                RemoveMethodFromCallableMethods(chainingMethod, methodToRemove);
+                RemoveMethodFromCallableMethods(chainingMethod, method);
             }
 
             UpdateInterfaces();
-
-            NotifyPropertyChanged(nameof(ChainStartingMethods));
-            NotifyPropertyChanged(nameof(ChainEndingMethods));
-        }
-
-        public bool AlreadyContainsThisMethodSignature(string methodName, List<Parameter> parameters)
-        {
-            foreach(Method method in InstantiatingMethods
-                .Where(m => m.Name.Equals(methodName, StringComparison.CurrentCultureIgnoreCase) &&
-                            m.Parameters.Count == parameters.Count))
-            {
-                if(parameters.Count == 0 ||
-                   parameters.Where((t, i) => method.Parameters[i].DataType == t.DataType).Any())
-                {
-                    return true;
-                }
-            }
-
-            foreach(Method method in ChainingMethods
-                .Where(m => m.Name.Equals(methodName, StringComparison.CurrentCultureIgnoreCase) &&
-                            m.Parameters.Count == parameters.Count))
-            {
-                if(parameters.Count == 0 ||
-                   parameters.Where((t, i) => method.Parameters[i].DataType == t.DataType).Any())
-                {
-                    return true;
-                }
-            }
-
-            foreach(Method method in ExecutingMethods
-                .Where(m => m.Name.Equals(methodName, StringComparison.CurrentCultureIgnoreCase) &&
-                            m.Parameters.Count == parameters.Count))
-            {
-                if(parameters.Count == 0 ||
-                   parameters.Where((t, i) => method.Parameters[i].DataType == t.DataType).Any())
-                {
-                    return true;
-                }
-            }
-
-            return false;
-        }
-
-        public void CreateFluentInterfaceFiles()
-        {
-            SingleFluentInterfaceFile.Clear();
-            SeparateFluentInterfaceFiles.Clear();
-
-            FluentInterfaceFileCreatorBase creator = 
-                FluentInterfaceCreatorFactory.GetFluentInterfaceFileCreator(OutputLanguage, this);
-
-            SingleFluentInterfaceFile.Add(creator.CreateSingleFile());
-            
-            IEnumerable<FluentInterfaceFile> files = creator.CreateIndividualFiles();
-
-            foreach (FluentInterfaceFile fluentInterfaceFile in files)
-            {
-                SeparateFluentInterfaceFiles.Add(fluentInterfaceFile);
-            }
-
-            OnFluentInterfaceFilesUpdated();
         }
 
         #endregion
 
         #region Internal functions
-
-        internal void UpdateNativeDatatypes()
-        {
-            // Remove existing native datatypes
-            List<Datatype> nativeDatatypes =
-                Datatypes.Where(d => d.IsNative).ToList();
-
-            foreach (Datatype nativeDatatype in nativeDatatypes)
-            {
-                Datatypes.Remove(nativeDatatype);
-            }
-
-            // Insert native datatypes for current language
-            foreach (Datatype nativeDatatype in
-                OutputLanguageDetails.NativeDatatypesFor(OutputLanguage))
-            {
-                Datatypes.Add(nativeDatatype);
-            }
-        }
 
         internal void UpdateInterfaces()
         {
@@ -322,13 +162,12 @@ namespace Engine.Models
 
         #region Private functions
 
-        private void SetDefaultFactoryClassName(string suffix)
+        private void SetDefaultFactoryClassName()
         {
-            if(!string.IsNullOrWhiteSpace(Name) &&
-               string.IsNullOrWhiteSpace(FactoryClassName))
+            if(Name.HasText() && FactoryClassName.IsEmpty())
             {
-                FactoryClassName =
-                    _textInfo.ToTitleCase(Name).Replace(" ", "") + suffix;
+                FactoryClassName = 
+                    new CultureInfo(CultureInfo.CurrentCulture.Name, true).TextInfo.ToTitleCase(Name).Replace(" ", "") + "Builder";
             }
         }
 
@@ -336,14 +175,18 @@ namespace Engine.Models
         {
             switch (method.Group)
             {
-                case Enums.MethodGroup.Instantiating:
+                case Method.MethodGroup.Instantiating:
                     InstantiatingMethods.Add(method);
+                    ChainStartingMethods.Add(method);
                     break;
-                case Enums.MethodGroup.Chaining:
+                case Method.MethodGroup.Chaining:
                     ChainingMethods.Add(method);
+                    ChainStartingMethods.Add(method);
+                    ChainEndingMethods.Add(method);
                     break;
-                case Enums.MethodGroup.Executing:
+                case Method.MethodGroup.Executing:
                     ExecutingMethods.Add(method);
+                    ChainEndingMethods.Add(method);
                     break;
                 default:
                     throw new ArgumentException(ErrorMessages.GroupIsNotValid);
@@ -354,8 +197,7 @@ namespace Engine.Models
         {
             // Add this method as a callable method, to all ChainStarting methods,
             // if this is a ChainEnding method.
-            if (methodToAdd.Group == Enums.MethodGroup.Chaining ||
-                methodToAdd.Group == Enums.MethodGroup.Executing)
+            if (methodToAdd.IsChainEnding)
             {
                 foreach (Method instantiatingMethod in InstantiatingMethods)
                 {
@@ -434,41 +276,31 @@ namespace Engine.Models
             }
         }
 
-        private void AddMethodToCallableMethods(Method methodWithCallableMethods,
-                                                Method methodToAdd)
+        private void AddMethodToCallableMethods(Method method, Method callableMethod)
         {
-            if (!methodWithCallableMethods
+            if (!method
                     .MethodsCallableNext
-                    .Any(cm => cm.Group == methodToAdd.Group.ToString() &&
-                               cm.DatatypeSignature == methodToAdd.DatatypeSignature))
+                    .Any(cm => cm.Group == callableMethod.Group.ToString() &&
+                               cm.DatatypeSignature == callableMethod.DatatypeSignature))
             {
-                methodWithCallableMethods
+                method
                     .MethodsCallableNext
-                    .Add(new CallableMethodIndicator(methodToAdd));
+                    .Add(new CallableMethodIndicator(callableMethod));
             }
         }
 
-        private void RemoveMethodFromCallableMethods(Method methodWithCallableMethods,
-                                                     Method methodToRemove)
+        private void RemoveMethodFromCallableMethods(Method method, Method callableMethod)
         {
             CallableMethodIndicator callableMethodToRemove =
-                methodWithCallableMethods
+                method
                     .MethodsCallableNext
-                    .FirstOrDefault(cm => cm.Group == methodToRemove.Group.ToString() &&
-                                          cm.Name == methodToRemove.Name);
+                    .FirstOrDefault(cm => cm.Group == callableMethod.Group.ToString() &&
+                                          cm.Name == callableMethod.Name);
 
             if (callableMethodToRemove != null)
             {
-                methodWithCallableMethods.MethodsCallableNext.Remove(callableMethodToRemove);
+                method.MethodsCallableNext.Remove(callableMethodToRemove);
             }
-        }
-
-        private void OnFluentInterfaceFilesUpdated()
-        {
-            FluentInterfaceFilesUpdated?.Invoke(this, new EventArgs());
-
-            NotifyPropertyChanged(nameof(HasSingleFluentInterfaceFile));
-            NotifyPropertyChanged(nameof(HasSeparateFluentInterfaceFiles));
         }
 
         #endregion

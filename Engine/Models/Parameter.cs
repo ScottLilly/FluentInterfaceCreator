@@ -1,46 +1,49 @@
 ﻿using System;
-using Engine.Common;
+using System.Collections.Generic;
+using Engine.Resources;
+using Engine.Shared;
+using PropertyChanged;
 
 namespace Engine.Models
 {
-    [Serializable]
-    public class Parameter : NotificationClassBase
+    [AddINotifyPropertyChangedInterface]
+    public class Parameter
     {
-        private string _dataType;
-        private string _name;
-        private string _inNamespace;
+        public Datatype Datatype { get; set; }
+        public string Name { get; set; }
 
-        public string DataType
+        public IEnumerable<string> ValidationErrors()
         {
-            get { return _dataType; }
-            set
+            if(Datatype == null)
             {
-                _dataType = value;
+                yield return ErrorMessages.DatatypeIsRequired;
+            }
 
-                NotifyPropertyChanged(nameof(DataType));
+            if(Name.IsEmpty())
+            {
+                yield return ErrorMessages.NameIsRequired;
+            }
+            else
+            {
+                if(Name.HasAnInternalSpace())
+                {
+                    yield return ErrorMessages.NameCannotContainAnInternalSpace;
+                }
+
+                if (Name.ContainsInvalidCharacter())
+                {
+                    yield return ErrorMessages.NameCannotContainSpecialCharacters;
+                }
             }
         }
 
-        public string Name
+        public bool Matches(Parameter parameter, bool isCaseSensitive = true)
         {
-            get { return _name; }
-            set
-            {
-                _name = value;
+            StringComparison comparisonMethod = isCaseSensitive
+                                                    ? StringComparison.CurrentCulture
+                                                    : StringComparison.CurrentCultureIgnoreCase;
 
-                NotifyPropertyChanged(nameof(Name));
-            }
-        }
-
-        public string InNamespace
-        {
-            get { return _inNamespace; }
-            set
-            {
-                _inNamespace = value; 
-                
-                NotifyPropertyChanged(nameof(InNamespace));
-            }
+            return Name.Equals(parameter.Name.Trim(), comparisonMethod);
         }
     }
 }

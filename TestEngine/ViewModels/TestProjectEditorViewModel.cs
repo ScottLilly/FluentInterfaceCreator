@@ -1,5 +1,8 @@
-﻿using Engine.Resources;
+﻿using System.Linq;
+using Engine.Models;
+using Engine.Resources;
 using Engine.ViewModels;
+using Shouldly;
 using Xunit;
 
 namespace TestEngine.ViewModels
@@ -7,85 +10,117 @@ namespace TestEngine.ViewModels
     public class TestProjectEditorViewModel
     {
         [Fact]
-        public void Test_CreateFluentInterface()
+        public void Test_CreateNewViewModel()
         {
-            ProjectEditorViewModel viewModel = new ProjectEditorViewModel();
+            ProjectEditorViewModel vm = new ProjectEditorViewModel();
 
-            viewModel.CreateNewProject();
-            viewModel.CurrentProject.Name = "Test fluent interface";
+            // Assertions
+            vm.OutputLanguages.Count.ShouldBe(1);
+            vm.OutputLanguages.Exists(ol => ol.Name == "C#").ShouldBeTrue();
 
-            Assert.Equal("TestFluentInterfaceBuilder", viewModel.CurrentProject.FactoryClassName);
+            vm.CurrentProject.ShouldBeNull();
         }
 
         [Fact]
-        public void Test_HasProject()
+        public void Test_StartNewProject()
         {
-            ProjectEditorViewModel viewModel = new ProjectEditorViewModel();
+            ProjectEditorViewModel vm = new ProjectEditorViewModel();
 
-            Assert.False(viewModel.HasProject);
+            OutputLanguage outputLanguage = vm.OutputLanguages.First(ol => ol.Name == "C#");
 
-            viewModel.CreateNewProject();
+            vm.StartNewProject(outputLanguage);
 
-            Assert.True(viewModel.HasProject);
+            // Assertions
+            vm.CurrentProject.ShouldNotBeNull();
+            vm.CurrentProject.Datatypes.Count.ShouldBe(17);
         }
 
         [Fact]
-        public void Test_AddNewMethod_BlankValuesShowErrors()
+        public void Test_AddNewDatatype_InputValidation()
         {
-            ProjectEditorViewModel viewModel = new ProjectEditorViewModel();
+            ProjectEditorViewModel vm = new ProjectEditorViewModel();
 
-            viewModel.CreateNewProject();
-            viewModel.CurrentProject.Name = "Test fluent interface";
+            OutputLanguage outputLanguage = vm.OutputLanguages.First(ol => ol.Name == "C#");
 
-            // Missing Group, missing Name
-            viewModel.CurrentEditingMethodGroup = null;
+            vm.StartNewProject(outputLanguage);
 
-            viewModel.AddNewMethod();
+            vm.DatatypeUnderEdit.Name = "";
+            vm.DatatypeUnderEdit.ContainingNamespace = "";
+            vm.AddNewDatatype();
 
-            Assert.Contains(ErrorMessages.GroupIsRequired,
-                            viewModel.CurrentEditingMethodErrorMessage);
-            Assert.Contains(ErrorMessages.NameIsRequired,
-                            viewModel.CurrentEditingMethodErrorMessage);
+            // Datatype.Name is empty
+            vm.DatatypeUnderEditErrorMessage.Contains(ErrorMessages.DatatypeIsRequired).ShouldBeTrue();
+            vm.DatatypeUnderEditErrorMessage.Contains(ErrorMessages.NameCannotContainAnInternalSpace).ShouldBeFalse();
+            vm.DatatypeUnderEditErrorMessage.Contains(ErrorMessages.NameCannotContainSpecialCharacters).ShouldBeFalse();
+            vm.DatatypeUnderEditErrorMessage.Contains(ErrorMessages.NamespaceCannotContainAnInternalSpace).ShouldBeFalse();
+            vm.DatatypeUnderEditErrorMessage.Contains(ErrorMessages.NamespaceCannotContainSpecialCharacters).ShouldBeFalse();
 
-            // Invalid Group
-            //viewModel.CurrentEditingMethodGroup = "ASD";
+            // Datatype.Name contains internal space
+            vm.DatatypeUnderEdit.Name = "asd asd";
+            vm.DatatypeUnderEdit.ContainingNamespace = "";
+            vm.AddNewDatatype();
 
-            //viewModel.AddNewMethod();
+            vm.DatatypeUnderEditErrorMessage.Contains(ErrorMessages.DatatypeIsRequired).ShouldBeFalse();
+            vm.DatatypeUnderEditErrorMessage.Contains(ErrorMessages.NameCannotContainAnInternalSpace).ShouldBeTrue();
+            vm.DatatypeUnderEditErrorMessage.Contains(ErrorMessages.NameCannotContainSpecialCharacters).ShouldBeFalse();
+            vm.DatatypeUnderEditErrorMessage.Contains(ErrorMessages.NamespaceCannotContainAnInternalSpace).ShouldBeFalse();
+            vm.DatatypeUnderEditErrorMessage.Contains(ErrorMessages.NamespaceCannotContainSpecialCharacters).ShouldBeFalse();
 
-            //Assert.Contains(ErrorMessages.GroupIsNotValid,
-            //                viewModel.CurrentEditingMethodErrorMessage);
+            // Datatype.Name contains internal space AND special character
+            vm.DatatypeUnderEdit.Name = "asd asd#";
+            vm.DatatypeUnderEdit.ContainingNamespace = "";
+            vm.AddNewDatatype();
 
-            // Has valid Group, missing Name
-            viewModel.CurrentEditingMethodGroup = "Instantiating";
+            vm.DatatypeUnderEditErrorMessage.Contains(ErrorMessages.DatatypeIsRequired).ShouldBeFalse();
+            vm.DatatypeUnderEditErrorMessage.Contains(ErrorMessages.NameCannotContainAnInternalSpace).ShouldBeTrue();
+            vm.DatatypeUnderEditErrorMessage.Contains(ErrorMessages.NameCannotContainSpecialCharacters).ShouldBeTrue();
+            vm.DatatypeUnderEditErrorMessage.Contains(ErrorMessages.NamespaceCannotContainAnInternalSpace).ShouldBeFalse();
+            vm.DatatypeUnderEditErrorMessage.Contains(ErrorMessages.NamespaceCannotContainSpecialCharacters).ShouldBeFalse();
 
-            viewModel.AddNewMethod();
+            // Datatype.Name contains special character
+            vm.DatatypeUnderEdit.Name = "asdasd#";
+            vm.DatatypeUnderEdit.ContainingNamespace = "";
+            vm.AddNewDatatype();
 
-            Assert.DoesNotContain(ErrorMessages.GroupIsRequired,
-                                  viewModel.CurrentEditingMethodErrorMessage);
-            Assert.Contains(ErrorMessages.NameIsRequired,
-                            viewModel.CurrentEditingMethodErrorMessage);
+            vm.DatatypeUnderEditErrorMessage.Contains(ErrorMessages.DatatypeIsRequired).ShouldBeFalse();
+            vm.DatatypeUnderEditErrorMessage.Contains(ErrorMessages.NameCannotContainAnInternalSpace).ShouldBeFalse();
+            vm.DatatypeUnderEditErrorMessage.Contains(ErrorMessages.NameCannotContainSpecialCharacters).ShouldBeTrue();
+            vm.DatatypeUnderEditErrorMessage.Contains(ErrorMessages.NamespaceCannotContainAnInternalSpace).ShouldBeFalse();
+            vm.DatatypeUnderEditErrorMessage.Contains(ErrorMessages.NamespaceCannotContainSpecialCharacters).ShouldBeFalse();
 
-            // Has valid Group and valid Name
-            viewModel.CurrentEditingMethodName = "CreateEmail";
+            // Datatype.ContainingName contains internal space and special character
+            vm.DatatypeUnderEdit.Name = "asdasd";
+            vm.DatatypeUnderEdit.ContainingNamespace = "asd asd#";
+            vm.AddNewDatatype();
 
-            viewModel.AddNewMethod();
+            vm.DatatypeUnderEditErrorMessage.Contains(ErrorMessages.DatatypeIsRequired).ShouldBeFalse();
+            vm.DatatypeUnderEditErrorMessage.Contains(ErrorMessages.NameCannotContainAnInternalSpace).ShouldBeFalse();
+            vm.DatatypeUnderEditErrorMessage.Contains(ErrorMessages.NameCannotContainSpecialCharacters).ShouldBeFalse();
+            vm.DatatypeUnderEditErrorMessage.Contains(ErrorMessages.NamespaceCannotContainAnInternalSpace).ShouldBeTrue();
+            vm.DatatypeUnderEditErrorMessage.Contains(ErrorMessages.NamespaceCannotContainSpecialCharacters).ShouldBeTrue();
 
-            Assert.DoesNotContain(ErrorMessages.GroupIsRequired,
-                                  viewModel.CurrentEditingMethodErrorMessage);
-            Assert.DoesNotContain(ErrorMessages.NameIsRequired,
-                                  viewModel.CurrentEditingMethodErrorMessage);
+            // Datatype.ContainingName contains internal space
+            vm.DatatypeUnderEdit.Name = "asdasd";
+            vm.DatatypeUnderEdit.ContainingNamespace = "asd asd";
+            vm.AddNewDatatype();
 
-            // Has valid Group, duplicate Name
-            viewModel.CurrentEditingMethodName = "CreateEmail";
+            vm.DatatypeUnderEditErrorMessage.Contains(ErrorMessages.DatatypeIsRequired).ShouldBeFalse();
+            vm.DatatypeUnderEditErrorMessage.Contains(ErrorMessages.NameCannotContainAnInternalSpace).ShouldBeFalse();
+            vm.DatatypeUnderEditErrorMessage.Contains(ErrorMessages.NameCannotContainSpecialCharacters).ShouldBeFalse();
+            vm.DatatypeUnderEditErrorMessage.Contains(ErrorMessages.NamespaceCannotContainAnInternalSpace).ShouldBeTrue();
+            vm.DatatypeUnderEditErrorMessage.Contains(ErrorMessages.NamespaceCannotContainSpecialCharacters).ShouldBeFalse();
 
-            viewModel.AddNewMethod();
+            // Datatype.ContainingName contains special character
+            vm.DatatypeUnderEdit.Name = "asdasd";
+            vm.DatatypeUnderEdit.ContainingNamespace = "asdasd#";
+            vm.AddNewDatatype();
 
-            Assert.DoesNotContain(ErrorMessages.GroupIsRequired,
-                                  viewModel.CurrentEditingMethodErrorMessage);
-            Assert.DoesNotContain(ErrorMessages.NameIsRequired,
-                                  viewModel.CurrentEditingMethodErrorMessage);
-            Assert.Contains(ErrorMessages.MethodAlreadyExists,
-                            viewModel.CurrentEditingMethodErrorMessage);
+            vm.DatatypeUnderEditErrorMessage.Contains(ErrorMessages.DatatypeIsRequired).ShouldBeFalse();
+            vm.DatatypeUnderEditErrorMessage.Contains(ErrorMessages.NameCannotContainAnInternalSpace).ShouldBeFalse();
+            vm.DatatypeUnderEditErrorMessage.Contains(ErrorMessages.NameCannotContainSpecialCharacters).ShouldBeFalse();
+            vm.DatatypeUnderEditErrorMessage.Contains(ErrorMessages.NamespaceCannotContainAnInternalSpace).ShouldBeFalse();
+            vm.DatatypeUnderEditErrorMessage.Contains(ErrorMessages.NamespaceCannotContainSpecialCharacters).ShouldBeTrue();
+
         }
     }
 }

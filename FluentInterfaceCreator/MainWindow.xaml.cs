@@ -1,8 +1,10 @@
-﻿using System.IO;
+﻿using System.Collections.Generic;
+using System.IO;
+using System.Linq;
 using System.Windows;
 using System.Windows.Forms;
 using Engine.Models;
-using Engine.Utilities;
+using Engine.Shared;
 using Engine.ViewModels;
 using FluentInterfaceCreator.Resources;
 using OpenFileDialog = Microsoft.Win32.OpenFileDialog;
@@ -14,24 +16,25 @@ namespace FluentInterfaceCreator
     {
         private const string FILE_NAME_EXTENSION = ".ficp";
 
-        private readonly ProjectEditorViewModel _projectEditor =
+        private readonly ProjectEditorViewModel _projectEditorViewModel =
             new ProjectEditorViewModel();
 
         public MainWindow()
         {
             InitializeComponent();
 
-            DataContext = _projectEditor;
+            DataContext = _projectEditorViewModel;
         }
 
         #region "File" menu options
 
+        // TODO: Move to ViewModel
         private void CreateNewProject_OnClick(object sender, RoutedEventArgs e)
         {
-            _projectEditor.CreateNewProject();
+            string selectedLanguage = "C#"; // Currently, only support C#
+            OutputLanguage outputLanguage = _projectEditorViewModel.OutputLanguages.First(ol => ol.Name == selectedLanguage);
 
-            _projectEditor.CurrentProject.FluentInterfaceFilesUpdated += 
-                CurrentProject_FluentInterfaceFilesUpdated;
+            _projectEditorViewModel.StartNewProject(outputLanguage);
         }
 
         private void LoadProject_OnClick(object sender, RoutedEventArgs e)
@@ -47,15 +50,13 @@ namespace FluentInterfaceCreator
 
             if (result == true)
             {
-                _projectEditor.LoadProjectFromXML(File.ReadAllText(dialog.FileName));
-
-                _projectEditor.CurrentProject.FluentInterfaceFilesUpdated +=
-                    CurrentProject_FluentInterfaceFilesUpdated;
+                _projectEditorViewModel.LoadProjectFromXML(File.ReadAllText(dialog.FileName));
             }
         }
 
         private void Exit_OnClick(object sender, RoutedEventArgs e)
         {
+            // TODO: Add Project.IsDirty and warn if there are unsaved changes
             Close();
         }
 
@@ -72,120 +73,105 @@ namespace FluentInterfaceCreator
 
         #endregion
 
+        #region Workspace button click handlers
+
         private void AddNewDatatype_OnClick(object sender, RoutedEventArgs e)
         {
-            _projectEditor.AddNewDatatype();
+            _projectEditorViewModel.AddNewDatatype();
         }
 
         private void DeleteDatatype_OnClick(object sender, RoutedEventArgs e)
         {
             Datatype selectedDatatype = ((FrameworkElement)sender).DataContext as Datatype;
 
-            _projectEditor.DeleteDatatype(selectedDatatype);
+            _projectEditorViewModel.DeleteDatatype(selectedDatatype);
         }
 
-        private void SaveMethodParameter_OnClick(object sender, RoutedEventArgs e)
+        private void AddMethodParameter_OnClick(object sender, RoutedEventArgs e)
         {
-            _projectEditor.AddParameterToMethod();
+            _projectEditorViewModel.AddParameterToMethod();
         }
 
         private void DeleteMethodParameter_OnClick(object sender, RoutedEventArgs e)
         {
             Parameter selectedParameter = ((FrameworkElement)sender).DataContext as Parameter;
 
-            _projectEditor.DeleteParameter(selectedParameter);
+            _projectEditorViewModel.DeleteParameterFromMethod(selectedParameter);
         }
 
-        private void SaveMethod_OnClick(object sender, RoutedEventArgs e)
+        private void AddMethod_OnClick(object sender, RoutedEventArgs e)
         {
-            _projectEditor.AddNewMethod();
+            _projectEditorViewModel.AddNewMethod();
         }
 
         private void DeleteMethod_OnClick(object sender, RoutedEventArgs e)
         {
             Method selectedMethod = ((FrameworkElement)sender).DataContext as Method;
 
-            _projectEditor.DeleteMethod(selectedMethod);
+            _projectEditorViewModel.DeleteMethod(selectedMethod);
         }
 
         private void SelectMethodsCallableNext_OnClick(object sender, RoutedEventArgs e)
         {
             Method selectedMethod = ((FrameworkElement)sender).DataContext as Method;
 
-            _projectEditor.SelectMethodsCallableNextFor(selectedMethod);
+            _projectEditorViewModel.SelectMethodsCallableNextFor(selectedMethod);
         }
 
         private void MethodCallableNext_OnChecked(object sender, RoutedEventArgs e)
         {
-            _projectEditor.RefreshCurrentProjectInterfaces();
+            _projectEditorViewModel.RefreshInterfaces();
         }
 
         private void SelectInterfaceToName_OnClick(object sender, RoutedEventArgs e)
         {
             InterfaceData selectedInterface = ((FrameworkElement)sender).DataContext as InterfaceData;
 
-            _projectEditor.CurrentInterface = selectedInterface;
+            _projectEditorViewModel.SelectedInterface = selectedInterface;
         }
 
         private void SaveInterfaceName_OnClick(object sender, RoutedEventArgs e)
         {
-            _projectEditor.SaveInterfaceName();
+            _projectEditorViewModel.UpdateSelectedInterfaceName();
         }
 
-        private void CreateFluentInterfaceFiles_OnClick(object sender, RoutedEventArgs e)
-        {
-            _projectEditor.CreateFluentInterface();
-        }
+        #endregion
 
-        private void CurrentProject_FluentInterfaceFilesUpdated(object sender, System.EventArgs e)
+        private void SaveFluentInterfaceInSingleFile_OnClick(object sender, RoutedEventArgs e)
         {
-            if (_projectEditor.CurrentProject.HasSingleFluentInterfaceFile)
-            {
-                FluentInterfaceSingleFilesTabControl.SelectedIndex = 0;
-            }
-
-            if (_projectEditor.CurrentProject.HasSeparateFluentInterfaceFiles)
-            {
-                FluentInterfaceSeparateFilesTabControl.SelectedIndex = 0;
-            }
-        }
-
-        private void SaveSingleBuilderFileToDisk_OnClick(object sender, RoutedEventArgs e)
-        {
-            // This requires adding a project reference to System.Windows.Forms.dll
             FolderBrowserDialog dialog =
                 new FolderBrowserDialog
                 {
-                    Description = Literals.SaveSingleFile,
+                    Description = Literals.SaveFluentInterfaceInSingleFile,
                     ShowNewFolderButton = true
                 };
 
             if(dialog.ShowDialog() == System.Windows.Forms.DialogResult.OK)
             {
-                foreach(FluentInterfaceFile file in 
-                    _projectEditor.CurrentProject.SingleFluentInterfaceFile)
-                {
-                    File.WriteAllText(Path.Combine(dialog.SelectedPath, file.FileName), file.Contents);
-                }
+                FluentInterfaceFile fluentInterfaceFile = 
+                    _projectEditorViewModel.FluentInterfaceInSingleFile();
+
+                File.WriteAllText(Path.Combine(dialog.SelectedPath, fluentInterfaceFile.Name), fluentInterfaceFile.FormattedText());
             }
         }
 
-        private void SaveSeparateFilesToDisk_OnClick(object sender, RoutedEventArgs e)
+        private void SaveFluentInterfaceInMultipleFiles_OnClick(object sender, RoutedEventArgs e)
         {
-            // This requires adding a project reference to System.Windows.Forms.dll
             FolderBrowserDialog dialog =
                 new FolderBrowserDialog
                 {
-                    Description = Literals.SaveIndividualFiles,
+                    Description = Literals.SaveFluentInterfaceInMultipleFiles,
                     ShowNewFolderButton = true
                 };
 
             if (dialog.ShowDialog() == System.Windows.Forms.DialogResult.OK)
             {
-                foreach (FluentInterfaceFile file in
-                    _projectEditor.CurrentProject.SeparateFluentInterfaceFiles)
+                IEnumerable<FluentInterfaceFile> fluentInterfaceFiles = 
+                    _projectEditorViewModel.FluentInterfaceInMultipleFiles();
+
+                foreach (FluentInterfaceFile file in fluentInterfaceFiles)
                 {
-                    File.WriteAllText(Path.Combine(dialog.SelectedPath, file.FileName), file.Contents);
+                    File.WriteAllText(Path.Combine(dialog.SelectedPath, file.Name), file.FormattedText());
                 }
             }
         }
@@ -195,7 +181,7 @@ namespace FluentInterfaceCreator
             SaveFileDialog dialog =
                 new SaveFileDialog
                 {
-                    FileName = _projectEditor.CurrentProject.Name,
+                    FileName = _projectEditorViewModel.CurrentProject.Name,
                     DefaultExt = FILE_NAME_EXTENSION,
                     Filter = "Fluent Interface Creator projects (*.ficp)|*.ficp"
                 };
@@ -205,7 +191,9 @@ namespace FluentInterfaceCreator
             if (result == true)
             {
                 File.WriteAllText(dialog.FileName,
-                                  Serialization.Serialize(_projectEditor.CurrentProject));
+                                  Serialization.Serialize(_projectEditorViewModel.CurrentProject));
+
+                // TODO: Reset Project.IsDirty flag
             }
         }
     }

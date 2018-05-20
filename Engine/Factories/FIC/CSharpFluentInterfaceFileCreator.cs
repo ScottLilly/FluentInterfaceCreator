@@ -1,30 +1,30 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
-using Engine.Common;
 using Engine.Models;
 
-namespace Engine.FluentInterfaceCreators
+namespace Engine.Factories.FIC
 {
-    internal sealed class CSharpFluentInterfaceFileCreator : FluentInterfaceFileCreatorBase
+    internal sealed class CSharpFluentInterfaceFileCreator : 
+        BaseFluentInterfaceFileCreator, IFluentInterfaceCreator
     {
-        private const string FILE_NAME_EXTENSION = ".cs";
-
         private enum InterfaceLocation
         {
             InBuilderFile,
             InSeparateFiles
         }
 
-        internal CSharpFluentInterfaceFileCreator(Project project) : base(project)
+        public CSharpFluentInterfaceFileCreator(Project project) : base(project)
         {
         }
 
-        internal override FluentInterfaceFile CreateSingleFile()
+        #region Public functions
+
+        public FluentInterfaceFile CreateInSingleFile()
         {
             return CreateBuilderFile(InterfaceLocation.InBuilderFile);
         }
 
-        internal override IEnumerable<FluentInterfaceFile> CreateIndividualFiles()
+        public IEnumerable<FluentInterfaceFile> CreateInMultipleFiles()
         {
             List<FluentInterfaceFile> files = new List<FluentInterfaceFile>();
 
@@ -34,10 +34,14 @@ namespace Engine.FluentInterfaceCreators
             return files;
         }
 
+        #endregion
+
+        #region Private functions
+
         private FluentInterfaceFile CreateBuilderFile(InterfaceLocation interfaceLocation)
         {
             FluentInterfaceFile builder = 
-                new FluentInterfaceFile($"{_project.FactoryClassName}{FILE_NAME_EXTENSION}");
+                new FluentInterfaceFile($"{_project.FactoryClassName}.{_project.OutputLanguage.FileExtension}");
 
             // Find namespaces needed for "using" statements
             List<string> namespacesNeeded = new List<string>();
@@ -138,7 +142,7 @@ namespace Engine.FluentInterfaceCreators
                 foreach(FluentInterfaceFile interfaceFile in interfaces)
                 {
                     builder.AddBlankLine();
-                    builder.AddLine(0, interfaceFile.Contents);
+                    builder.AddLine(0, interfaceFile.FormattedText());
                 }
             }
 
@@ -155,7 +159,7 @@ namespace Engine.FluentInterfaceCreators
             foreach(InterfaceData interfaceData in _project.Interfaces)
             {
                 FluentInterfaceFile interfaceFile =
-                    new FluentInterfaceFile($"{interfaceData.Name}{FILE_NAME_EXTENSION}");
+                    new FluentInterfaceFile($"{interfaceData.Name}.{_project.OutputLanguage.FileExtension}");
 
                 if(interfaceLocation == InterfaceLocation.InSeparateFiles)
                 {
@@ -189,8 +193,8 @@ namespace Engine.FluentInterfaceCreators
 
                 foreach(Method callableMethod in
                     interfaceData.CallableMethods
-                                 .Where(cm => cm.Group == Enums.MethodGroup.Instantiating ||
-                                              cm.Group == Enums.MethodGroup.Chaining))
+                                 .Where(cm => cm.Group == Method.MethodGroup.Instantiating ||
+                                              cm.Group == Method.MethodGroup.Chaining))
                 {
                     InterfaceData returnInterface =
                         _project.Interfaces
@@ -201,7 +205,7 @@ namespace Engine.FluentInterfaceCreators
 
                 foreach(Method callableMethod in
                     interfaceData.CallableMethods
-                                 .Where(cm => cm.Group == Enums.MethodGroup.Executing))
+                                 .Where(cm => cm.Group == Method.MethodGroup.Executing))
                 {
                     interfaceFile.AddLine(2, $"{callableMethod.ReturnDatatype.Name} {callableMethod.Signature};");
                 }
@@ -225,5 +229,7 @@ namespace Engine.FluentInterfaceCreators
                 .Interfaces
                 .FirstOrDefault(i => i.CalledByMethods.Exists(c => c.Name == method.Name));
         }
+
+        #endregion
     }
 }

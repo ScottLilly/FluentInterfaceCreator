@@ -5,10 +5,10 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:resources="clr-namespace:FluentInterfaceCreator.Resources"
         xmlns:viewModels="clr-namespace:Engine.ViewModels;assembly=Engine"
-        xmlns:models="clr-namespace:Engine.Models;assembly=Engine"
+        xmlns:converters="clr-namespace:FluentInterfaceCreator.Converters"
         d:DataContext="{d:DesignInstance viewModels:ProjectEditorViewModel}"
         mc:Ignorable="d"
-        FontSize="10pt"
+        FontSize="11pt"
         Title="{Binding Source={x:Static resources:Literals.AppTitle}}" 
         Width="1024" Height="768">
 
@@ -28,7 +28,9 @@
             <Setter Property="VerticalAlignment" Value="Center"/>
         </Style>
         <Style TargetType="Button">
-            <Setter Property="Margin" Value="3"/>
+            <Setter Property="Margin" Value="3, 0, 3, 0"/>
+            <Setter Property="Padding" Value="8, 3, 8, 3"/>
+            <Setter Property="HorizontalAlignment" Value="Center"/>
             <Setter Property="VerticalAlignment" Value="Center"/>
         </Style>
         <Style TargetType="DataGrid">
@@ -38,26 +40,19 @@
             <Setter Property="Margin" Value="3"/>
         </Style>
 
-        <BooleanToVisibilityConverter x:Key="BooleanToVisibility" />
-
-        <DataTemplate x:Key="FluentInterfaceFileHeaderTemplate" DataType="{x:Type models:FluentInterfaceFile}">
-            <TextBlock Text="{Binding FileName}"/>
-        </DataTemplate>
-
-        <DataTemplate x:Key="FluentInterfaceFileContentTemplate" DataType="{x:Type models:FluentInterfaceFile}">
-            <TextBox TextWrapping="Wrap"
-                     VerticalAlignment="Stretch"
-                     Background="Azure"
-                     IsReadOnly="True"
-                     VerticalScrollBarVisibility="Visible"
-                     Text="{Binding Contents, Mode=OneWay}"/>
-        </DataTemplate>
+        <converters:ConfigurableBooleanToVisibilityConverter 
+            x:Key="CollapsedWhenTrueVisibleWhenFalse"
+            True="Collapsed"
+            False="Visible"/>
+        <converters:ConfigurableBooleanToVisibilityConverter 
+            x:Key="VisibleWhenTrueCollapsedWhenFalse"
+            True="Visible"
+            False="Collapsed"/>
         
     </Window.Resources>
 
     <Grid>
         <Grid.RowDefinitions>
-            <RowDefinition Height="Auto"/>
             <RowDefinition Height="Auto"/>
             <RowDefinition Height="*"/>
             <RowDefinition Height="Auto"/>
@@ -66,8 +61,17 @@
         <!-- Menu -->
         <Menu Grid.Row="0" FontSize="11pt">
             <MenuItem Header="{Binding Source={x:Static resources:Literals.File}}">
-                <MenuItem Header="{Binding Source={x:Static resources:Literals.CreateNewProject}}"
-                          Click="CreateNewProject_OnClick"/>
+                <MenuItem Header="{Binding Source={x:Static resources:Literals.CreateNewProject}}">
+                    <ItemsControl ItemsSource="{Binding OutputLanguages}">
+                        <ItemsControl.ItemTemplate>
+                            <DataTemplate>
+                                <MenuItem Header="{Binding Name}" 
+                                          Click="CreateNewProject_OnClick"
+                                          CommandParameter="{Binding Name}"/>
+                            </DataTemplate>
+                        </ItemsControl.ItemTemplate>
+                    </ItemsControl>
+                </MenuItem>
                 <MenuItem Header="{Binding Source={x:Static resources:Literals.LoadProject}}"
                           Click="LoadProject_OnClick"/>
                 <Separator/>
@@ -81,12 +85,12 @@
         </Menu>
 
         <!-- Work Area -->
-        <TabControl Grid.Row="2"
+        <TabControl Grid.Row="1"
                     Margin="5"
-                    Visibility="{Binding HasProject, Converter={StaticResource BooleanToVisibility}}">
+                    Visibility="{Binding HasProject, Converter={StaticResource VisibleWhenTrueCollapsedWhenFalse}}">
         
             <!-- Project settings information -->
-            <TabItem Header="{Binding Source={x:Static resources:Literals.TabHeaderProjectSettings}}">
+            <TabItem Header="{Binding Source={x:Static resources:Literals.ProjectSettings}}">
                 
                 <Grid>
                     <Grid.RowDefinitions>
@@ -94,20 +98,11 @@
                     </Grid.RowDefinitions>
                     <Grid.ColumnDefinitions>
                         <ColumnDefinition Width="Auto"/>
-                        <ColumnDefinition Width="10"/>
-                        <ColumnDefinition Width="*"/>
                     </Grid.ColumnDefinitions>
 
                     <!-- Project Settings values -->
                     <Grid Grid.Row="0" Grid.Column="0">
                         <Grid.RowDefinitions>
-                            <RowDefinition Height="Auto"/>
-                            <RowDefinition Height="Auto"/>
-                            <RowDefinition Height="Auto"/>
-                            <RowDefinition Height="Auto"/>
-                            <RowDefinition Height="Auto"/>
-                            <RowDefinition Height="10"/>
-                            <RowDefinition Height="*"/>
                             <RowDefinition Height="Auto"/>
                             <RowDefinition Height="Auto"/>
                             <RowDefinition Height="Auto"/>
@@ -120,10 +115,11 @@
 
                         <Label Grid.Row="0" Grid.Column="0"
                                FontWeight="Bold"
-                               Content="{Binding Source={x:Static resources:Literals.Version}}"/>
+                               Content="{Binding Source={x:Static resources:Literals.Language}}"/>
                         <Label Grid.Row="0" Grid.Column="1"
+                               Width="150"
                                HorizontalAlignment="Left"
-                               Content="{Binding CurrentProject.Version.Complete, Mode=OneWay}"/>
+                               Content="{Binding CurrentProject.OutputLanguage.Name}"/>
 
                         <Label Grid.Row="1" Grid.Column="0"
                                FontWeight="Bold"
@@ -149,101 +145,117 @@
                                  HorizontalAlignment="Left"
                                  Text="{Binding CurrentProject.FactoryClassName}"/>
 
-                        <Label Grid.Row="4" Grid.Column="0"
-                               FontWeight="Bold"
-                               Content="{Binding Source={x:Static resources:Literals.Language}}"/>
-                        <ComboBox Grid.Row="4" Grid.Column="1"
-                                  Width="150"
-                                  HorizontalAlignment="Left"
-                                  ItemsSource="{Binding OutputLanguages}"
-                                  SelectedItem="{Binding CurrentProject.OutputLanguage}"/>
-
-                        <!-- Controls to add custom datatypes -->
-                        <Label Grid.Row="6" Grid.Column="0"
-                               Grid.ColumnSpan="2"
-                               HorizontalAlignment="Center"
-                               VerticalAlignment="Bottom"
-                               FontWeight="Bold"
-                               Content="{Binding Source={x:Static resources:Literals.AddCustomDatatypes}}"/>
-                        
-                        <Label Grid.Row="7" Grid.Column="0"
-                               Grid.ColumnSpan="2"
-                               MinHeight="25"
-                               HorizontalAlignment="Left"
-                               FontWeight="Bold"
-                               Foreground="Red"
-                               Content="{Binding CurrentEditingDatatypeErrorMessage}"/>
-
-                        <Label Grid.Row="8" Grid.Column="0"
-                               FontWeight="Bold"
-                               Content="{Binding Source={x:Static resources:Literals.DatatypeColon}}"/>
-                        <TextBox Grid.Row="8" Grid.Column="1"
-                                 HorizontalAlignment="Left"
-                                 MinWidth="200"
-                                 Text="{Binding CurrentEditingDatatypeName}"/>
-
-                        <Label Grid.Row="9" Grid.Column="0"
-                               FontWeight="Bold"
-                               Content="{Binding Source={x:Static resources:Literals.DatatypeNamespace}}"/>
-                        <TextBox Grid.Row="9" Grid.Column="1"
-                                 HorizontalAlignment="Left"
-                                 MinWidth="200"
-                                 Text="{Binding CurrentEditingDatatypeNamespace}"/>
-
-                        <Button Grid.Row="10" Grid.Column="0"
-                                Grid.ColumnSpan="2"
-                                HorizontalAlignment="Center"
-                                Content="{Binding Source={x:Static resources:Literals.AddNewDatatype}}"
-                                MinWidth="100"
-                                Click="AddNewDatatype_OnClick"/>
-
                     </Grid>
 
-                    <!-- Project Datatypes -->
-                    <Grid Grid.Row="0" Grid.Column="2">
-                        <Grid.RowDefinitions>
-                            <RowDefinition Height="Auto"/>
-                        </Grid.RowDefinitions>
-                        <Grid.ColumnDefinitions>
-                            <ColumnDefinition Width="*"/>
-                        </Grid.ColumnDefinitions>
+                </Grid>
+                
+            </TabItem>
 
-                        <DataGrid Grid.Row="0" Grid.Column="0" 
+            <!-- Project datatypes -->
+            <TabItem Header="{Binding Source={x:Static resources:Literals.Datatypes}}">
+
+                <Grid>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="*"/>
+                    </Grid.RowDefinitions>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="10"/>
+                        <ColumnDefinition Width="Auto"/>
+                    </Grid.ColumnDefinitions>
+
+                    <!-- Project Datatypes -->
+                    <DataGrid Grid.Row="0" Grid.Column="0"
                                   AutoGenerateColumns="False"
                                   HeadersVisibility="Column"
                                   CanUserAddRows="False"
                                   CanUserDeleteRows="False"
                                   VerticalScrollBarVisibility="Auto"
                                   ItemsSource="{Binding CurrentProject.Datatypes}">
-                            <DataGrid.Columns>
-                                <DataGridTextColumn Header="{Binding Source={x:Static resources:Literals.Namespace}}"
+                        <DataGrid.Columns>
+                            <DataGridTextColumn Header="{Binding Source={x:Static resources:Literals.Namespace}}"
                                                     IsReadOnly="True" 
                                                     Width="Auto"
-                                                    Binding="{Binding Path=InNamespace}"/>
-                                <DataGridTextColumn Header="{Binding Source={x:Static resources:Literals.Name}}"
+                                                    Binding="{Binding Path=ContainingNamespace}"/>
+                            <DataGridTextColumn Header="{Binding Source={x:Static resources:Literals.Name}}"
                                                     IsReadOnly="True" 
                                                     Width="*"
                                                     Binding="{Binding Path=Name}"/>
-                                <DataGridTemplateColumn MinWidth="75">
-                                    <DataGridTemplateColumn.CellTemplate>
-                                        <DataTemplate>
-                                            <Button Click="DeleteDatatype_OnClick" 
-                                                    Width="55"
+                            <DataGridTemplateColumn MinWidth="85">
+                                <DataGridTemplateColumn.CellTemplate>
+                                    <DataTemplate>
+                                        <Button Click="DeleteDatatype_OnClick" 
+                                                    Width="75"
                                                     Content="{Binding Source={x:Static resources:Literals.Delete}}"
-                                                    Visibility="{Binding Path=CanDelete, Mode=OneWay, Converter={StaticResource BooleanToVisibility}, FallbackValue=Hidden}"/>
-                                        </DataTemplate>
-                                    </DataGridTemplateColumn.CellTemplate>
-                                </DataGridTemplateColumn>
-                            </DataGrid.Columns>
-                        </DataGrid>
+                                                    Visibility="{Binding Path=IsNative, 
+                                                                         Mode=OneWay, 
+                                                                         Converter={StaticResource CollapsedWhenTrueVisibleWhenFalse}, 
+                                                                         FallbackValue=Hidden}"/>
+                                    </DataTemplate>
+                                </DataGridTemplateColumn.CellTemplate>
+                            </DataGridTemplateColumn>
+                        </DataGrid.Columns>
+                    </DataGrid>
+
+                    <Grid Grid.Row="0" Grid.Column="2">
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="Auto"/>
+                        </Grid.RowDefinitions>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="Auto"/>
+                            <ColumnDefinition Width="Auto"/>
+                        </Grid.ColumnDefinitions>
+
+                        <!-- Controls to add custom datatypes -->
+                        <Label Grid.Row="0" Grid.Column="0"
+                               Grid.ColumnSpan="2"
+                               HorizontalAlignment="Center"
+                               VerticalAlignment="Bottom"
+                               FontWeight="Bold"
+                               Content="{Binding Source={x:Static resources:Literals.AddCustomDatatypes}}"/>
+
+                        <Label Grid.Row="1" Grid.Column="0"
+                               Grid.ColumnSpan="2"
+                               MinHeight="25"
+                               HorizontalAlignment="Left"
+                               FontWeight="Bold"
+                               Foreground="Red"
+                               Content="{Binding DatatypeUnderEditErrorMessage}"/>
+
+                        <Label Grid.Row="2" Grid.Column="0"
+                               FontWeight="Bold"
+                               Content="{Binding Source={x:Static resources:Literals.Name}}"/>
+                        <TextBox Grid.Row="2" Grid.Column="1"
+                                 HorizontalAlignment="Left"
+                                 MinWidth="200"
+                                 Text="{Binding DatatypeUnderEdit.Name}"/>
+
+                        <Label Grid.Row="3" Grid.Column="0"
+                               FontWeight="Bold"
+                               Content="{Binding Source={x:Static resources:Literals.Namespace}}"/>
+                        <TextBox Grid.Row="3" Grid.Column="1"
+                                 HorizontalAlignment="Left"
+                                 MinWidth="200"
+                                 Text="{Binding DatatypeUnderEdit.ContainingNamespace}"/>
+
+                        <Button Grid.Row="4" Grid.Column="0"
+                                Grid.ColumnSpan="2"
+                                Content="{Binding Source={x:Static resources:Literals.AddNewDatatype}}"
+                                MinWidth="100"
+                                Click="AddNewDatatype_OnClick"/>
+
                     </Grid>
 
                 </Grid>
-                
+
             </TabItem>
-            
+
             <!-- Enter the methods in the fluent interface -->
-            <TabItem Header="{Binding Source={x:Static resources:Literals.TabHeaderEnterMethods}}">
+            <TabItem Header="{Binding Source={x:Static resources:Literals.EnterMethods}}">
                 
                 <Grid>
                     <Grid.RowDefinitions>
@@ -254,7 +266,7 @@
                         <ColumnDefinition Width="1*"/>
                     </Grid.ColumnDefinitions>
 
-                    <!-- Datagrids for Methods -->
+                    <!-- Datagrids to display current methods in the project -->
                     <Grid Grid.Row="0" Grid.Column="0">
                         <Grid.RowDefinitions>
                             <RowDefinition Height="Auto"/>
@@ -294,11 +306,11 @@
                                     Width="*"
                                     Binding="{Binding Path=ParameterList}"/>
 
-                                <DataGridTemplateColumn MinWidth="75">
+                                <DataGridTemplateColumn MinWidth="85">
                                     <DataGridTemplateColumn.CellTemplate>
                                         <DataTemplate>
                                             <Button Click="DeleteMethod_OnClick" 
-                                                    Width="55"
+                                                    Width="75"
                                                     Content="{Binding Source={x:Static resources:Literals.Delete}}"/>
                                         </DataTemplate>
                                     </DataGridTemplateColumn.CellTemplate>
@@ -334,11 +346,11 @@
                                     Width="*"
                                     Binding="{Binding Path=ParameterList}"/>
 
-                                <DataGridTemplateColumn MinWidth="75">
+                                <DataGridTemplateColumn MinWidth="85">
                                     <DataGridTemplateColumn.CellTemplate>
                                         <DataTemplate>
                                             <Button Click="DeleteMethod_OnClick" 
-                                                    Width="55"
+                                                    Width="75"
                                                     Content="{Binding Source={x:Static resources:Literals.Delete}}"/>
                                         </DataTemplate>
                                     </DataGridTemplateColumn.CellTemplate>
@@ -374,11 +386,11 @@
                                     Width="*"
                                     Binding="{Binding Path=ParameterList}"/>
 
-                                <DataGridTemplateColumn MinWidth="75">
+                                <DataGridTemplateColumn MinWidth="85">
                                     <DataGridTemplateColumn.CellTemplate>
                                         <DataTemplate>
                                             <Button Click="DeleteMethod_OnClick" 
-                                                    Width="55"
+                                                    Width="75"
                                                     Padding="1"
                                                     Content="{Binding Source={x:Static resources:Literals.Delete}}"/>
                                         </DataTemplate>
@@ -416,14 +428,14 @@
                                    Grid.ColumnSpan="2"
                                    HorizontalAlignment="Center"
                                    FontWeight="Bold"
-                                   Content="{Binding Source={x:Static resources:Literals.AddMethod}}"/>
+                                   Content="{Binding Source={x:Static resources:Literals.AddNewMethod}}"/>
 
                             <Label Grid.Row="1" Grid.Column="0"
                                    Grid.ColumnSpan="2"
                                    HorizontalAlignment="Left"
                                    FontWeight="Bold"
                                    Foreground="Red"
-                                   Content="{Binding CurrentEditingMethodErrorMessage}"/>
+                                   Content="{Binding MethodUnderEditErrorMessage}"/>
 
                             <Label Grid.Row="2" Grid.Column="0"
                                    FontWeight="Bold"
@@ -431,8 +443,8 @@
                             <ComboBox Grid.Row="2" Grid.Column="1"
                                       MinWidth="175"
                                       HorizontalAlignment="Left"
-                                      ItemsSource="{Binding MethodGroups}"
-                                      SelectedItem="{Binding CurrentEditingMethodGroup}"/>
+                                      ItemsSource="{Binding Path=MethodUnderEdit.MethodGroups}"
+                                      SelectedItem="{Binding MethodUnderEdit.Group}"/>
 
                             <Label Grid.Row="3" Grid.Column="0"
                                    FontWeight="Bold"
@@ -440,20 +452,20 @@
                             <TextBox Grid.Row="3" Grid.Column="1"
                                      HorizontalAlignment="Left"
                                      MinWidth="175"
-                                     Text="{Binding CurrentEditingMethodName}"/>
+                                     Text="{Binding MethodUnderEdit.Name}"/>
 
                             <Label Grid.Row="4" Grid.Column="0"
                                    FontWeight="Bold"
-                                   Visibility="{Binding ShouldDisplayReturnDatatype, Converter={StaticResource BooleanToVisibility}}"
+                                   Visibility="{Binding MethodUnderEdit.RequiresReturnDatatype, Converter={StaticResource VisibleWhenTrueCollapsedWhenFalse}}"
                                    Content="{Binding Source={x:Static resources:Literals.ReturnType}}"/>
                             <ComboBox Grid.Row="4" Grid.Column="1"
                                       MinWidth="175"
                                       HorizontalAlignment="Left"
                                       Width="Auto"
-                                      Visibility="{Binding ShouldDisplayReturnDatatype, Converter={StaticResource BooleanToVisibility}}"
+                                      Visibility="{Binding MethodUnderEdit.RequiresReturnDatatype, Converter={StaticResource VisibleWhenTrueCollapsedWhenFalse}}"
                                       ItemsSource="{Binding CurrentProject.Datatypes}"
                                       DisplayMemberPath="Name"
-                                      SelectedItem="{Binding CurrentEditingMethodReturnDatatype}"/>
+                                      SelectedItem="{Binding MethodUnderEdit.ReturnDatatype}"/>
 
                             <!-- Method Parameters -->
                             <Border Grid.Row="5" Grid.Column="0"
@@ -489,7 +501,7 @@
                                               HeadersVisibility="Column"
                                               CanUserAddRows="False"
                                               CanUserDeleteRows="False"
-                                              ItemsSource="{Binding CurrentEditingMethodParameters}">
+                                              ItemsSource="{Binding MethodUnderEdit.Parameters}">
 
                                         <DataGrid.Columns>
 
@@ -497,7 +509,7 @@
                                                 Header="{Binding Source={x:Static resources:Literals.Datatype}}" 
                                                 IsReadOnly="True" 
                                                 Width="Auto"
-                                                Binding="{Binding Path=DataType}"/>
+                                                Binding="{Binding Path=Datatype.Name}"/>
 
                                             <DataGridTextColumn 
                                                 Header="{Binding Source={x:Static resources:Literals.Name}}" 
@@ -510,7 +522,6 @@
                                                     <DataTemplate>
                                                         <Button Click="DeleteMethodParameter_OnClick" 
                                                                 Width="Auto"
-                                                                Padding="1"
                                                                 Content="{Binding Source={x:Static resources:Literals.Delete}}"/>
                                                     </DataTemplate>
                                                 </DataGridTemplateColumn.CellTemplate>
@@ -525,7 +536,7 @@
                                            HorizontalAlignment="Left" 
                                            FontWeight="Bold"
                                            Foreground="Red"
-                                           Content="{Binding CurrentEditingMethodParameterErrorMessage}"/>
+                                           Content="{Binding ParameterUnderEditErrorMessage}"/>
 
                                     <Label Grid.Row="3" Grid.Column="0"
                                            FontWeight="Bold"
@@ -535,7 +546,7 @@
                                               MinWidth="175"
                                               ItemsSource="{Binding CurrentProject.Datatypes}"
                                               DisplayMemberPath="Name"
-                                              SelectedItem="{Binding CurrentEditingMethodParameterDatatype}"/>
+                                              SelectedItem="{Binding ParameterUnderEdit.Datatype}"/>
 
                                     <Label Grid.Row="4" Grid.Column="0"
                                            FontWeight="Bold"
@@ -543,26 +554,24 @@
                                     <TextBox Grid.Row="4" Grid.Column="1"
                                              HorizontalAlignment="Left"
                                              MinWidth="175"
-                                             Text="{Binding CurrentEditingMethodParameterName}"/>
+                                             Text="{Binding ParameterUnderEdit.Name}"/>
 
                                     <Button Grid.Row="5" Grid.Column="0"
                                             Grid.ColumnSpan="2"
-                                            HorizontalAlignment="Center"
                                             Content="{Binding Source={x:Static resources:Literals.AddParameter}}"
                                             MinWidth="100"
-                                            Click="SaveMethodParameter_OnClick"/>
+                                            Click="AddMethodParameter_OnClick"/>
 
                                 </Grid>
 
                             </Border>
 
-                            <!-- Save Method button -->
+                            <!-- Add Method button -->
                             <Button Grid.Row="7" Grid.Column="0"
                                     Grid.ColumnSpan="2"
-                                    HorizontalAlignment="Center"
-                                    Content="{Binding Source={x:Static resources:Literals.SaveMethod}}"
+                                    Content="{Binding Source={x:Static resources:Literals.AddMethod}}"
                                     MinWidth="100"
-                                    Click="SaveMethod_OnClick"/>
+                                    Click="AddMethod_OnClick"/>
                         </Grid>
 
                     </Border>
@@ -572,7 +581,7 @@
             </TabItem>
             
             <!-- Set the calling order for the Methods -->
-            <TabItem Header="{Binding Source={x:Static resources:Literals.TabHeaderSetCallingOrder}}">
+            <TabItem Header="{Binding Source={x:Static resources:Literals.SetCallingOrder}}">
 
                 <Grid>
                     <Grid.RowDefinitions>
@@ -622,7 +631,7 @@
                                 <DataGridTemplateColumn.CellTemplate>
                                     <DataTemplate>
                                         <Button Click="SelectMethodsCallableNext_OnClick"
-                                                Width="55"
+                                                Width="75"
                                                 Content="{Binding Source={x:Static resources:Literals.Select}}"/>
                                     </DataTemplate>
                                 </DataGridTemplateColumn.CellTemplate>
@@ -634,11 +643,11 @@
 
                     <!-- Chain ending methods -->
                     <StackPanel Grid.Row="2" Grid.Column="0"
-                                Visibility="{Binding HasMethod, Converter={StaticResource BooleanToVisibility}}"
+                                Visibility="{Binding HasMethod, Converter={StaticResource VisibleWhenTrueCollapsedWhenFalse}}"
                                 Orientation="Horizontal">
                         <Label FontWeight="Bold"
                                Content="{Binding Source={x:Static resources:Literals.SelectedMethod}}"/>
-                        <Label Content="{Binding CurrentMethod.Signature}"/>
+                        <Label Content="{Binding SelectedMethod.Signature}"/>
                     </StackPanel>
 
                     <DataGrid Grid.Row="3" Grid.Column="0"
@@ -646,8 +655,8 @@
                               HeadersVisibility="Column"
                               CanUserAddRows="False"
                               CanUserDeleteRows="False"
-                              Visibility="{Binding HasMethod, Converter={StaticResource BooleanToVisibility}}"
-                              ItemsSource="{Binding CurrentMethod.MethodsCallableNext}">
+                              Visibility="{Binding HasMethod, Converter={StaticResource VisibleWhenTrueCollapsedWhenFalse}}"
+                              ItemsSource="{Binding SelectedMethod.MethodsCallableNext}">
 
                         <DataGrid.Columns>
 
@@ -681,7 +690,7 @@
             </TabItem>
 
             <!-- Name the interfaces -->
-            <TabItem Header="{Binding Source={x:Static resources:Literals.TabHeaderNameInterfaces}}">
+            <TabItem Header="{Binding Source={x:Static resources:Literals.NameInterfaces}}">
 
                 <Grid>
                     <Grid.RowDefinitions>
@@ -717,7 +726,7 @@
                                     <DataGridTemplateColumn.CellTemplate>
                                         <DataTemplate>
                                             <Button Click="SelectInterfaceToName_OnClick"
-                                                    Width="55"
+                                                    Width="75"
                                                     Content="{Binding Source={x:Static resources:Literals.Select}}"/>
                                         </DataTemplate>
                                     </DataGridTemplateColumn.CellTemplate>
@@ -731,7 +740,7 @@
                     
                     <!-- Interface naming controls -->
                     <Grid Grid.Row="0" Grid.Column="1"
-                          Visibility="{Binding HasInterface, Converter={StaticResource BooleanToVisibility}}">
+                          Visibility="{Binding HasInterface, Converter={StaticResource VisibleWhenTrueCollapsedWhenFalse}}">
                         <Grid.RowDefinitions>
                             <RowDefinition Height="Auto"/>
                             <RowDefinition Height="Auto"/>
@@ -750,7 +759,7 @@
                                HorizontalAlignment="Left" 
                                FontWeight="Bold"
                                Foreground="Red"
-                               Content="{Binding CurrentEditingInterfaceErrorMessage}"/>
+                               Content="{Binding InterfaceUnderEditErrorMessage}"/>
                         
                         <StackPanel Grid.Row="1" Grid.Column="0"
                                     Orientation="Horizontal">
@@ -760,16 +769,13 @@
 
                             <TextBox HorizontalAlignment="Left"
                                      MinWidth="200"
-                                     Text="{Binding CurrentEditingInterfaceName}"/>
+                                     Text="{Binding InterfaceUnderEdit.Name}"/>
 
                         </StackPanel>
 
                         <Button Grid.Row="2" Grid.Column="0"
                                 MinWidth="75"
-                                Padding="3"
-                                Margin="10"
-                                HorizontalAlignment="Center"
-                                Content="{Binding Source={x:Static resources:Literals.Save}}"
+                                Content="{Binding Source={x:Static resources:Literals.SaveName}}"
                                 Click="SaveInterfaceName_OnClick"/>
 
                         <Label Grid.Row="3" Grid.Column="0"
@@ -782,7 +788,7 @@
                                   HeadersVisibility="Column"
                                   CanUserAddRows="False"
                                   CanUserDeleteRows="False"
-                                  ItemsSource="{Binding CurrentInterface.CalledByMethods}">
+                                  ItemsSource="{Binding SelectedInterface.CalledByMethods}">
 
                             <DataGrid.Columns>
 
@@ -805,7 +811,7 @@
                                   HeadersVisibility="Column"
                                   CanUserAddRows="False"
                                   CanUserDeleteRows="False"
-                                  ItemsSource="{Binding CurrentInterface.CallableMethods}">
+                                  ItemsSource="{Binding SelectedInterface.CallableMethods}">
 
                             <DataGrid.Columns>
 
@@ -824,97 +830,38 @@
 
             </TabItem>
 
-            <!-- Create the output file(s) for the fluent interface -->
-            <TabItem Header="{Binding Source={x:Static resources:Literals.TabHeaderCreateFluentInterfaceFiles}}">
-                
-                <Grid>
-                    <Grid.RowDefinitions>
-                        <RowDefinition Height="Auto"/>
-                        <RowDefinition Height="Auto"/>
-                        <RowDefinition Height="*"/>
-                        <RowDefinition Height="Auto"/>
-                    </Grid.RowDefinitions>
-                    <Grid.ColumnDefinitions>
-                        <ColumnDefinition Width="*"/>
-                        <ColumnDefinition Width="10"/>
-                        <ColumnDefinition Width="*"/>
-                    </Grid.ColumnDefinitions>
-
-                    <Button Grid.Row="0" Grid.Column="0" 
-                            Grid.ColumnSpan="3"
-                            HorizontalAlignment="Center"
-                            VerticalAlignment="Top"
-                            Width="250"
-                            Padding="3"
-                            Click="CreateFluentInterfaceFiles_OnClick"
-                            Content="{Binding Source={x:Static resources:Literals.CreateFluentInterfaceFiles}}"/>
-
-                    <Label Grid.Row="1" Grid.Column="0"
-                           FontWeight="Bold"
-                           HorizontalAlignment="Center"
-                           Visibility="{Binding CurrentProject.HasSingleFluentInterfaceFile, Converter={StaticResource BooleanToVisibility}}"
-                           Content="Single File"/>
-
-                    <Label Grid.Row="1" Grid.Column="2"
-                           FontWeight="Bold"
-                           HorizontalAlignment="Center"
-                           Visibility="{Binding CurrentProject.HasSeparateFluentInterfaceFiles, Converter={StaticResource BooleanToVisibility}}"
-                           Content="Individual Files"/>
-
-                    <TabControl Grid.Row="2" Grid.Column="0"
-                                x:Name="FluentInterfaceSingleFilesTabControl"
-                                Visibility="{Binding CurrentProject.HasSingleFluentInterfaceFile, Converter={StaticResource BooleanToVisibility}}"
-                                ItemsSource="{Binding CurrentProject.SingleFluentInterfaceFile}"
-                                ItemTemplate="{StaticResource FluentInterfaceFileHeaderTemplate}"
-                                ContentTemplate="{StaticResource FluentInterfaceFileContentTemplate}"/>
-
-                    <TabControl Grid.Row="2" Grid.Column="2"
-                                x:Name="FluentInterfaceSeparateFilesTabControl"
-                                Visibility="{Binding CurrentProject.HasSeparateFluentInterfaceFiles, Converter={StaticResource BooleanToVisibility}}"
-                                ItemsSource="{Binding CurrentProject.SeparateFluentInterfaceFiles}"
-                                ItemTemplate="{StaticResource FluentInterfaceFileHeaderTemplate}"
-                                ContentTemplate="{StaticResource FluentInterfaceFileContentTemplate}"/>
-
-                    <Button Grid.Row="3" Grid.Column="0" 
-                            HorizontalAlignment="Center"
-                            Width="Auto"
-                            Padding="3"
-                            Visibility="{Binding CurrentProject.HasSeparateFluentInterfaceFiles, Converter={StaticResource BooleanToVisibility}}"
-                            Click="SaveSingleBuilderFileToDisk_OnClick"
-                            Content="{Binding Source={x:Static resources:Literals.SaveToDisk}}"/>
-
-                    <Button Grid.Row="3" Grid.Column="2" 
-                            HorizontalAlignment="Center"
-                            Width="Auto"
-                            Padding="3"
-                            Visibility="{Binding CurrentProject.HasSeparateFluentInterfaceFiles, Converter={StaticResource BooleanToVisibility}}"
-                            Click="SaveSeparateFilesToDisk_OnClick"
-                            Content="{Binding Source={x:Static resources:Literals.SaveToDisk}}"/>
-
-                </Grid>
-
-            </TabItem>
-
         </TabControl>
         
         <!-- Buttons -->
-        <StackPanel Grid.Row="3"
-                    HorizontalAlignment="Right"
-                    Orientation="Horizontal">
+        <DockPanel Grid.Row="2"
+                   HorizontalAlignment="Stretch"
+                   Margin="5">
 
-            <Button MinWidth="75"
-                    Padding="3"
-                    Margin="10"
-                    HorizontalAlignment="Right"
-                    Visibility="{Binding HasProject, Converter={StaticResource BooleanToVisibility}}"
-                    Content="{Binding Source={x:Static resources:Literals.Save}}"
-                    Click="SaveProject_OnClick"/>
+            <StackPanel HorizontalAlignment="Left"
+                        Orientation="Horizontal">
+                <Button Width="Auto"
+                        Click="SaveFluentInterfaceInSingleFile_OnClick"
+                        IsEnabled="{Binding CurrentProject.CanCreateFiles}"
+                        Visibility="{Binding HasProject, Converter={StaticResource VisibleWhenTrueCollapsedWhenFalse}}"
+                        Content="{Binding Source={x:Static resources:Literals.SaveFluentInterfaceInSingleFile}}"/>
 
-        </StackPanel>
+                <Button Width="Auto"
+                        Click="SaveFluentInterfaceInMultipleFiles_OnClick"
+                        IsEnabled="{Binding CurrentProject.CanCreateFiles}"
+                        Visibility="{Binding HasProject, Converter={StaticResource VisibleWhenTrueCollapsedWhenFalse}}"
+                        Content="{Binding Source={x:Static resources:Literals.SaveFluentInterfaceInMultipleFiles}}"/>
+            </StackPanel>
+
+            <StackPanel HorizontalAlignment="Right"
+                        Orientation="Horizontal">
+                <Button MinWidth="75"
+                        Visibility="{Binding HasProject, Converter={StaticResource VisibleWhenTrueCollapsedWhenFalse}}"
+                        Content="{Binding Source={x:Static resources:Literals.SaveProject}}"
+                        Click="SaveProject_OnClick"/>
+            </StackPanel>
+
+        </DockPanel>
         
     </Grid>
 
 </Window>
-
-
-
