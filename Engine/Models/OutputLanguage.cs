@@ -1,8 +1,10 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Collections.ObjectModel;
 
 namespace Engine.Models
 {
+    [Serializable]
     public class OutputLanguage
     {
         public string Name { get; set; }

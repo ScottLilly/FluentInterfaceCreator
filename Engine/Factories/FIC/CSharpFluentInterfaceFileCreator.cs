@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 using Engine.Models;
+using Engine.Shared;
 
 namespace Engine.Factories.FIC
 {
@@ -9,8 +10,8 @@ namespace Engine.Factories.FIC
     {
         private enum InterfaceLocation
         {
-            InBuilderFile,
-            InSeparateFiles
+            BuilderFile,
+            IndividualFiles
         }
 
         public CSharpFluentInterfaceFileCreator(Project project) : base(project)
@@ -21,15 +22,15 @@ namespace Engine.Factories.FIC
 
         public FluentInterfaceFile CreateInSingleFile()
         {
-            return CreateBuilderFile(InterfaceLocation.InBuilderFile);
+            return CreateBuilderFile(InterfaceLocation.BuilderFile);
         }
 
         public IEnumerable<FluentInterfaceFile> CreateInMultipleFiles()
         {
             List<FluentInterfaceFile> files = new List<FluentInterfaceFile>();
 
-            files.Add(CreateBuilderFile(InterfaceLocation.InSeparateFiles));
-            files.AddRange(CreateInterfaceFiles(InterfaceLocation.InSeparateFiles));
+            files.Add(CreateBuilderFile(InterfaceLocation.IndividualFiles));
+            files.AddRange(CreateInterfaceFiles(InterfaceLocation.IndividualFiles));
 
             return files;
         }
@@ -43,110 +44,34 @@ namespace Engine.Factories.FIC
             FluentInterfaceFile builder = 
                 new FluentInterfaceFile($"{_project.FactoryClassName}.{_project.OutputLanguage.FileExtension}");
 
-            // Find namespaces needed for "using" statements
-            List<string> namespacesNeeded = new List<string>();
+            AddRequiredUsingStatements(builder, _project.NamespacesNeeded());
 
-            foreach(Method method in _project.InstantiatingMethods)
-            {
-                namespacesNeeded.AddRange(method.NamespacesNeeded);
-            }
-
-            foreach(Method method in _project.ChainingMethods)
-            {
-                namespacesNeeded.AddRange(method.NamespacesNeeded);
-            }
-
-            foreach(Method method in _project.ExecutingMethods)
-            {
-                namespacesNeeded.AddRange(method.NamespacesNeeded);
-            }
-
-            // Add "using" statements
-            foreach(string ns in namespacesNeeded.Distinct().OrderBy(n => n))
-            {
-                builder.AddLine(0, $"using {ns};");
-            }
-
-            if(namespacesNeeded.Any())
-            {
-                builder.AddBlankLine();
-            }
-
-            // Namespace definition
             builder.AddLine(0, $"namespace {_project.FactoryClassNamespace}");
             builder.AddLine(0, "{");
 
-            // Class definition
             builder.AddLine(1, $"public class {_project.FactoryClassName} : {_project.InterfaceListAsCommaSeparatedString}");
             builder.AddLine(1, "{");
 
-            // Instantiating functions
-            builder.AddLine(2, "// Instantiating functions");
+            AddInstantiatingFunctions(builder);
+            AddChainingFunctions(builder);
+            AddExecutingFunctions(builder);
 
-            foreach(Method method in _project.InstantiatingMethods)
-            {
-                InterfaceData returnDataType = ReturnDataTypeForMethod(method);
-
-                if(returnDataType != null)
-                {
-                    builder.AddBlankLine();
-                    builder.AddLine(2, $"public static {returnDataType.Name} {method.Signature}");
-                    builder.AddLine(2, "{");
-                    builder.AddLine(3, $"return new {_project.FactoryClassName}();");
-                    builder.AddLine(2, "}");
-                }
-            }
-
-            // Chaining functions
-            builder.AddBlankLine();
-            builder.AddLine(2, "// Chaining functions");
-
-            foreach(Method method in _project.ChainingMethods)
-            {
-                InterfaceData returnDataType = ReturnDataTypeForMethod(method);
-
-                if(returnDataType != null)
-                {
-                    builder.AddBlankLine();
-                    builder.AddLine(2, $"public {returnDataType.Name} {method.Signature}");
-                    builder.AddLine(2, "{");
-                    builder.AddLine(3, "return this;");
-                    builder.AddLine(2, "}");
-                }
-            }
-
-            // Executing functions
-            builder.AddBlankLine();
-            builder.AddLine(2, "// Executing functions");
-
-            foreach(Method method in _project.ExecutingMethods)
-            {
-                builder.AddBlankLine();
-                builder.AddLine(2, $"public {method.ReturnDatatype.Name} {method.Signature}");
-                builder.AddLine(2, "{");
-                builder.AddLine(2, "}");
-            }
-
-            // Close class definition
+            // Close class
             builder.AddLine(1, "}");
 
-            // Append interfaces
-            if(interfaceLocation == InterfaceLocation.InBuilderFile)
+            // Append interfaces, if single file output
+            if(interfaceLocation == InterfaceLocation.BuilderFile)
             {
-                List<FluentInterfaceFile> interfaces =
-                    CreateInterfaceFiles(InterfaceLocation.InBuilderFile);
+                builder.AddLineAfterBlankLine(1, "// Interfaces");
 
-                builder.AddBlankLine();
-                builder.AddLine(1, "// Interfaces");
-
-                foreach(FluentInterfaceFile interfaceFile in interfaces)
+                foreach(FluentInterfaceFile interfaceFile in 
+                    CreateInterfaceFiles(InterfaceLocation.BuilderFile))
                 {
-                    builder.AddBlankLine();
-                    builder.AddLine(0, interfaceFile.FormattedText());
+                    builder.AddLineAfterBlankLine(0, interfaceFile.FormattedText());
                 }
             }
 
-            // Close namespace definition
+            // Close namespace
             builder.AddLine(0, "}");
 
             return builder;
@@ -158,69 +83,111 @@ namespace Engine.Factories.FIC
 
             foreach(InterfaceData interfaceData in _project.Interfaces)
             {
-                FluentInterfaceFile interfaceFile =
+                FluentInterfaceFile builder =
                     new FluentInterfaceFile($"{interfaceData.Name}.{_project.OutputLanguage.FileExtension}");
 
-                if(interfaceLocation == InterfaceLocation.InSeparateFiles)
+                if(interfaceLocation == InterfaceLocation.IndividualFiles)
                 {
-                    // Find namespaces needed for "using" statements
-                    List<string> namespacesNeeded = new List<string>();
-
-                    foreach(Method method in interfaceData.CallableMethods)
-                    {
-                        namespacesNeeded.AddRange(method.NamespacesNeeded);
-                    }
-
-                    // Add "using" statements
-                    foreach(string ns in namespacesNeeded.Distinct().OrderBy(n => n))
-                    {
-                        interfaceFile.AddLine(0, $"using {ns};");
-                    }
-
-                    if(namespacesNeeded.Any())
-                    {
-                        interfaceFile.AddBlankLine();
-                    }
+                    AddRequiredUsingStatements(builder, interfaceData.NamespacesNeeded());
 
                     // Start namespace
-                    interfaceFile.AddLine(0, $"namespace {_project.FactoryClassNamespace}");
-                    interfaceFile.AddLine(0, "{");
+                    builder.AddLine(0, $"namespace {_project.FactoryClassNamespace}");
+                    builder.AddLine(0, "{");
                 }
 
-                interfaceFile.AddLine(1, $"public interface {interfaceData.Name}");
+                builder.AddLine(1, $"public interface {interfaceData.Name}");
 
-                interfaceFile.AddLine(1, "{");
+                builder.AddLine(1, "{");
 
                 foreach(Method callableMethod in
-                    interfaceData.CallableMethods
-                                 .Where(cm => cm.Group == Method.MethodGroup.Instantiating ||
-                                              cm.Group == Method.MethodGroup.Chaining))
+                    interfaceData.CallableMethods.Where(cm => cm.Group.IsChainStartingMethod()))
                 {
                     InterfaceData returnInterface =
                         _project.Interfaces
                                 .FirstOrDefault(i => i.CalledByMethods.Exists(cm => cm.Name == callableMethod.Name));
 
-                    interfaceFile.AddLine(2, $"{returnInterface?.Name} {callableMethod.Signature};");
+                    builder.AddLine(2, $"{returnInterface?.Name} {callableMethod.Signature};");
                 }
 
                 foreach(Method callableMethod in
                     interfaceData.CallableMethods
                                  .Where(cm => cm.Group == Method.MethodGroup.Executing))
                 {
-                    interfaceFile.AddLine(2, $"{callableMethod.ReturnDatatype.Name} {callableMethod.Signature};");
+                    builder.AddLine(2, $"{callableMethod.ReturnDatatype.Name} {callableMethod.Signature};");
                 }
 
-                interfaceFile.AddLine(1, "}");
+                builder.AddLine(1, "}");
 
-                if(interfaceLocation == InterfaceLocation.InSeparateFiles)
+                if(interfaceLocation == InterfaceLocation.IndividualFiles)
                 {
-                    interfaceFile.AddLine(0, "}");
+                    builder.AddLine(0, "}");
                 }
 
-                interfaces.Add(interfaceFile);
+                interfaces.Add(builder);
             }
 
             return interfaces;
+        }
+
+        private void AddInstantiatingFunctions(FluentInterfaceFile builder)
+        {
+            builder.AddLine(2, "// Instantiating functions");
+
+            foreach(Method method in _project.InstantiatingMethods)
+            {
+                InterfaceData returnDataType = ReturnDataTypeForMethod(method);
+
+                if(returnDataType != null)
+                {
+                    builder.AddLineAfterBlankLine(2, $"public static {returnDataType.Name} {method.Signature}");
+                    builder.AddLine(2, "{");
+                    builder.AddLine(3, $"return new {_project.FactoryClassName}();");
+                    builder.AddLine(2, "}");
+                }
+            }
+        }
+
+        private void AddChainingFunctions(FluentInterfaceFile builder)
+        {
+            builder.AddLineAfterBlankLine(2, "// Chaining functions");
+
+            foreach(Method method in _project.ChainingMethods)
+            {
+                InterfaceData returnDataType = ReturnDataTypeForMethod(method);
+
+                if(returnDataType != null)
+                {
+                    builder.AddLineAfterBlankLine(2, $"public {returnDataType.Name} {method.Signature}");
+                    builder.AddLine(2, "{");
+                    builder.AddLine(3, "return this;");
+                    builder.AddLine(2, "}");
+                }
+            }
+        }
+
+        private void AddExecutingFunctions(FluentInterfaceFile builder)
+        {
+            builder.AddLineAfterBlankLine(2, "// Executing functions");
+
+            foreach(Method method in _project.ExecutingMethods)
+            {
+                builder.AddLineAfterBlankLine(2, $"public {method.ReturnDatatype.Name} {method.Signature}");
+                builder.AddLine(2, "{");
+                builder.AddLine(2, "}");
+            }
+        }
+
+        private static void AddRequiredUsingStatements(FluentInterfaceFile builder, List<string> namespaces)
+        {
+            foreach(string ns in namespaces.Distinct().OrderBy(n => n))
+            {
+                builder.AddLine(0, $"using {ns};");
+            }
+
+            if(namespaces.Any())
+            {
+                builder.AddBlankLine();
+            }
         }
 
         private InterfaceData ReturnDataTypeForMethod(Method method)

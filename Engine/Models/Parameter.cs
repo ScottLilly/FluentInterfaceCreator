@@ -6,6 +6,7 @@ using PropertyChanged;
 
 namespace Engine.Models
 {
+    [Serializable]
     [AddINotifyPropertyChangedInterface]
     public class Parameter
     {

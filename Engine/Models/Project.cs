@@ -3,13 +3,13 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Globalization;
 using System.Linq;
-using System.Reflection;
 using Engine.Resources;
 using Engine.Shared;
 using PropertyChanged;
 
 namespace Engine.Models
 {
+    [Serializable]
     [AddINotifyPropertyChangedInterface]
     public class Project
     {
@@ -149,6 +149,28 @@ namespace Engine.Models
         #endregion
 
         #region Internal functions
+
+        internal List<string> NamespacesNeeded()
+        {
+            List<string> namespaces = new List<string>();
+
+            foreach(Method method in InstantiatingMethods)
+            {
+                namespaces.AddRange(method.NamespacesNeeded);
+            }
+
+            foreach(Method method in ChainingMethods)
+            {
+                namespaces.AddRange(method.NamespacesNeeded);
+            }
+
+            foreach(Method method in ExecutingMethods)
+            {
+                namespaces.AddRange(method.NamespacesNeeded);
+            }
+
+            return namespaces.Distinct().OrderBy(n => n).ToList();
+        }
 
         internal void UpdateInterfaces()
         {

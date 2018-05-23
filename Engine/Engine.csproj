@@ -49,7 +49,6 @@
     <Compile Include="Factories\FIC\BaseFluentInterfaceFileCreator.cs" />
     <Compile Include="Factories\FIC\CSharpFluentInterfaceFileCreator.cs" />
     <Compile Include="Factories\FIC\IFluentInterfaceCreator.cs" />
-    <Compile Include="Factories\FluentInterfaceCreator.cs" />
     <Compile Include="Factories\FluentInterfaceCreatorFactory.cs" />
     <Compile Include="Models\CallableMethodIndicator.cs" />
     <Compile Include="Models\Datatype.cs" />

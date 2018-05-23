@@ -1,5 +1,8 @@
-﻿namespace Engine.Models
+﻿using System;
+
+namespace Engine.Models
 {
+    [Serializable]
     public class CallableMethodIndicator
     {
         public string Group { get; set; }

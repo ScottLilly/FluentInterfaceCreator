@@ -27,6 +27,12 @@ namespace Engine.Models
             _lines.Add(new Line(0, ""));
         }
 
+        public void AddLineAfterBlankLine(int indentationLevel, string text)
+        {
+            AddBlankLine();
+            AddLine(indentationLevel, text);
+        }
+
         public string FormattedText()
         {
             StringBuilder outputString = new StringBuilder();
@@ -40,7 +46,7 @@ namespace Engine.Models
             return outputString.ToString();
         }
 
-        private struct Line
+        private sealed class Line
         {
             public int IndentationDepth { get; }
             public string Text { get; }

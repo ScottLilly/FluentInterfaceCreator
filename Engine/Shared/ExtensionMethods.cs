@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
+using Engine.Models;
 
 namespace Engine.Shared
 {
@@ -33,6 +34,11 @@ namespace Engine.Shared
         internal static string Repeated(this string text, int times)
         {
             return string.Concat(Enumerable.Repeat(text, times));
+        }
+
+        internal static bool IsChainStartingMethod(this Method.MethodGroup group)
+        {
+            return group == Method.MethodGroup.Instantiating || group == Method.MethodGroup.Chaining;
         }
     }
 }

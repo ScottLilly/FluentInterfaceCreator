@@ -9,8 +9,6 @@ namespace Engine.Factories
     {
         internal static IFluentInterfaceCreator GetFluentInterfaceFileCreator(Project project)
         {
-            FluentInterfaceCreator creator = new FluentInterfaceCreator(project);
-
             switch(project.OutputLanguage.Name)
             {
                 case "C#":

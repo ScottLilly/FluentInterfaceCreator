@@ -316,3 +316,4 @@ svn*.*
 
 # NDepend
 NDependOut/*
+.svn/wc.db

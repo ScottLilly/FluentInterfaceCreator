@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
 using System.Xml;
 using Engine.Factories;
@@ -88,7 +87,7 @@ namespace Engine.ViewModels
             {
                 CurrentProject = Serialization.Deserialize<Project>(serializedProject);
             }
-            catch(Exception e)
+            catch
             {
                 CurrentProject = new Project();
             }
@@ -105,7 +104,6 @@ namespace Engine.ViewModels
 
             if(errorMessages.Any())
             {
-                // TODO: Handle the line feeds in the WPF
                 DatatypeUnderEditErrorMessage = errorMessages.ToStringWithLineFeeds();
                 return;
             }

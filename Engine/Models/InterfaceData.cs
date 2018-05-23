@@ -1,11 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using Engine.Resources;
 using Engine.Shared;
 using PropertyChanged;
 
 namespace Engine.Models
 {
+    [Serializable]
     [AddINotifyPropertyChangedInterface]
     public class InterfaceData
     {
@@ -27,7 +29,7 @@ namespace Engine.Models
                     yield return ErrorMessages.NameCannotContainAnInternalSpace;
                 }
 
-                if (Name.ContainsInvalidCharacter())
+                if(Name.ContainsInvalidCharacter())
                 {
                     yield return ErrorMessages.NameCannotContainSpecialCharacters;
                 }
@@ -46,6 +48,11 @@ namespace Engine.Models
                                                     : StringComparison.CurrentCultureIgnoreCase;
 
             return Name.Equals(interfaceData.Name.Trim(), comparisonMethod);
+        }
+
+        internal List<string> NamespacesNeeded()
+        {
+            return CallableMethods.SelectMany(x => x.NamespacesNeeded).Distinct().OrderBy(n => n).ToList();
         }
     }
 }

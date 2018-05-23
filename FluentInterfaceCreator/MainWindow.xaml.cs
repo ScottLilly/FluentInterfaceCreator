@@ -28,7 +28,6 @@ namespace FluentInterfaceCreator
 
         #region "File" menu options
 
-        // TODO: Move to ViewModel
         private void CreateNewProject_OnClick(object sender, RoutedEventArgs e)
         {
             string selectedLanguage = "C#"; // Currently, only support C#

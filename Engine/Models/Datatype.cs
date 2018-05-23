@@ -5,6 +5,7 @@ using Engine.Shared;
 
 namespace Engine.Models
 {
+    [Serializable]
     public class Datatype
     {
         public string Name { get; set; }

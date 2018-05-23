@@ -1,5 +1,5 @@
-﻿<?xml version="1.0" encoding="utf-8" standalone="yes"?>
-<NDepend AppName="FluentInterfaceCreator" Platform="DotNet" FileWrittenByProductVersion="2017.2.1.8955">
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<NDepend AppName="FluentInterfaceCreator" Platform="DotNet" FileWrittenByProductVersion="2018.1.1.9040">
   <OutputDir KeepXmlFiles="False">D:\Projects\OpenSource\FluentInterfaceCreator\NDependOut</OutputDir>
   <Assemblies>
     <Name>Engine</Name>
@@ -13,6 +13,7 @@
   <Dirs>
     <Dir>C:\WINDOWS\Microsoft.NET\Framework\v4.0.30319</Dir>
     <Dir>C:\WINDOWS\Microsoft.NET\Framework\v4.0.30319\WPF</Dir>
+    <Dir>C:\Users\Scott\.nuget\packages</Dir>
     <Dir>D:\Projects\OpenSource\FluentInterfaceCreator\Engine\bin\Debug</Dir>
   </Dirs>
   <MergeCodeGeneratedByCompiler>True</MergeCodeGeneratedByCompiler>
@@ -26,10 +27,6 @@
       <Serie MetricName="# Lines of Code Covered" MetricUnit="Loc" Color="#FF32CD32" ChartType="Area" ScaleExp="0" />
       <Serie MetricName="# Lines of Code (NotMyCode)" MetricUnit="Loc" Color="#FFA9A9A9" ChartType="Area" ScaleExp="0" />
       <Serie MetricName="# Lines of Comments" MetricUnit="Lines" Color="#FF008000" ChartType="Line" ScaleExp="0" />
-    </Chart>
-    <Chart Name="% Coverage and % Debt" ShowInReport="True">
-      <Serie MetricName="Percentage Code Coverage" MetricUnit="%" Color="#FF32CD32" ChartType="Area" ScaleExp="0" />
-      <Serie MetricName="Percentage Debt (Metric)" MetricUnit="%" Color="#FFFF0000" ChartType="Line" ScaleExp="0" />
     </Chart>
     <Chart Name="Issues" ShowInReport="True">
       <Serie MetricName="# New Issues since Baseline" MetricUnit="issues" Color="#FFFF0000" ChartType="Line" ScaleExp="0" />
@@ -46,10 +43,6 @@
       <Serie MetricName="# Quality Gates Fail" MetricUnit="quality gates" Color="#FFFF0000" ChartType="Line" ScaleExp="0" />
       <Serie MetricName="# Quality Gates Warn" MetricUnit="quality gates" Color="#FFFF8C00" ChartType="Line" ScaleExp="0" />
       <Serie MetricName="# Quality Gates" MetricUnit="quality gates" Color="#FF32CD32" ChartType="Line" ScaleExp="0" />
-    </Chart>
-    <Chart Name="Debt" ShowInReport="True">
-      <Serie MetricName="Debt (Metric)" MetricUnit="man-days" Color="#FFFF0000" ChartType="Line" ScaleExp="0" />
-      <Serie MetricName="Annual Interest (Metric)" MetricUnit="man-days" Color="#FFFF8C00" ChartType="Line" ScaleExp="0" />
     </Chart>
   </TrendMetrics>
   <HistoricAnalysisResult PersistRecurrence="3" UseCustomDir="False" CustomDir="" />
@@ -79,8 +72,7 @@
       <High2Critical_SeverityThreshold>72000000000</High2Critical_SeverityThreshold>
       <Critical2Blocker_SeverityThreshold>360000000000</Critical2Blocker_SeverityThreshold>
     </DebtSettings>
-  </ProjectDebtSettings>
-  <Queries>
+  </ProjectDebtSettings><Queries>
     <Group Name="Quality Gates" Active="True" ShownInReport="True">
       <Query Active="True" DisplayList="True" DisplayStat="True" DisplaySelectionView="False" IsCriticalRule="False"><![CDATA[// <Name>Quality Gates Evolution</Name>
 from qg in QualityGates
@@ -10939,5 +10931,4 @@ select new {
 //</HowToFix>]]></Query>
       </Group>
     </Group>
-  </Queries>
-</NDepend>
+  </Queries></NDepend>
