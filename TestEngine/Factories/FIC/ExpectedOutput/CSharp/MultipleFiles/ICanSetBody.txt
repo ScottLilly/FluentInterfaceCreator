@@ -1,0 +1,7 @@
+﻿namespace Engine
+{
+	public interface ICanSetBody
+	{
+		ICanSend Body(string body);
+	}
+}

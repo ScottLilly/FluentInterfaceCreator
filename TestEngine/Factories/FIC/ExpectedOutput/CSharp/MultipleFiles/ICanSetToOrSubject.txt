@@ -1,0 +1,8 @@
+﻿namespace Engine
+{
+	public interface ICanSetToOrSubject
+	{
+		ICanSetToOrSubject To(string emailAddress);
+		ICanSetBody Subject(string subject);
+	}
+}

@@ -1,0 +1,35 @@
+﻿namespace Engine
+{
+	public class EmailBuilder : ICanSetTo, ICanSetToOrSubject, ICanSetBody, ICanSend
+	{
+		// Instantiating functions
+
+		public static ICanSetTo CreateEmailFrom(string emailAddress)
+		{
+			return new EmailBuilder();
+		}
+
+		// Chaining functions
+
+		public ICanSetToOrSubject To(string emailAddress)
+		{
+			return this;
+		}
+
+		public ICanSetBody Subject(string subject)
+		{
+			return this;
+		}
+
+		public ICanSend Body(string body)
+		{
+			return this;
+		}
+
+		// Executing functions
+
+		public void Send()
+		{
+		}
+	}
+}

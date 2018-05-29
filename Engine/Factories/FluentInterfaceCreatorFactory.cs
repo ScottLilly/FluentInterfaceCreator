@@ -5,9 +5,9 @@ using Engine.Resources;
 
 namespace Engine.Factories
 {
-    internal static class FluentInterfaceCreatorFactory
+    public static class FluentInterfaceCreatorFactory
     {
-        internal static IFluentInterfaceCreator GetFluentInterfaceFileCreator(Project project)
+        public static IFluentInterfaceCreator GetFluentInterfaceFileCreator(Project project)
         {
             switch(project.OutputLanguage.Name)
             {

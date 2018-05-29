@@ -1,0 +1,7 @@
+﻿namespace Engine
+{
+	public interface ICanSend
+	{
+		void Send();
+	}
+}
