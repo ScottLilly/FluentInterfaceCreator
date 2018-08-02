@@ -51,7 +51,7 @@ namespace Engine.Models
                     yield return ErrorMessages.NameCannotContainAnInternalSpace;
                 }
 
-                if (Name.ContainsInvalidCharacter())
+                if(Name.ContainsInvalidCharacter())
                 {
                     yield return ErrorMessages.NameCannotContainSpecialCharacters;
                 }
@@ -62,9 +62,9 @@ namespace Engine.Models
                 yield return ErrorMessages.NamespaceCannotContainAnInternalSpace;
             }
 
-            if (ContainingNamespace.ContainsInvalidCharacter())
+            if(ContainingNamespace.IsNotValidNamespace())
             {
-                yield return ErrorMessages.NamespaceCannotContainSpecialCharacters;
+                yield return ErrorMessages.NamespaceIsNotValid;
             }
         }
 

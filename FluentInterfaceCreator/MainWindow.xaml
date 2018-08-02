@@ -107,6 +107,7 @@
                             <RowDefinition Height="Auto"/>
                             <RowDefinition Height="Auto"/>
                             <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="Auto"/>
                         </Grid.RowDefinitions>
                         <Grid.ColumnDefinitions>
                             <ColumnDefinition Width="Auto"/>
@@ -114,33 +115,41 @@
                         </Grid.ColumnDefinitions>
 
                         <Label Grid.Row="0" Grid.Column="0"
+                               Grid.ColumnSpan="2"
+                               MinHeight="25"
+                               HorizontalAlignment="Left"
+                               FontWeight="Bold"
+                               Foreground="Red"
+                               Content="{Binding ProjectUnderEditErrorMessage}"/>
+
+                        <Label Grid.Row="1" Grid.Column="0"
                                FontWeight="Bold"
                                Content="{Binding Source={x:Static resources:Literals.Language}}"/>
-                        <Label Grid.Row="0" Grid.Column="1"
+                        <Label Grid.Row="1" Grid.Column="1"
                                Width="150"
                                HorizontalAlignment="Left"
                                Content="{Binding CurrentProject.OutputLanguage.Name}"/>
 
-                        <Label Grid.Row="1" Grid.Column="0"
+                        <Label Grid.Row="2" Grid.Column="0"
                                FontWeight="Bold"
                                Content="{Binding Source={x:Static resources:Literals.ProjectName}}"/>
-                        <TextBox Grid.Row="1" Grid.Column="1"
+                        <TextBox Grid.Row="2" Grid.Column="1"
                                  Width="250"
                                  HorizontalAlignment="Left"
                                  Text="{Binding CurrentProject.Name}"/>
 
-                        <Label Grid.Row="2" Grid.Column="0"
+                        <Label Grid.Row="3" Grid.Column="0"
                                FontWeight="Bold"
                                Content="{Binding Source={x:Static resources:Literals.FactoryClassNamespace}}"/>
-                        <TextBox Grid.Row="2" Grid.Column="1"
+                        <TextBox Grid.Row="3" Grid.Column="1"
                                  Width="250"
                                  HorizontalAlignment="Left"
                                  Text="{Binding CurrentProject.FactoryClassNamespace}"/>
 
-                        <Label Grid.Row="3" Grid.Column="0"
+                        <Label Grid.Row="4" Grid.Column="0"
                                FontWeight="Bold"
                                Content="{Binding Source={x:Static resources:Literals.FactoryClassName}}"/>
-                        <TextBox Grid.Row="3" Grid.Column="1"
+                        <TextBox Grid.Row="4" Grid.Column="1"
                                  Width="250"
                                  HorizontalAlignment="Left"
                                  Text="{Binding CurrentProject.FactoryClassName}"/>

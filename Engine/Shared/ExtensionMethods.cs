@@ -21,6 +21,23 @@ namespace Engine.Shared
             return !text.All(x => char.IsLetterOrDigit(x) || x.Equals('_') || x.Equals(' '));
         }
 
+        internal static bool IsNotValidNamespace(this string text)
+        {
+            if(text == null || string.IsNullOrWhiteSpace(text))
+            {
+                return true;
+            }
+
+            if(text.Replace(".", "").ContainsInvalidCharacter())
+            {
+                return true;
+            }
+
+            return text.Trim().StartsWith(".") ||
+                   text.Trim().EndsWith(".") ||
+                   text.Contains("..");
+        }
+
         internal static bool HasAnInternalSpace(this string text)
         {
             return text.HasText() && text.Trim().Contains(" ");

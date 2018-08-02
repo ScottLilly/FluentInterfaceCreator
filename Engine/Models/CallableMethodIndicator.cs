@@ -5,7 +5,7 @@ namespace Engine.Models
     [Serializable]
     public class CallableMethodIndicator
     {
-        public string Group { get; set; }
+        public Method.MethodGroup Group { get; set; }
         public string Name { get; set; }
         public bool CanCall { get; set; }
         public string Signature { get; set; }
@@ -13,7 +13,7 @@ namespace Engine.Models
 
         public CallableMethodIndicator(Method method, bool canCall = false)
         {
-            Group = method.Group.ToString();
+            Group = method.Group;
             Name = method.Name;
             Signature = method.Signature;
             DatatypeSignature = method.DatatypeSignature;

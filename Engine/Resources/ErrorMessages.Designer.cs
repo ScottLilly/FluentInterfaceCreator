@@ -97,6 +97,15 @@ namespace Engine.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to &apos;Factory Class Name&apos; is required.
+        /// </summary>
+        public static string FactoryClassNameIsRequired {
+            get {
+                return ResourceManager.GetString("FactoryClassNameIsRequired", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to &apos;Group&apos; is not valid.
         /// </summary>
         public static string GroupIsNotValid {
@@ -169,11 +178,11 @@ namespace Engine.Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to &apos;Namespace&apos; cannot contain special characters.
+        ///   Looks up a localized string similar to &apos;Namespace&apos; is not valid.
         /// </summary>
-        public static string NamespaceCannotContainSpecialCharacters {
+        public static string NamespaceIsNotValid {
             get {
-                return ResourceManager.GetString("NamespaceCannotContainSpecialCharacters", resourceCulture);
+                return ResourceManager.GetString("NamespaceIsNotValid", resourceCulture);
             }
         }
         

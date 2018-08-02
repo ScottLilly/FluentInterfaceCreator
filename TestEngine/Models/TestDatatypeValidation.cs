@@ -20,7 +20,7 @@ namespace TestEngine.Models
             errors.Contains(ErrorMessages.NameCannotContainAnInternalSpace).ShouldBeFalse();
             errors.Contains(ErrorMessages.NameCannotContainSpecialCharacters).ShouldBeFalse();
             errors.Contains(ErrorMessages.NamespaceCannotContainAnInternalSpace).ShouldBeFalse();
-            errors.Contains(ErrorMessages.NamespaceCannotContainSpecialCharacters).ShouldBeFalse();
+            errors.Contains(ErrorMessages.NamespaceIsNotValid).ShouldBeFalse();
         }
 
         [Fact]
@@ -34,7 +34,7 @@ namespace TestEngine.Models
             errors.Contains(ErrorMessages.NameCannotContainAnInternalSpace).ShouldBeTrue();
             errors.Contains(ErrorMessages.NameCannotContainSpecialCharacters).ShouldBeFalse();
             errors.Contains(ErrorMessages.NamespaceCannotContainAnInternalSpace).ShouldBeFalse();
-            errors.Contains(ErrorMessages.NamespaceCannotContainSpecialCharacters).ShouldBeFalse();
+            errors.Contains(ErrorMessages.NamespaceIsNotValid).ShouldBeFalse();
         }
 
         [Fact]
@@ -48,7 +48,7 @@ namespace TestEngine.Models
             errors.Contains(ErrorMessages.NameCannotContainAnInternalSpace).ShouldBeTrue();
             errors.Contains(ErrorMessages.NameCannotContainSpecialCharacters).ShouldBeTrue();
             errors.Contains(ErrorMessages.NamespaceCannotContainAnInternalSpace).ShouldBeFalse();
-            errors.Contains(ErrorMessages.NamespaceCannotContainSpecialCharacters).ShouldBeFalse();
+            errors.Contains(ErrorMessages.NamespaceIsNotValid).ShouldBeFalse();
         }
 
         [Fact]
@@ -62,7 +62,7 @@ namespace TestEngine.Models
             errors.Contains(ErrorMessages.NameCannotContainAnInternalSpace).ShouldBeFalse();
             errors.Contains(ErrorMessages.NameCannotContainSpecialCharacters).ShouldBeTrue();
             errors.Contains(ErrorMessages.NamespaceCannotContainAnInternalSpace).ShouldBeFalse();
-            errors.Contains(ErrorMessages.NamespaceCannotContainSpecialCharacters).ShouldBeFalse();
+            errors.Contains(ErrorMessages.NamespaceIsNotValid).ShouldBeFalse();
         }
 
         [Fact]
@@ -76,7 +76,7 @@ namespace TestEngine.Models
             errors.Contains(ErrorMessages.NameCannotContainAnInternalSpace).ShouldBeFalse();
             errors.Contains(ErrorMessages.NameCannotContainSpecialCharacters).ShouldBeFalse();
             errors.Contains(ErrorMessages.NamespaceCannotContainAnInternalSpace).ShouldBeFalse();
-            errors.Contains(ErrorMessages.NamespaceCannotContainSpecialCharacters).ShouldBeFalse();
+            errors.Contains(ErrorMessages.NamespaceIsNotValid).ShouldBeFalse();
         }
 
         [Fact]
@@ -90,7 +90,7 @@ namespace TestEngine.Models
             errors.Contains(ErrorMessages.NameCannotContainAnInternalSpace).ShouldBeFalse();
             errors.Contains(ErrorMessages.NameCannotContainSpecialCharacters).ShouldBeFalse();
             errors.Contains(ErrorMessages.NamespaceCannotContainAnInternalSpace).ShouldBeTrue();
-            errors.Contains(ErrorMessages.NamespaceCannotContainSpecialCharacters).ShouldBeFalse();
+            errors.Contains(ErrorMessages.NamespaceIsNotValid).ShouldBeFalse();
         }
 
         [Fact]
@@ -104,7 +104,7 @@ namespace TestEngine.Models
             errors.Contains(ErrorMessages.NameCannotContainAnInternalSpace).ShouldBeFalse();
             errors.Contains(ErrorMessages.NameCannotContainSpecialCharacters).ShouldBeFalse();
             errors.Contains(ErrorMessages.NamespaceCannotContainAnInternalSpace).ShouldBeTrue();
-            errors.Contains(ErrorMessages.NamespaceCannotContainSpecialCharacters).ShouldBeTrue();
+            errors.Contains(ErrorMessages.NamespaceIsNotValid).ShouldBeTrue();
         }
 
         [Fact]
@@ -118,7 +118,7 @@ namespace TestEngine.Models
             errors.Contains(ErrorMessages.NameCannotContainAnInternalSpace).ShouldBeFalse();
             errors.Contains(ErrorMessages.NameCannotContainSpecialCharacters).ShouldBeFalse();
             errors.Contains(ErrorMessages.NamespaceCannotContainAnInternalSpace).ShouldBeFalse();
-            errors.Contains(ErrorMessages.NamespaceCannotContainSpecialCharacters).ShouldBeTrue();
+            errors.Contains(ErrorMessages.NamespaceIsNotValid).ShouldBeTrue();
         }
     }
 }

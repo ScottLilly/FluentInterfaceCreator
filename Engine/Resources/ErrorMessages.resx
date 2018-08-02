@@ -153,10 +153,13 @@
   <data name="NamespaceCannotContainAnInternalSpace" xml:space="preserve">
     <value>'Namespace' cannot contain an internal space</value>
   </data>
-  <data name="NamespaceCannotContainSpecialCharacters" xml:space="preserve">
-    <value>'Namespace' cannot contain special characters</value>
+  <data name="NamespaceIsNotValid" xml:space="preserve">
+    <value>'Namespace' is not valid</value>
   </data>
   <data name="ReturnTypeIsRequired" xml:space="preserve">
     <value>'Return Type' is required</value>
+  </data>
+  <data name="FactoryClassNameIsRequired" xml:space="preserve">
+    <value>'Factory Class Name' is required</value>
   </data>
 </root>

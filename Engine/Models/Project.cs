@@ -1,23 +1,23 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.ComponentModel;
 using System.Globalization;
 using System.Linq;
 using Engine.Resources;
 using Engine.Shared;
-using PropertyChanged;
 
 namespace Engine.Models
 {
     [Serializable]
-    [AddINotifyPropertyChangedInterface]
-    public class Project
+    public class Project : INotifyPropertyChanged
     {
         #region Properties
 
         public OutputLanguage OutputLanguage { get; set; }
 
         private string _name;
+
         public string Name
         {
             get => _name;
@@ -48,19 +48,24 @@ namespace Engine.Models
         public ObservableCollection<InterfaceData> Interfaces { get; } =
             new ObservableCollection<InterfaceData>();
 
-        public string InterfaceListAsCommaSeparatedString => 
+        public string InterfaceListAsCommaSeparatedString =>
             string.Join(", ", Interfaces.Select(i => i.Name));
 
         // For this section, a "chain" is two methods, called in order,
         // during the use of the fluent interface.
         // The first method must be an InstantiatingMethod or a ChainingMethod. 
         // The second method must be a ChainingMethod or an ExecutingMethod.
-        public ObservableCollection<Method> ChainStartingMethods { get; } = 
+        public ObservableCollection<Method> ChainStartingMethods { get; } =
             new ObservableCollection<Method>();
 
         public ObservableCollection<Method> ChainEndingMethods { get; } =
             new ObservableCollection<Method>();
 
+        // TODO: Make this smarter. Check that project:
+        //      Has at least one instantiating/chaining/executing method
+        //      All method are used in interfaces
+        //      All interfaces have names
+        //      etc.
         public bool CanCreateFiles => FactoryClassName.HasText();
 
         #endregion
@@ -114,7 +119,7 @@ namespace Engine.Models
 
         public void DeleteMethod(Method method)
         {
-            switch (method.Group)
+            switch(method.Group)
             {
                 case Method.MethodGroup.Instantiating:
                     InstantiatingMethods.Remove(method);
@@ -144,6 +149,36 @@ namespace Engine.Models
             }
 
             UpdateInterfaces();
+        }
+
+        public IEnumerable<string> ValidationErrors()
+        {
+            if(FactoryClassName.IsEmpty())
+            {
+                yield return ErrorMessages.FactoryClassNameIsRequired;
+            }
+            else
+            {
+                if(FactoryClassName.HasAnInternalSpace())
+                {
+                    yield return ErrorMessages.NameCannotContainAnInternalSpace;
+                }
+
+                if(FactoryClassName.ContainsInvalidCharacter())
+                {
+                    yield return ErrorMessages.NameCannotContainSpecialCharacters;
+                }
+            }
+
+            if(FactoryClassNamespace.HasAnInternalSpace())
+            {
+                yield return ErrorMessages.NamespaceCannotContainAnInternalSpace;
+            }
+
+            if(FactoryClassNamespace.IsNotValidNamespace())
+            {
+                yield return ErrorMessages.NamespaceIsNotValid;
+            }
         }
 
         #endregion
@@ -188,14 +223,15 @@ namespace Engine.Models
         {
             if(Name.HasText() && FactoryClassName.IsEmpty())
             {
-                FactoryClassName = 
-                    new CultureInfo(CultureInfo.CurrentCulture.Name, true).TextInfo.ToTitleCase(Name).Replace(" ", "") + "Builder";
+                FactoryClassName =
+                    new CultureInfo(CultureInfo.CurrentCulture.Name, true).TextInfo.ToTitleCase(Name).Replace(" ", "") +
+                    "Builder";
             }
         }
 
         private void AddMethodToCollection(Method method)
         {
-            switch (method.Group)
+            switch(method.Group)
             {
                 case Method.MethodGroup.Instantiating:
                     InstantiatingMethods.Add(method);
@@ -219,14 +255,14 @@ namespace Engine.Models
         {
             // Add this method as a callable method, to all ChainStarting methods,
             // if this is a ChainEnding method.
-            if (methodToAdd.IsChainEnding)
+            if(methodToAdd.IsChainEnding)
             {
-                foreach (Method instantiatingMethod in InstantiatingMethods)
+                foreach(Method instantiatingMethod in InstantiatingMethods)
                 {
                     AddMethodToCallableMethods(instantiatingMethod, methodToAdd);
                 }
 
-                foreach (Method chainingMethod in ChainingMethods)
+                foreach(Method chainingMethod in ChainingMethods)
                 {
                     AddMethodToCallableMethods(chainingMethod, methodToAdd);
                 }
@@ -236,12 +272,12 @@ namespace Engine.Models
         private void AddChainEndingMethodsTo(Method method)
         {
             // Add all ChainEndingMethods to this new Method
-            foreach (Method chainEndingMethod in ChainEndingMethods)
+            foreach(Method chainEndingMethod in ChainEndingMethods)
             {
-                if (!method
-                        .MethodsCallableNext
-                        .Any(cm => cm.Group == chainEndingMethod.Group.ToString() &&
-                                   cm.DatatypeSignature == chainEndingMethod.DatatypeSignature))
+                if(!method
+                    .MethodsCallableNext
+                    .Any(cm => cm.Group == chainEndingMethod.Group &&
+                               cm.DatatypeSignature == chainEndingMethod.DatatypeSignature))
                 {
                     method.MethodsCallableNext.Add(new CallableMethodIndicator(chainEndingMethod));
                 }
@@ -250,36 +286,36 @@ namespace Engine.Models
 
         private void PopulateInterfacesForMethods(IEnumerable<Method> methods)
         {
-            foreach (Method method in methods
+            foreach(Method method in methods
                 .Where(m => !string.IsNullOrWhiteSpace(m.CallableMethodsSignature)))
             {
                 InterfaceData interfaceData =
                     Interfaces.FirstOrDefault(i => i.CallableMethodsSignature == method.CallableMethodsSignature);
 
-                if (interfaceData == null)
+                if(interfaceData == null)
                 {
                     interfaceData = new InterfaceData();
 
                     interfaceData.CalledByMethods.Add(method);
 
-                    foreach (CallableMethodIndicator callableMethod in
+                    foreach(CallableMethodIndicator callableMethod in
                         method.MethodsCallableNext.Where(m => m.CanCall))
                     {
-                        switch (callableMethod.Group)
+                        switch(callableMethod.Group)
                         {
-                            case "Instantiating":
+                            case Method.MethodGroup.Instantiating:
                                 interfaceData
                                     .CallableMethods
                                     .Add(InstantiatingMethods
                                              .First(m => m.Signature == callableMethod.Signature));
                                 break;
-                            case "Chaining":
+                            case Method.MethodGroup.Chaining:
                                 interfaceData
                                     .CallableMethods
                                     .Add(ChainingMethods
                                              .First(m => m.Signature == callableMethod.Signature));
                                 break;
-                            case "Executing":
+                            case Method.MethodGroup.Executing:
                                 interfaceData
                                     .CallableMethods
                                     .Add(ExecutingMethods
@@ -300,10 +336,10 @@ namespace Engine.Models
 
         private void AddMethodToCallableMethods(Method method, Method callableMethod)
         {
-            if (!method
-                    .MethodsCallableNext
-                    .Any(cm => cm.Group == callableMethod.Group.ToString() &&
-                               cm.DatatypeSignature == callableMethod.DatatypeSignature))
+            if(!method
+                .MethodsCallableNext
+                .Any(cm => cm.Group == callableMethod.Group &&
+                           cm.DatatypeSignature == callableMethod.DatatypeSignature))
             {
                 method
                     .MethodsCallableNext
@@ -316,15 +352,17 @@ namespace Engine.Models
             CallableMethodIndicator callableMethodToRemove =
                 method
                     .MethodsCallableNext
-                    .FirstOrDefault(cm => cm.Group == callableMethod.Group.ToString() &&
+                    .FirstOrDefault(cm => cm.Group == callableMethod.Group &&
                                           cm.Name == callableMethod.Name);
 
-            if (callableMethodToRemove != null)
+            if(callableMethodToRemove != null)
             {
                 method.MethodsCallableNext.Remove(callableMethodToRemove);
             }
         }
 
         #endregion
+
+        public event PropertyChangedEventHandler PropertyChanged;
     }
 }

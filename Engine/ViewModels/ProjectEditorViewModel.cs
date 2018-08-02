@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.ComponentModel;
 using System.Linq;
 using System.Xml;
 using Engine.Factories;
@@ -25,12 +26,24 @@ namespace Engine.ViewModels
             {
                 if(_currentProject != value)
                 {
+                    if(_currentProject != null)
+                    {
+                        _currentProject.PropertyChanged -= OnCurrentProjectChanged;
+                    }
+
                     _currentProject = value;
+
+                    if(_currentProject != null)
+                    {
+                        _currentProject.PropertyChanged += OnCurrentProjectChanged;
+                    }
 
                     ClearViewModelProperties();
                 }
             }
         }
+
+        public string ProjectUnderEditErrorMessage { get; set; }
 
         public string DatatypeUnderEditErrorMessage { get; set; }
         public Datatype DatatypeUnderEdit { get; private set; }
@@ -216,6 +229,12 @@ namespace Engine.ViewModels
         #endregion
 
         #region Private functions
+
+        private void OnCurrentProjectChanged(object sender, PropertyChangedEventArgs e)
+        {
+            ProjectUnderEditErrorMessage = 
+                _currentProject.ValidationErrors().ToStringWithLineFeeds();
+        }
 
         private void ClearViewModelProperties()
         {
