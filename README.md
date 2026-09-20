@@ -3,7 +3,7 @@ Tool to create fluent interface files, in C#
 
 Support page: https://scottlilly.com/fluent-interface-creator/
 
-**NEW VERSION BEING BUILT IN .NET 6 AT** : https://github.com/ScottLilly/FluentInterfaceCreatorDotNet
+A .NET 6 rewrite was started in 2022 and abandoned. This is the only version.
 
 <table>
   <tbody>
